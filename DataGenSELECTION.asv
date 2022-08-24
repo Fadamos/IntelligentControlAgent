@@ -8,8 +8,8 @@
 clear
 clc
 
-myDir = '/Users/ajh/UNSW/Sky Shepherds - FINALv2'; 
-myFiles = dir(fullfile(myDir, '*.mat')); 
+topLevelFolder = '/Users/ajh/UNSW/Sky Shepherds - FINALv2'; 
+%[listOfFolderNames, listOfFileNames, numberOfFolders, allFileInfo, thisFolder, totalNumberOfFiles, baseNameNoExt] = RecurseFolderStructure(myDir);
 
 ScenarioKEY = [];
 CollisionKEY = [];
@@ -18,22 +18,59 @@ MPstats = [];
 CollectKEY = []; 
 DriveKEY = []; 
 
-% generate flat files 
-for simRun = 1:length(myFiles)
-    % import 
-    baseFileName = myFiles(simRun).name; 
-    fullFileName = fullfile(myDir, baseFileName); 
-    fprintf(1, 'Now reading %s\n', fullFileName); 
-    dat = importdata(fullFileName);
 
-    % MissionPerformanceStats
-    MPstats = [MPstats; dat.MissionPerformanceStatistics];
-    ScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
-    SpeedKEY = [SpeedKEY; dat.parameters.SheepDogVehicleSpeedLimit];
-    CollisionKEY = [CollisionKEY; dat.parameters.CollisionRange];
-    CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
-    DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
-end
+    % Initialization steps:
+    clc;    % Clear the command window.
+    workspace;  % Make sure the workspace panel is showing.
+    format long g;
+    format compact;
+    
+    % Specify the file pattern.
+    filePattern = sprintf('%s/**/*.mat', topLevelFolder);
+    allFileInfo = dir(filePattern);
+    
+    % Throw out any folders.  We want files only, not folders.
+    isFolder = [allFileInfo.isdir]; % Logical list of what item is a folder or not.
+    % Now set those folder entries to null, essentially deleting/removing them from the list.
+    allFileInfo(isFolder) = [];
+    % Get a cell array of strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+    listOfFolderNames = unique({allFileInfo.folder});
+    numberOfFolders = length(listOfFolderNames);
+    fprintf('The total number of folders to look in is %d.\n', numberOfFolders);
+    
+    % Get a cell array of base filename strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+    listOfFileNames = {allFileInfo.name};
+    totalNumberOfFiles = length(listOfFileNames);
+    fprintf('The total number of files in those %d folders is %d.\n', numberOfFolders, totalNumberOfFiles);
+    
+    % Process all files in those folders.
+    totalNumberOfFiles = length(allFileInfo);
+    % Now we have a list of all files, matching the pattern, in the top level folder and its subfolders.
+    if totalNumberOfFiles >= 1
+	    for k = 1 : totalNumberOfFiles
+		    % Go through all those files.
+		    thisFolder = allFileInfo(k).folder;
+		    thisBaseFileName = allFileInfo(k).name;
+		    fullFileName = fullfile(thisFolder, thisBaseFileName);
+    % 		fprintf('     Processing file %d of %d : "%s".\n', k, totalNumberOfFiles, fullFileName);
+    
+		    [~, baseNameNoExt, ~] = fileparts(thisBaseFileName);
+		    fprintf('%s\n', baseNameNoExt);
+            
+            dat = importdata(fullFileName);
+            
+            % MissionPerformanceStats
+            MPstats = [MPstats; dat.MissionPerformanceStatistics];
+            ScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
+            SpeedKEY = [SpeedKEY; dat.parameters.SheepDogVehicleSpeedLimit];
+            CollisionKEY = [CollisionKEY; dat.parameters.CollisionRange];
+            CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
+            DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
+	    end
+    else
+	    fprintf('     Folder %s has no files in it.\n', thisFolder);
+    end
+    fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
 
 % organise data by collect and drive tactic pairs PER scenario, speed or collision (needs to be manually changed)
 
