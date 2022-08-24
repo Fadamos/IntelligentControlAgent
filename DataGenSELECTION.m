@@ -1,5 +1,5 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-08-18
+% LastModified: 2022-08-24
 % Explanaton: Summarise tactic-pair methods from generated data to
 % determine optimal assignments, for a given set of simulation parameters
 
@@ -71,6 +71,14 @@ DriveKEY = [];
 	    fprintf('     Folder %s has no files in it.\n', thisFolder);
     end
     fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
+
+% arrange data 
+df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY);
+df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic"];
+
+
+% 
+
 
 % organise data by collect and drive tactic pairs PER scenario, speed or collision (needs to be manually changed)
 

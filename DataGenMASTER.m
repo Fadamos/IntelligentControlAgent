@@ -126,7 +126,6 @@
                                     % Col 8  = Total distance moved by the sheepdog 
                                     % Col 9  = Average distance moved by the sheepdog (per time period)
                                     % Col 10 = sim run time (seconds)
-                                    % Col 11 = Average number of separated sheep 
                                     % Col 11 = Average number of separated sheep
                                     % Col 12 = Average convex hull of all agents swarm 
                                     % Col 13 = Average density (dispersion) of agents in convex hull - allows us to normalise between simulation runs
