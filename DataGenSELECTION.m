@@ -8,7 +8,7 @@
 clear
 clc
 
-myDir = '/Users/ajh/GitHub/RecognitionController/SimData/dataClassic'; 
+myDir = '/Users/ajh/UNSW/Sky Shepherds - FINALv2'; 
 myFiles = dir(fullfile(myDir, '*.mat')); 
 
 ScenarioKEY = [];
