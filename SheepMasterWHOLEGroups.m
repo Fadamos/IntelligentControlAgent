@@ -237,7 +237,7 @@ parameters.SwarmAgentTypeDistribution = generateSwarm(parameters.NumberOfSheep,p
 % select behaviour case for swarm agent i
 parameters.SheepBehaviourCase = char(parameters.SwarmAgentTypeDistribution(i));
 
-fprintf('Simulation Time = ')
+fprintf('\nSimulation Time = ')
 while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
         %% Console time counter! 

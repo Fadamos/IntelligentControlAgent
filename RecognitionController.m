@@ -6,7 +6,7 @@
 
 %% Data farming or independent execution
 
-parameters.Adam = false; % set of false for Daniel
+parameters.Adam = true; % set of false for Daniel
 
 %% FOR SINGLE RUN ONLY = TRUE 
 parameters.IsolatedSim = true; 
@@ -25,8 +25,8 @@ end
 if parameters.Adam % Adam's isolated simulation parameters 
     parameters.user = "Adam";
     % Sim params 
-    parameters.Verbose = false; % visuals (true) or data only (false)
-    parameters.VerboseBugger = false; % sys print for increased data debugging
+    parameters.Verbose = true; % visuals (true) or data only (false)
+    parameters.VerboseBugger = true; % sys print for increased data debugging
     parameters.visual = "classic"; % 'classic' if using original visuals
     % turn off warnings if not impacting code execution
     warning('off','all')
@@ -172,8 +172,10 @@ end
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    if parameters.Adam % Adam's isolated simulation parameters 
-        load('/Users/ajh/GitHub/RecognitionController/C1.mat')
+    if parameters.Adam % Adam's isolated simulation paramete
+        % \
+        % rs 
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
     else % Daniel's isolated simulation parameters 
         load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
     end
