@@ -1,6 +1,6 @@
 function output = ObjectiveLibraryDECISION(df)
     % Author: Adam J Hepworth
-    % LastModified: 2022-08-26
+    % LastModified: 2022-08-27
     % Explanaton: Intelligent control agent   
 
     %% data generation
@@ -42,7 +42,6 @@ function output = ObjectiveLibraryDECISION(df)
                 end
             end
     end
-    % re order to S1,...,S11
 
 
     %% summary statistics
@@ -56,32 +55,60 @@ function output = ObjectiveLibraryDECISION(df)
         end
     end
     
-    DefaultTactic.I1.value = max(max(TacticSummary(:,:,1))); 
-    DefaultTactic.I1.index = find(TacticSummary(:,:,1) == max(max(TacticSummary(:,:,1))));
-    DefaultTactic.I2.value = min(min(TacticSummary(:,:,2)));
-    DefaultTactic.I2.index = find(TacticSummary(:,:,2) == min(min(TacticSummary(:,:,2))));
-    DefaultTactic.I3.value = min(min(TacticSummary(:,:,3)));
-    DefaultTactic.I3.index = find(TacticSummary(:,:,3) == min(min(TacticSummary(:,:,3))));
-    DefaultTactic.I4.value = max(max(TacticSummary(:,:,4)));
-    DefaultTactic.I4.index = find(TacticSummary(:,:,4) == max(max(TacticSummary(:,:,4))));
-    DefaultTactic.I5.value = max(max(TacticSummary(:,:,5)));
-    DefaultTactic.I5.index = find(TacticSummary(:,:,5) == max(max(TacticSummary(:,:,5))));
-    DefaultTactic.I6.value = min(min(TacticSummary(:,:,6)));
-    DefaultTactic.I6.index = find(TacticSummary(:,:,6) == min(min(TacticSummary(:,:,6))));
-    DefaultTactic.I7.value = max(max(TacticSummary(:,:,7)));
-    DefaultTactic.I7.index = find(TacticSummary(:,:,7) == max(max(TacticSummary(:,:,7))));
-    DefaultTactic.I8.value = min(min(TacticSummary(:,:,8))); 
-    DefaultTactic.I8.index = find(TacticSummary(:,:,8) == min(min(TacticSummary(:,:,8))));
-    DefaultTactic.I9.value = max(max(TacticSummary(:,:,9)));
-    DefaultTactic.I9.index = find(TacticSummary(:,:,9) == max(max(TacticSummary(:,:,9))));
-    DefaultTactic.I10.value = min(min(TacticSummary(:,:,10)));
-    DefaultTactic.I10.index = find(TacticSummary(:,:,10) == min(min(TacticSummary(:,:,10))));
+    Tactic.I1.value = max(max(TacticSummary(:,:,1))); 
+    Tactic.I1.linIdx = find(TacticSummary(:,:,1) == max(max(TacticSummary(:,:,1))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I1.linIdx]);
+    Tactic.I1.Idx = [r c];
+    
+    Tactic.I2.value = min(min(TacticSummary(:,:,2)));
+    Tactic.I2.linIdx = find(TacticSummary(:,:,2) == min(min(TacticSummary(:,:,2))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I2.linIdx]);
+    Tactic.I2.Idx = [r c];
+    
+    Tactic.I3.value = min(min(TacticSummary(:,:,3)));
+    Tactic.I3.linIdx = find(TacticSummary(:,:,3) == min(min(TacticSummary(:,:,3))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I3.linIdx]);
+    Tactic.I3.Idx = [r c];
+    
+    Tactic.I4.value = max(max(TacticSummary(:,:,4)));
+    Tactic.I4.linIdx = find(TacticSummary(:,:,4) == max(max(TacticSummary(:,:,4))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I4.linIdx]);
+    Tactic.I4.Idx = [r c]; 
+    
+    Tactic.I5.value = max(max(TacticSummary(:,:,5)));
+    Tactic.I5.linIdx = find(TacticSummary(:,:,5) == max(max(TacticSummary(:,:,5))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I5.linIdx]);
+    Tactic.I5.Idx = [r c];
+    
+    Tactic.I6.value = min(min(TacticSummary(:,:,6)));
+    Tactic.I6.linIdx = find(TacticSummary(:,:,6) == min(min(TacticSummary(:,:,6))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I6.linIdx]);
+    Tactic.I6.Idx = [r c];
+    
+    Tactic.I7.value = max(max(TacticSummary(:,:,7)));
+    Tactic.I7.linIdx = find(TacticSummary(:,:,7) == max(max(TacticSummary(:,:,7))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I7.linIdx]);
+    Tactic.I7.Idx = [r c];
+    
+    Tactic.I8.value = min(min(TacticSummary(:,:,8))); 
+    Tactic.I8.linIdx = find(TacticSummary(:,:,8) == min(min(TacticSummary(:,:,8))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I8.linIdx]);
+    Tactic.I8.Idx = [r c];
+    
+    Tactic.I9.value = max(max(TacticSummary(:,:,9)));
+    Tactic.I9.linIdx = find(TacticSummary(:,:,9) == max(max(TacticSummary(:,:,9))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I9.linIdx]);
+    Tactic.I9.Idx = [r c];
+    
+    Tactic.I10.value = min(min(TacticSummary(:,:,10)));
+    Tactic.I10.linIdx = find(TacticSummary(:,:,10) == min(min(TacticSummary(:,:,10))));
+    [r,c] = ind2sub([size(TacticMatrix,1) size(TacticMatrix,2)],[Tactic.I10.linIdx]);
+    Tactic.I10.Idx = [r c];
 
     %% save data
     output.Data = df; 
     output.TacticMatrix = TacticMatrix; 
     output.TacticSummary = TacticSummary; 
-    output.DefaultTactic = DefaultTactic; 
-    
+    output.Tactic = Tactic; 
 
 end
