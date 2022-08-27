@@ -80,7 +80,8 @@ function output = ObjectiveLibraryDECISION(df)
     %% save data
     output.Data = df; 
     output.TacticMatrix = TacticMatrix; 
-    output.DefaultTactic = TacticSummary; 
+    output.TacticSummary = TacticSummary; 
+    output.DefaultTactic = DefaultTactic; 
     
 
 end
