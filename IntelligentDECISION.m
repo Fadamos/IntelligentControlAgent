@@ -34,7 +34,7 @@ function output = IntelligentDECISION(df, Intent, Scenario)
             SortedUnique = sort(unique(SortedValues), 'ascend'); 
     end 
 
-    SortedIndices = [];
+    SortedIndices = []; 
     for UniqueElm = 1:length(SortedUnique)
         SortedIndices = [SortedIndices; find(TacticMatrix == SortedUnique(UniqueElm))];
     end
