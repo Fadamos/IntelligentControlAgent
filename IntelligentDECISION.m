@@ -1,7 +1,11 @@
-function output = IntelligentDECISION(df, Scenario, Intent)
+function output = IntelligentDECISION(df, Intent, Scenario)
     % Author: Adam J Hepworth
     % LastModified: 2022-08-27
     % Explanaton: Intelligent control agent library for a particular scenario and intent 
+
+    if ~exist('Scenario', 'var')
+        Scenario = "S0"; 
+    end
 
     CollectSET = unique(df.("Collect Tactic"));
     DriveSET = unique(df.("Drive Tactic"));
