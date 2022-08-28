@@ -1,4 +1,4 @@
-function output = IntelligentDECISION(df, Intent, Scenario)
+function output = IntelligentDECISION(library, Intent, Scenario)
     % Author: Adam J Hepworth
     % LastModified: 2022-08-28
     % Explanaton: Intelligent control agent data library 
@@ -8,14 +8,14 @@ function output = IntelligentDECISION(df, Intent, Scenario)
     end
     
     if Scenario == "S0"
-        subsetDF = df(:,[Intent 13:15]); 
+        subsetDF = library(:,[Intent 13:15]); 
     else
-        subsetIndex = find(df.Scenario == Scenario);
-        subsetDF = df(subsetIndex,[Intent 13:15]);
+        subsetIndex = find(library.Scenario == Scenario);
+        subsetDF = library(subsetIndex,[Intent 13:15]);
     end
 
-    CollectSET = unique(df.("Collect Tactic"));
-    DriveSET = unique(df.("Drive Tactic"));
+    CollectSET = unique(library.("Collect Tactic"));
+    DriveSET = unique(library.("Drive Tactic"));
     
     for COLLECT = 1:length(unique(subsetDF.("Collect Tactic")))
         for DRIVE = 1:length(unique(subsetDF.("Drive Tactic")))
@@ -43,8 +43,8 @@ function output = IntelligentDECISION(df, Intent, Scenario)
     
     TacticSet.SortedValues = SortedValues; % values in sorted order for the intent
     TacticSet.SortedUnique = SortedUnique; % unique values in sorted order for the intent
-    TacticSet.SortedIndices = SortedIndices; % sorted tacitc-pair linear indices 
-    TacticSet.SortedIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
+    TacticSet.SortedLinIdx = SortedIndices; % sorted tacitc-pair linear indices 
+    TacticSet.SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
     
     output.TacticMatrix = TacticMatrix; 
     output.TacticSet = TacticSet; 
