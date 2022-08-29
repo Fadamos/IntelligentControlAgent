@@ -26,10 +26,10 @@ function output = IntelligentDECISION(library, Intent, Scenario)
     end
     
     switch Intent 
-        case {1 4 5 7 9 11} % intent = maximise; sort = descend
+        case {1 4 5 7 9 11} % intent = maximise; sort = 'descend'
             SortedValues = reshape(sort(TacticMatrix(:), 'descend'), [size(TacticMatrix,1)*size(TacticMatrix,2), 1]); % sort values 
             SortedUnique = sort(unique(SortedValues), 'descend'); % linear indices
-        case {2 3 6 8} % intent = minimise; sort = ascend
+        case {2 3 6 8} % intent = minimise; sort = 'ascend'
             SortedValues = reshape(sort(TacticMatrix(:), 'ascend'), [size(TacticMatrix,1)*size(TacticMatrix,2), 1]);
             SortedUnique = sort(unique(SortedValues), 'ascend'); 
     end 
