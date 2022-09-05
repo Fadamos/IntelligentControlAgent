@@ -3,6 +3,9 @@ function output = IntelligentDECISION(library, Intent, Scenario)
     % LastModified: 2022-08-28
     % Explanaton: Intelligent control agent data library 
 
+    % collect = C2D  C2H  F2D  F2G  F2H
+    % drive   = DAH  DHH  DOAT DQH  DTQH
+
     if ~exist('Scenario', 'var')
         Scenario = "S0"; % if scenario is not given, default to best tactic-pair across all scenarios
     end
@@ -22,6 +25,9 @@ function output = IntelligentDECISION(library, Intent, Scenario)
             TacticINDEX = find(subsetDF.("Collect Tactic") == CollectSET(COLLECT) & subsetDF.("Drive Tactic") == DriveSET(DRIVE));
             TacticDF = subsetDF(TacticINDEX,:);
             TacticMatrix(COLLECT, DRIVE) = mean(TacticDF{:,1}); 
+            TacticMatrixSTD(COLLECT, DRIVE) = std(TacticDF{:,1}); 
+            TacticMatrixIQR(COLLECT, DRIVE) = iqr(TacticDF{:,1});
+            TacticMatrixRNG(COLLECT, DRIVE) = range(TacticDF{:,1});
         end
     end
     
@@ -47,6 +53,9 @@ function output = IntelligentDECISION(library, Intent, Scenario)
     TacticSet.SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
     
     output.TacticMatrix = TacticMatrix; 
-    output.TacticSet = TacticSet; 
+    output.Summary.std  = TacticMatrixSTD; 
+    output.Summary.iqr  = TacticMatrixIQR; 
+    output.Summary.rng  = TacticMatrixRNG; 
+    output.TacticSet    = TacticSet; 
 
 end 
