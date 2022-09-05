@@ -142,6 +142,31 @@ h.XLabel = 'Drive Behaviours';
 h.YLabel = 'Collect Behaviours';
 h.Title = 'Mean mission length Across all Scenarios'; 
 
+%% Figure - mission success all scenarios
+
+hmap = IntelligentDECISION(df, 3, "S0");
+h = heatmap(hmap.TacticMatrix/5149);%, 'Colormap', gray); 
+caxis([0 1])
+
+h.CellLabelFormat = '%.2f';
+h.FontSize = 16;
+
+h.NodeChildren(3).XAxis.Label.Interpreter = 'latex';
+h.NodeChildren(3).YAxis.Label.Interpreter = 'latex';
+h.NodeChildren(3).Title.Interpreter = 'latex';
+
+%h.NodeChildren(3).XAxis.Label.FontSize = 16;
+%h.NodeChildren(3).YAxis.Label.FontSize = 16;
+%h.NodeChildren(3).Title.FontSize = 16;
+
+h.XData = {'\sigma_1^1' '\sigma_1^2' '\sigma_1^3' '\sigma_1^4' '\sigma_1^5'};
+h.YData = {'\sigma_2^1' '\sigma_2^2' '\sigma_2^3' '\sigma_2^4' '\sigma_2^5'};
+
+h.XLabel = 'Drive Behaviours';
+h.YLabel = 'Collect Behaviours';
+h.Title = 'Mean mission length Across all Scenarios'; 
+
+
 
 %% Figure - Success Rate vs Scenario
 
