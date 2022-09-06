@@ -1,4 +1,4 @@
-function output = IntelligentDECISION(library, Intent, Scenario)
+function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
     % Author: Adam J Hepworth
     % LastModified: 2022-08-28
     % Explanaton: Intelligent control agent data library 
@@ -8,6 +8,9 @@ function output = IntelligentDECISION(library, Intent, Scenario)
 
     if ~exist('Scenario', 'var')
         Scenario = "S0"; % if scenario is not given, default to best tactic-pair across all scenarios
+    end
+    if ~exist('Baseline', 'var')
+        Baseline = [5 1]; % Strombom coordintes 
     end
     
     if Scenario == "S0"
@@ -28,9 +31,17 @@ function output = IntelligentDECISION(library, Intent, Scenario)
             TacticMatrixSTD(COLLECT, DRIVE) = std(TacticDF{:,1}); 
             TacticMatrixIQR(COLLECT, DRIVE) = iqr(TacticDF{:,1});
             TacticMatrixRNG(COLLECT, DRIVE) = range(TacticDF{:,1});
+            TacticMatrixSE(COLLECT, DRIVE) = std(TacticDF{:,1})/sqrt(length(TacticINDEX));
+            strName = 'c'; % make this a string in the form cXdY where X,Y are index positons
+            output.Data.(strName)
         end
     end
     
+    %% Calculate the statistical significant data 
+    Baseline 
+
+
+    %% Calculate sorted data indices
     switch Intent 
         case {1 4 5 7 9 11} % intent = maximise; sort = 'descend'
             SortedValues = reshape(sort(TacticMatrix(:), 'descend'), [size(TacticMatrix,1)*size(TacticMatrix,2), 1]); % sort values 
@@ -52,10 +63,11 @@ function output = IntelligentDECISION(library, Intent, Scenario)
     TacticSet.SortedLinIdx = SortedIndices; % sorted tacitc-pair linear indices 
     TacticSet.SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
     
-    output.TacticMatrix = TacticMatrix; 
+    output.TacticSet    = TacticSet;
+    output.Summary.mean = TacticMatrix; 
     output.Summary.std  = TacticMatrixSTD; 
     output.Summary.iqr  = TacticMatrixIQR; 
     output.Summary.rng  = TacticMatrixRNG; 
-    output.TacticSet    = TacticSet; 
-
+    output.Summary.se   = TacticMatrixSE; 
+    
 end 
