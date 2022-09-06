@@ -9,7 +9,9 @@ function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
     if ~exist('Scenario', 'var')
         Scenario = "S0"; % if scenario is not given, default to best tactic-pair across all scenarios
     end
-    if ~exist('Baselin', 'var')
+    if ~exist('Baseline', 'var')
+        Baseline = [5 1]; % Strombom coordintes 
+    end
     
     if Scenario == "S0"
         subsetDF = library(:,[Intent 13:15]); 
@@ -30,11 +32,17 @@ function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
             TacticMatrixIQR(COLLECT, DRIVE) = iqr(TacticDF{:,1});
             TacticMatrixRNG(COLLECT, DRIVE) = range(TacticDF{:,1});
             TacticMatrixSE(COLLECT, DRIVE) = std(TacticDF{:,1})/sqrt(length(TacticINDEX));
-            strName = '';
-            output.Data.(strName)
+            strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
+            RawData.(strName) = TacticDF; 
         end
     end
     
+    %% Calculate the statistical significant data 
+    baselineName = ['c',num2str(Baseline(1)),'d',num2str(Baseline(2))]; % name for baseline variable
+    
+
+
+    %% Calculate sorted data indices
     switch Intent 
         case {1 4 5 7 9 11} % intent = maximise; sort = 'descend'
             SortedValues = reshape(sort(TacticMatrix(:), 'descend'), [size(TacticMatrix,1)*size(TacticMatrix,2), 1]); % sort values 
@@ -62,5 +70,6 @@ function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
     output.Summary.iqr  = TacticMatrixIQR; 
     output.Summary.rng  = TacticMatrixRNG; 
     output.Summary.se   = TacticMatrixSE; 
+    output.RawData      = RawData;
     
 end 

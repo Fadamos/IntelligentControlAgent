@@ -32,13 +32,14 @@ function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
             TacticMatrixIQR(COLLECT, DRIVE) = iqr(TacticDF{:,1});
             TacticMatrixRNG(COLLECT, DRIVE) = range(TacticDF{:,1});
             TacticMatrixSE(COLLECT, DRIVE) = std(TacticDF{:,1})/sqrt(length(TacticINDEX));
-            strName = 'c'; % make this a string in the form cXdY where X,Y are index positons
-            output.Data.(strName)
+            strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
+            RawData.(strName) = TacticDF; 
         end
     end
     
     %% Calculate the statistical significant data 
-    Baseline 
+    baselineName = ['c',num2str(Baseline(1)),'d',num2str(Baseline(2))]; % name for baseline variable
+    
 
 
     %% Calculate sorted data indices
@@ -69,5 +70,6 @@ function output = IntelligentDECISION(library, Intent, Scenario, Baseline)
     output.Summary.iqr  = TacticMatrixIQR; 
     output.Summary.rng  = TacticMatrixRNG; 
     output.Summary.se   = TacticMatrixSE; 
+    output.RawData      = RawData;
     
 end 
