@@ -15,6 +15,12 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     
     if Scenario == "S0"
         subsetDF = library(:,[Intent 13:15]); 
+    elseif Scenario == "S_He"
+        subsetIndex = find(library.Scenario == "S1" | library.Scenario == "S2" | library.Scenario == "S3" | library.Scenario == "S4");
+        subsetDF = library(subsetIndex,[Intent 13:15]);
+    elseif Scenario == "S_Ho"
+        subsetIndex = find(library.Scenario == "S5" | library.Scenario == "S6" | library.Scenario == "S6" | library.Scenario == "S7" | library.Scenario == "S8" | library.Scenario == "S9" | library.Scenario == "S10" | library.Scenario == "S11");
+        subsetDF = library(subsetIndex,[Intent 13:15]);
     else
         subsetIndex = find(library.Scenario == Scenario);
         subsetDF = library(subsetIndex,[Intent 13:15]);
@@ -75,29 +81,36 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     fieldname = fieldnames(RawData); 
     for iter = 1:numel(fieldname) % https://au.mathworks.com/help/stats/available-hypothesis-tests.html
         testData = RawData.(fieldname{iter}); % https://au.mathworks.com/help/stats/hypothesis-tests-1.html?s_tid=CRUX_lftnav
-%         switch Intent      % confirm we have placed the indices in the correct order --> most important lol
-%             case 1 % binary data --> hypoth test =  
-%                 StatsTtest(iter) = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
-%                 outStats = reshape(outStats, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-%             case {2 3 11} % integer count data --> hypoth test =  
-%                 StatsTtest(iter) = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
-%                 outStats = reshape(outStats, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-%             case {4 5 6 7 8 9} % continious data --> hypoth test = t-test 
-                StatsTtest(iter) = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
-                StatsKStest(iter) = kstest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold); % https://stats.stackexchange.com/questions/208517/kolmogorov-smirnov-test-vs-t-test
-%        end 
+         [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
+         StatsTtest(iter) = hT; 
+         StatsTp(iter) = pT; 
+         StatsTci(iter,:) = ciT; 
+         [hKS, pKS] = kstest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold); % https://stats.stackexchange.com/questions/208517/kolmogorov-smirnov-test-vs-t-test
+         StatsKStest(iter) = hKS; 
+         StatsKSp(iter) = pKS; 
     end
-    
-%     switch Intent 
-%         case 1
-%         case {2 3 11}
-%         case {4 5 6 7 8 9}
-         %   StatsTtest = reshape(StatsTtest', [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-         %   StatsKStest = reshape(StatsKStest', [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-%     end
 
-    outStats.ttest2 = StatsTtest; 
-    outStats.kstest2 = StatsKStest; 
+    StatsTtest = reshape(StatsTtest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsTp = reshape(StatsTp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsKStest = reshape(StatsKStest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsKSp = reshape(StatsKSp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+            
+    outStats.ttest2 = StatsTtest'; 
+    outStats.tPval = StatsTp'; 
+    outStats.tCI = StatsTci'; 
+    outStats.kstest2 = StatsKStest'; 
+    outStats.ksPval = StatsKSp';
+
+    %% save index of indifferentiable tactic pairs
+
+    [rT,cT] = ind2sub([size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)], find(outStats.ttest2 == 0));
+    [rKS,cKS] = ind2sub([size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)], find(outStats.kstest2 == 0));
+
+    outStats.TacticPair.ttest2 = [rT cT];
+    outStats.TacticPair.kstest2 = [rKS,cKS];
+
+    %% save all and end 
+    
     output.HypothTest = outStats; 
     
 end 
