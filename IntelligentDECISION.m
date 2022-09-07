@@ -94,7 +94,9 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     StatsTp = reshape(StatsTp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
     StatsKStest = reshape(StatsKStest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
     StatsKSp = reshape(StatsKSp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-            
+    
+    StatsTtest(isnan(StatsTtest)) = 0; % handle NaN values for perfect completions, i.e. value = 1.0
+
     outStats.ttest2 = StatsTtest'; 
     outStats.tPval = StatsTp'; 
     outStats.tCI = StatsTci'; 
