@@ -1,7 +1,7 @@
 %% Figure - 'default tactic pair' across all scenarios (mission success) 
 
 hmap = IntelligentDECISION(df, 1, "S0");
-h = heatmap(hmap.TacticMatrix);%, 'Colormap', gray); 
+h = heatmap(hmap.Summary.mean);%, 'Colormap', gray); 
 caxis([0 1])
 
 h.CellLabelFormat = '%.2f';
