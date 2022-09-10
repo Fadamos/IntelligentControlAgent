@@ -717,7 +717,7 @@ classdef MARKERS
                 MissionCompletionRateOutput.Goal = [GoalX(timeStep), GoalY(timeStep)];
                 MissionCompletionRateOutput.Result = pdist([MissionCompletionRateOutput.FlockCurrentPos; MissionCompletionRateOutput.Goal], 'euclidean')/(pdist([MissionCompletionRateOutput.FlockCurrentPos; MissionCompletionRateOutput.FlockInitialPos], 'euclidean')+eps);
             end 
-           v
+           
             %% Centre of Mass Marker
             function CentreOfMassOutput = CentreOfMassMarker(SheepX, SheepY, NumberOfSheep, t)
                  iterGCM = t;
