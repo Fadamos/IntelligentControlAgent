@@ -140,27 +140,27 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
             % Mission Success
             MissionSuccess(COLLECT, DRIVE) = mean(DF.("Mssn Success")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.MissionSuccess.(strName) = TacticDF; 
+            output.Metrics.MissionSuccess.RawData.(strName) = DF; 
             % Mission Decision Stability
             MissionDecisionStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Decision Chg")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.MissionDecisionStability.(strName) = TacticDF; 
+            output.Metrics.MissionDecisionStability.RawData.(strName) = DF; 
             % Swarm Decision Stability
             SwarmDecisionStability(COLLECT, DRIVE) = mean(DF.("Avg Num Sep pi")./DF.("Decision Chg")); % minimise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.SwarmDecisionStability.(strName) = TacticDF; 
+            output.Metrics.SwarmDecisionStability.RawData.(strName) = DF; 
             % Mission Swarm Stability
             MissionSwarmStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Avg Num Sep pi")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.MissionSwarmStability.(strName) = TacticDF; 
+            output.Metrics.MissionSwarmStability.RawData.(strName) = DF; 
             % Mission Completion Rate
             MissionCompletionRate(COLLECT, DRIVE) = mean(DF.("Mssn Comp Rate")); % minimise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.MissionCompletionRate.(strName) = TacticDF; 
+            output.Metrics.MissionCompletionRate.RawData.(strName) = DF; 
             % Mission Speed Ratio
             MissionSpeedRatio(COLLECT, DRIVE) = mean(DF.("Mssn Speed")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            RawMetrics.MissionSpeedRatio.(strName) = TacticDF; 
+            output.Metrics.MissionSpeedRatio.RawData.(strName) = DF; 
         end
     end
 
@@ -170,7 +170,6 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     output.Metrics.MissionSwarmStability.mean    = MissionSwarmStability;
     output.Metrics.MissionCompletionRate.mean    = MissionCompletionRate;
     output.Metrics.MissionSpeedRatio.mean        = MissionSpeedRatio; 
-    output.RawMetrics                            = RawMetrics; 
     
     %% Calculate sorted data indices
     % can't use switch case here, so we need another way to calculate the metrics for each -- maybe reset the intent and use the switch cases? 
@@ -213,44 +212,55 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         SortedIndices = []; 
         SortedMean = output.Metrics.(MetricsFieldname{metric}).mean; 
         SortedUnique = output.Metrics.(MetricsFieldname{metric}).unique; 
+        
         for UniqueElm = 1:length(SortedUnique)
             SortedIndices = [SortedIndices; find(SortedMean == SortedUnique(UniqueElm))];
         end 
+        
         [r, c] = ind2sub([size(SortedMean,1) size(SortedMean,2)],SortedIndices);
         output.Metrics.(MetricsFieldname{metric}).SortedIndices = SortedIndices; % sorted tacitc-pair linear indices 
         output.Metrics.(MetricsFieldname{metric}).SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
-    end
+        SortedPairIdx = output.Metrics.(MetricsFieldname{metric}).SortedPairIdx; 
 
-     
-    baselineIdx = TacticSet.SortedPairIdx(1,:); 
-    baselineRef = ['c',num2str(baselineIdx(1)),'d',num2str(baselineIdx(2))];
-    baselineData = RawData.(baselineRef); % full table of data
+        baselineIdx  = SortedPairIdx(1,:); 
+        baselineRef  = ['c',num2str(baselineIdx(1)),'d',num2str(baselineIdx(2))];
+        baselineData = output.Metrics.(MetricsFieldname{metric}).RawData.(baselineRef); 
+
+        RawDataFieldname = fieldnames(output.Metrics.(MetricsFieldname{metric}).RawData); 
+
+        for iter = 1:numel(RawDataFieldname)
+            testData = output.Metrics.(MetricsFieldname{metric}).RawData.(RawDataFieldname{iter});
+            [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
+            StatsTtest(iter) = hT; 
+            StatsTp(iter) = pT; 
+            StatsTci(iter,:) = ciT; 
+            [hKS, pKS] = kstest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold); % https://stats.stackexchange.com/questions/208517/kolmogorov-smirnov-test-vs-t-test
+            StatsKStest(iter) = hKS; 
+            StatsKSp(iter) = pKS; 
+        end
+        
+        StatsTtest = reshape(StatsTtest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+        StatsTp = reshape(StatsTp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+        StatsKStest = reshape(StatsKStest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+        StatsKSp = reshape(StatsKSp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
     
-    fieldname = fieldnames(RawData); 
-    for iter = 1:numel(fieldname) % https://au.mathworks.com/help/stats/available-hypothesis-tests.html
-        testData = RawData.(fieldname{iter}); % https://au.mathworks.com/help/stats/hypothesis-tests-1.html?s_tid=CRUX_lftnav
-         [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
-         StatsTtest(iter) = hT; 
-         StatsTp(iter) = pT; 
-         StatsTci(iter,:) = ciT; 
-         [hKS, pKS] = kstest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold); % https://stats.stackexchange.com/questions/208517/kolmogorov-smirnov-test-vs-t-test
-         StatsKStest(iter) = hKS; 
-         StatsKSp(iter) = pKS; 
+        StatsTtest(isnan(StatsTtest)) = 0; % handle NaN values for perfect completions, i.e. value = 1.0
+
+        output.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2 = StatsTtest'; 
+        output.Metrics.(MetricsFieldname{metric}).HypothTest.tPval = StatsTp'; 
+        output.Metrics.(MetricsFieldname{metric}).HypothTest.kstest2 = StatsKStest'; 
+        output.Metrics.(MetricsFieldname{metric}).HypothTest.tConfInt = StatsTci';
+        output.Metrics.(MetricsFieldname{metric}).HypothTest.ksPval = StatsKSp'; 
+
+        % save indexes of tactic pairs that fail to reject the null hypothesis
+
+        [rT,cT] = ind2sub([size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)], find(output.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2 == 0));
+        [rKS,cKS] = ind2sub([size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)], find(output.Metrics.(MetricsFieldname{metric}).HypothTest.kstest2 == 0));
+
+        output.Metrics.(MetricsFieldname{metric}).ttest2  = [rT cT];
+        output.Metrics.(MetricsFieldname{metric}).kstest2 = [rKS,cKS]; 
+
     end
-
-    StatsTtest = reshape(StatsTtest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-    StatsTp = reshape(StatsTp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-    StatsKStest = reshape(StatsKStest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-    StatsKSp = reshape(StatsKSp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
-    
-    StatsTtest(isnan(StatsTtest)) = 0; % handle NaN values for perfect completions, i.e. value = 1.0
-
-    outStats.ttest2 = StatsTtest'; 
-    outStats.tPval = StatsTp'; 
-    outStats.tCI = StatsTci'; 
-    outStats.kstest2 = StatsKStest'; 
-    outStats.ksPval = StatsKSp';
-
 
 end 
 %
