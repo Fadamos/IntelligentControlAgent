@@ -142,26 +142,32 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
             DF = subsetDF(TacticINDEX,:);
             % Mission Success
             MissionSuccess(COLLECT, DRIVE) = mean(DF.("Mssn Success")); % maximise 
+            MissionSuccessSTD(COLLECT, DRIVE) = std(DF.("Mssn Success")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSuccess.RawData.(strName) = DF; 
             % Mission Decision Stability
             MissionDecisionStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Decision Chg")); % maximise 
+            MissionDecisionStabilitySTD(COLLECT, DRIVE) = std(DF.("Mssn Success")./DF.("Decision Chg")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionDecisionStability.RawData.(strName) = DF; 
             % Swarm Decision Stability
             SwarmDecisionStability(COLLECT, DRIVE) = mean(DF.("Avg Num Sep pi")./DF.("Decision Chg")); % minimise 
+            SwarmDecisionStabilitySTD(COLLECT, DRIVE) = std(DF.("Avg Num Sep pi")./DF.("Decision Chg")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.SwarmDecisionStability.RawData.(strName) = DF; 
             % Mission Swarm Stability
             MissionSwarmStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Avg Num Sep pi")); % maximise 
+            MissionSwarmStabilitySTD(COLLECT, DRIVE) = std(DF.("Mssn Success")./DF.("Avg Num Sep pi")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSwarmStability.RawData.(strName) = DF; 
             % Mission Completion Rate
             MissionCompletionRate(COLLECT, DRIVE) = mean(DF.("Mssn Comp Rate")); % minimise 
+            MissionCompletionRateSTD(COLLECT, DRIVE) = std(DF.("Mssn Comp Rate")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionCompletionRate.RawData.(strName) = DF; 
             % Mission Speed Ratio
             MissionSpeedRatio(COLLECT, DRIVE) = mean(DF.("Mssn Speed")); % maximise 
+            MissionSpeedRatioSTD(COLLECT, DRIVE) = std(DF.("Mssn Speed")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSpeedRatio.RawData.(strName) = DF; 
         end
@@ -173,6 +179,13 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     output.Metrics.MissionSwarmStability.mean    = MissionSwarmStability;
     output.Metrics.MissionCompletionRate.mean    = MissionCompletionRate;
     output.Metrics.MissionSpeedRatio.mean        = MissionSpeedRatio; 
+
+    output.Metrics.MissionSuccess.std            = MissionSuccessSTD; 
+    output.Metrics.MissionDecisionStability.std  = MissionDecisionStabilitySTD; 
+    output.Metrics.SwarmDecisionStability.std    = SwarmDecisionStabilitySTD; 
+    output.Metrics.MissionSwarmStability.std     = MissionSwarmStabilitySTD;
+    output.Metrics.MissionCompletionRate.std     = MissionCompletionRateSTD;
+    output.Metrics.MissionSpeedRatio.std         = MissionSpeedRatioSTD; 
     
     %% Calculate sorted data indices
     % can't use switch case here, so we need another way to calculate the metrics for each -- maybe reset the intent and use the switch cases? 
@@ -269,21 +282,28 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         fprintf('Scenario = %s\n', Scenario)
         fprintf('Mission Success\n')
         output.Metrics.MissionSuccess.mean    
+        output.Metrics.MissionSuccess.std
         output.Metrics.MissionSuccess.ttest2
         fprintf('Mission Decision Stability\n')
         output.Metrics.MissionDecisionStability.mean 
+        output.Metrics.MissionDecisionStability.std
+        output.Metrics.MissionDecisionStability.std
         output.Metrics.MissionDecisionStability.ttest2
         fprintf('Swarm Decision Stability\n')
-        output.Metrics.SwarmDecisionStability.mean   
+        output.Metrics.SwarmDecisionStability.mean 
+        output.Metrics.SwarmDecisionStability.std
         output.Metrics.SwarmDecisionStability.ttest2
         fprintf('Mission Swarm Stability\n')
         output.Metrics.MissionSwarmStability.mean    
+        output.Metrics.MissionSwarmStability.std
         output.Metrics.MissionSwarmStability.ttest2
         fprintf('Mission Completion Rate\n')
         output.Metrics.MissionCompletionRate.mean    
+        output.Metrics.MissionCompletionRate.std
         output.Metrics.MissionCompletionRate.ttest2
         fprintf('Mission Speed Ratio\n')
-        output.Metrics.MissionSpeedRatio.mean        
+        output.Metrics.MissionSpeedRatio.mean   
+        output.Metrics.MissionSpeedRatio.std
         output.Metrics.MissionSpeedRatio.ttest2
     end 
 
