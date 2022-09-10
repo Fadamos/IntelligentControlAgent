@@ -1,4 +1,4 @@
-function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold)
+function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold, Verbose)
     % Author: Adam J Hepworth
     % LastModified: 2022-08-28
     % Explanaton: Intelligent control agent data library 
@@ -10,6 +10,9 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         Scenario = "S0"; % if scenario is not given, default to best tactic-pair across all scenarios
     end
     if ~exist('SignifThreshold', 'var')
+        SignifThreshold = 0.05; % statistical significance threshold for testing
+    end
+    if ~exist('Verbose', 'var')
         SignifThreshold = 0.05; % statistical significance threshold for testing
     end
     
@@ -261,6 +264,28 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.(MetricsFieldname{metric}).kstest2 = [rKS,cKS]; 
 
     end
+
+    if Verbose 
+        fprintf('Scenario = %s\n', Scenario)
+        fprintf('Mission Success\n')
+        output.Metrics.MissionSuccess.mean    
+        output.Metrics.MissionSuccess.ttest2
+        fprintf('Mission Decision Stability\n')
+        output.Metrics.MissionDecisionStability.mean 
+        output.Metrics.MissionDecisionStability.ttest2
+        fprintf('Swarm Decision Stability\n')
+        output.Metrics.SwarmDecisionStability.mean   
+        output.Metrics.SwarmDecisionStability.ttest2
+        fprintf('Mission Swarm Stability\n')
+        output.Metrics.MissionSwarmStability.mean    
+        output.Metrics.MissionSwarmStability.ttest2
+        fprintf('Mission Completion Rate\n')
+        output.Metrics.MissionCompletionRate.mean    
+        output.Metrics.MissionCompletionRate.ttest2
+        fprintf('Mission Speed Ratio\n')
+        output.Metrics.MissionSpeedRatio.mean        
+        output.Metrics.MissionSpeedRatio.ttest2
+    end 
 
 end 
 %

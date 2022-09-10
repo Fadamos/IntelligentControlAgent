@@ -1,4 +1,4 @@
-function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold)
+function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold, Verbose)
     % Author: Adam J Hepworth
     % LastModified: 2022-08-28
     % Explanaton: Intelligent control agent data library 
@@ -10,6 +10,9 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         Scenario = "S0"; % if scenario is not given, default to best tactic-pair across all scenarios
     end
     if ~exist('SignifThreshold', 'var')
+        SignifThreshold = 0.05; % statistical significance threshold for testing
+    end
+    if ~exist('Verbose', 'var')
         SignifThreshold = 0.05; % statistical significance threshold for testing
     end
     
@@ -140,27 +143,27 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
             % Mission Success
             MissionSuccess(COLLECT, DRIVE) = mean(DF.("Mssn Success")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.MissionSuccess.RawData.(strName) = TacticDF; 
+            output.Metrics.MissionSuccess.RawData.(strName) = DF; 
             % Mission Decision Stability
             MissionDecisionStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Decision Chg")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.MissionDecisionStability.RawData.(strName) = TacticDF; 
+            output.Metrics.MissionDecisionStability.RawData.(strName) = DF; 
             % Swarm Decision Stability
             SwarmDecisionStability(COLLECT, DRIVE) = mean(DF.("Avg Num Sep pi")./DF.("Decision Chg")); % minimise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.SwarmDecisionStability.RawData.(strName) = TacticDF; 
+            output.Metrics.SwarmDecisionStability.RawData.(strName) = DF; 
             % Mission Swarm Stability
             MissionSwarmStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Avg Num Sep pi")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.MissionSwarmStability.RawData.(strName) = TacticDF; 
+            output.Metrics.MissionSwarmStability.RawData.(strName) = DF; 
             % Mission Completion Rate
             MissionCompletionRate(COLLECT, DRIVE) = mean(DF.("Mssn Comp Rate")); % minimise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.MissionCompletionRate.RawData.(strName) = TacticDF; 
+            output.Metrics.MissionCompletionRate.RawData.(strName) = DF; 
             % Mission Speed Ratio
             MissionSpeedRatio(COLLECT, DRIVE) = mean(DF.("Mssn Speed")); % maximise 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
-            output.Metrics.MissionSpeedRatio.RawData.(strName) = TacticDF; 
+            output.Metrics.MissionSpeedRatio.RawData.(strName) = DF; 
         end
     end
 
@@ -261,6 +264,20 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.(MetricsFieldname{metric}).kstest2 = [rKS,cKS]; 
 
     end
+
+    if Verbose 
+        fprintf('Mission Success')
+        output.Metrics.MissionSuccess.mean           
+        fprintf('Mission Success')
+        output.Metrics.MissionDecisionStability.mean 
+        fprintf('Mission Success')
+        output.Metrics.SwarmDecisionStability.mean   
+        fprintf('Mission Success')
+        output.Metrics.MissionSwarmStability.mean    
+        fprintf('Mission Success')
+        output.Metrics.MissionCompletionRate.mean    
+        output.Metrics.MissionSpeedRatio.mean        
+    end 
 
 end 
 %
