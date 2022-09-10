@@ -164,72 +164,64 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         end
     end
 
-    output.Metrics.MissionSuccess           = MissionSuccess; 
-    output.Metrics.MissionDecisionStability = MissionDecisionStability; 
-    output.Metrics.SwarmDecisionStability   = SwarmDecisionStability; 
-    output.Metrics.MissionSwarmStability    = MissionSwarmStability;
-    output.Metrics.MissionCompletionRate    = MissionCompletionRate;
-    output.Metrics.MissionSpeedRatio        = MissionSpeedRatio; 
-    output.RawMetrics                       = RawMetrics; 
+    output.Metrics.MissionSuccess.mean           = MissionSuccess; 
+    output.Metrics.MissionDecisionStability.mean = MissionDecisionStability; 
+    output.Metrics.SwarmDecisionStability.mean   = SwarmDecisionStability; 
+    output.Metrics.MissionSwarmStability.mean    = MissionSwarmStability;
+    output.Metrics.MissionCompletionRate.mean    = MissionCompletionRate;
+    output.Metrics.MissionSpeedRatio.mean        = MissionSpeedRatio; 
+    output.RawMetrics                            = RawMetrics; 
     
     %% Calculate sorted data indices
-   % can't use switch case here, so we need another way to calculate the metrics for each -- maybe reset the intent and use the switch cases? 
+    % can't use switch case here, so we need another way to calculate the metrics for each -- maybe reset the intent and use the switch cases? 
    
-   % intent = maximise; sort = 'descend'
-   MSsorted = reshape(sort(MissionSuccess(:), 'descend'), [size(MissionSuccess,1)*size(MissionSuccess,2), 1]); % sort values 
-   MSunique = sort(unique(MSsorted), 'descend'); % linear indices
-   output.Metrics.MSsorted = MSsorted;
-   output.Metrics.MSunique = MSunique;
+    % intent = maximise; sort = 'descend'
+    MSsorted = reshape(sort(MissionSuccess(:), 'descend'), [size(MissionSuccess,1)*size(MissionSuccess,2), 1]); % sort values 
+    MSunique = sort(unique(MSsorted), 'descend'); % linear indices
+    output.Metrics.MissionSuccess.sorted = MSsorted;
+    output.Metrics.MissionSuccess.unique = MSunique;
 
-   MDSsorted = reshape(sort(MissionDecisionStability(:), 'descend'), [size(MissionDecisionStability,1)*size(MissionDecisionStability,2), 1]); % sort values 
-   MDSunique = sort(unique(MDSsorted), 'descend'); % linear indices
-   output.Metrics.MDSsorted = MDSsorted;
-   output.Metrics.MDSunique = MDSunique;
+    MDSsorted = reshape(sort(MissionDecisionStability(:), 'descend'), [size(MissionDecisionStability,1)*size(MissionDecisionStability,2), 1]); % sort values 
+    MDSunique = sort(unique(MDSsorted), 'descend'); % linear indices
+    output.Metrics.MissionDecisionStability.sorted = MDSsorted;
+    output.Metrics.MissionDecisionStability.unique = MDSunique;
 
-   MSSsorted = reshape(sort(MissionSwarmStability(:), 'descend'), [size(MissionSwarmStability,1)*size(MissionSwarmStability,2), 1]); % sort values 
-   MSSunique = sort(unique(MSSsorted), 'descend'); % linear indices
-   output.Metrics.MSSsorted = MSSsorted;
-   output.Metrics.MSSunique = MSSunique;
+    MSSsorted = reshape(sort(MissionSwarmStability(:), 'descend'), [size(MissionSwarmStability,1)*size(MissionSwarmStability,2), 1]); % sort values 
+    MSSunique = sort(unique(MSSsorted), 'descend'); % linear indices
+    output.Metrics.MissionSwarmStability.sorted = MSSsorted;
+    output.Metrics.MissionSwarmStability.unique = MSSunique;
 
-   MSRsorted = reshape(sort(MissionSpeedRatio(:), 'descend'), [size(MissionSpeedRatio,1)*size(MissionSpeedRatio,2), 1]); % sort values 
-   MSRunqiue = sort(unique(MSRsorted), 'descend'); % linear indices
-   output.Metrics.MSRsorted = MSRsorted;
-   output.Metrics.MSRunqiue = MSRunqiue;
+    MSRsorted = reshape(sort(MissionSpeedRatio(:), 'descend'), [size(MissionSpeedRatio,1)*size(MissionSpeedRatio,2), 1]); % sort values 
+    MSRunqiue = sort(unique(MSRsorted), 'descend'); % linear indices
+    output.Metrics.MissionSpeedRatio.sorted = MSRsorted;
+    output.Metrics.MissionSpeedRatio.unique = MSRunqiue;
    
-   % intent = minimise; sort = 'ascend'
-   SDSsorted = reshape(sort(SwarmDecisionStability(:), 'ascend'), [size(SwarmDecisionStability,1)*size(SwarmDecisionStability,2), 1]);
-   SDSunique = sort(unique(SDSsorted), 'ascend'); 
-   output.Metrics.SDSsorted = SDSsorted;
-   output.Metrics.SDSunique = SDSunique;
+    % intent = minimise; sort = 'ascend'
+    SDSsorted = reshape(sort(SwarmDecisionStability(:), 'ascend'), [size(SwarmDecisionStability,1)*size(SwarmDecisionStability,2), 1]);
+    SDSunique = sort(unique(SDSsorted), 'ascend'); 
+    output.Metrics.SwarmDecisionStability.sorted = SDSsorted;
+    output.Metrics.SwarmDecisionStability.unique = SDSunique;
 
-   MCRsorted = reshape(sort(MissionCompletionRate(:), 'ascend'), [size(MissionCompletionRate,1)*size(MissionCompletionRate,2), 1]);
-   MCRunique = sort(unique(MCRsorted), 'ascend'); 
-   output.Metrics.MCRsorted = MCRsorted;
-   output.Metrics.MCRunique = MCRunique;
+    MCRsorted = reshape(sort(MissionCompletionRate(:), 'ascend'), [size(MissionCompletionRate,1)*size(MissionCompletionRate,2), 1]);
+    MCRunique = sort(unique(MCRsorted), 'ascend'); 
+    output.Metrics.MissionCompletionRate.sorted = MCRsorted;
+    output.Metrics.MissionCompletionRate.unique = MCRunique;
 
-
-   fieldname = fieldnames(output.Metrics.); 
-    SortedIndices = []; 
-    for UniqueElm = 1:length(SortedUnique)
-        SortedIndices = [SortedIndices; find(TacticMatrixMEAN == SortedUnique(UniqueElm))];
+    %% Calculate the statistical significant data
+    MetricsFieldname = fieldnames(output.Metrics); 
+    for metric = 1:numel(MetricsFieldname)
+        SortedIndices = []; 
+        SortedMean = output.Metrics.(MetricsFieldname{metric}).mean; 
+        SortedUnique = output.Metrics.(MetricsFieldname{metric}).unique; 
+        for UniqueElm = 1:length(SortedUnique)
+            SortedIndices = [SortedIndices; find(SortedMean == SortedUnique(UniqueElm))];
+        end 
+        [r, c] = ind2sub([size(SortedMean,1) size(SortedMean,2)],SortedIndices);
+        output.Metrics.(MetricsFieldname{metric}).SortedIndices = SortedIndices; % sorted tacitc-pair linear indices 
+        output.Metrics.(MetricsFieldname{metric}).SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
     end
-    % return index with value in sorted order
-    [r, c] = ind2sub([size(TacticMatrixMEAN,1) size(TacticMatrixMEAN,2)],SortedIndices);
-    
-    TacticSet.SortedValues = SortedValues; % values in sorted order for the intent
-    TacticSet.SortedUnique = SortedUnique; % unique values in sorted order for the intent
-    TacticSet.SortedLinIdx = SortedIndices; % sorted tacitc-pair linear indices 
-    TacticSet.SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
-    
-    output.TacticSet    = TacticSet;
-    output.Summary.mean = TacticMatrixMEAN; 
-    output.Summary.std  = TacticMatrixSTD; 
-    output.Summary.iqr  = TacticMatrixIQR; 
-    output.Summary.rng  = TacticMatrixRNG; 
-    output.Summary.se   = TacticMatrixSE; 
-    output.RawData      = RawData;
 
-    %% Calculate the statistical significant data 
+     
     baselineIdx = TacticSet.SortedPairIdx(1,:); 
     baselineRef = ['c',num2str(baselineIdx(1)),'d',num2str(baselineIdx(2))];
     baselineData = RawData.(baselineRef); % full table of data

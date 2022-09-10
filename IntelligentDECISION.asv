@@ -164,13 +164,13 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         end
     end
 
-    output.Metrics.MissionSuccess           = MissionSuccess; 
-    output.Metrics.MissionDecisionStability = MissionDecisionStability; 
-    output.Metrics.SwarmDecisionStability   = SwarmDecisionStability; 
-    output.Metrics.MissionSwarmStability    = MissionSwarmStability;
-    output.Metrics.MissionCompletionRate    = MissionCompletionRate;
-    output.Metrics.MissionSpeedRatio        = MissionSpeedRatio; 
-    output.RawMetrics                       = RawMetrics; 
+    output.Metrics.MissionSuccess.mean           = MissionSuccess; 
+    output.Metrics.MissionDecisionStability.mean = MissionDecisionStability; 
+    output.Metrics.SwarmDecisionStability.mean   = SwarmDecisionStability; 
+    output.Metrics.MissionSwarmStability.mean    = MissionSwarmStability;
+    output.Metrics.MissionCompletionRate.mean    = MissionCompletionRate;
+    output.Metrics.MissionSpeedRatio.mean        = MissionSpeedRatio; 
+    output.RawMetrics                            = RawMetrics; 
     
     %% Calculate sorted data indices
    % can't use switch case here, so we need another way to calculate the metrics for each -- maybe reset the intent and use the switch cases? 
@@ -178,22 +178,98 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
    % intent = maximise; sort = 'descend'
    MSsorted = reshape(sort(MissionSuccess(:), 'descend'), [size(MissionSuccess,1)*size(MissionSuccess,2), 1]); % sort values 
    MSunique = sort(unique(MSsorted), 'descend'); % linear indices
+   output.Metrics.MissionSuccess.sorted = MSsorted;
+   output.Metrics.MissionSuccess.unique = MSunique;
 
    MDSsorted = reshape(sort(MissionDecisionStability(:), 'descend'), [size(MissionDecisionStability,1)*size(MissionDecisionStability,2), 1]); % sort values 
    MDSunique = sort(unique(MDSsorted), 'descend'); % linear indices
+   output.Metrics.MissionDecisionStability.sorted = MDSsorted;
+   output.Metrics.MissionDecisionStability.unique = MDSunique;
 
    MSSsorted = reshape(sort(MissionSwarmStability(:), 'descend'), [size(MissionSwarmStability,1)*size(MissionSwarmStability,2), 1]); % sort values 
    MSSunique = sort(unique(MSSsorted), 'descend'); % linear indices
+   output.Metrics.sorted.MissionSwarmStability.sorted = MSSsorted;
+   output.Metrics.sorted.MissionSwarmStability.unique = MSSunique;
 
-   MissionSuccessSorted = reshape(sort(MissionSuccess(:), 'descend'), [size(MissionSuccess,1)*size(MissionSuccess,2), 1]); % sort values 
-   MissionSuccessUnique = sort(unique(MissionSuccessSorted), 'descend'); % linear indices
+   MSRsorted = reshape(sort(MissionSpeedRatio(:), 'descend'), [size(MissionSpeedRatio,1)*size(MissionSpeedRatio,2), 1]); % sort values 
+   MSRunqiue = sort(unique(MSRsorted), 'descend'); % linear indices
+   output.Metrics.sorted.MSRsorted = MSRsorted;
+   output.Metrics.sorted.MSRunqiue = MSRunqiue;
    
    % intent = minimise; sort = 'ascend'
    SDSsorted = reshape(sort(SwarmDecisionStability(:), 'ascend'), [size(SwarmDecisionStability,1)*size(SwarmDecisionStability,2), 1]);
    SDSunique = sort(unique(SDSsorted), 'ascend'); 
+   output.Metrics.sorted.SwarmDecisionStability.sorted = SDSsorted;
+   output.Metrics.sorted.SwarmDecisionStability.unique = SDSunique;
 
-   SDSsorted = reshape(sort(SwarmDecisionStability(:), 'ascend'), [size(SwarmDecisionStability,1)*size(SwarmDecisionStability,2), 1]);
-   SDSunique = sort(unique(SDSsorted), 'ascend'); 
+   MCRsorted = reshape(sort(MissionCompletionRate(:), 'ascend'), [size(MissionCompletionRate,1)*size(MissionCompletionRate,2), 1]);
+   MCRunique = sort(unique(MCRsorted), 'ascend'); 
+   output.Metrics.sorted.MissionCompletionRate.sorted = MCRsorted;
+   output.Metrics.sorted.MissionCompletionRate.unique = MCRunique;
+
+
+   MetricsFieldname = fieldnames(output.Metrics); 
+   for metric = 1:numel(MetricsFieldname)
+        SortedIndices = []; 
+        SortedUnique = output.Metrics.(MetricsFieldname{metric}).unique; 
+        for UniqueElm = 1:length(SortedUnique)
+            SortedIndices = [SortedIndices; find(output.Metrics.(MetricsFieldname{metric}).mean == SortedUnique(UniqueElm))];
+        end 
+   end
+
+
+
+
+    SortedIndices = []; 
+    for UniqueElm = 1:length(SortedUnique)
+        SortedIndices = [SortedIndices; find(TacticMatrixMEAN == SortedUnique(UniqueElm))];
+    end
+    % return index with value in sorted order
+    [r, c] = ind2sub([size(TacticMatrixMEAN,1) size(TacticMatrixMEAN,2)],SortedIndices);
+    
+    TacticSet.SortedValues = SortedValues; % values in sorted order for the intent
+    TacticSet.SortedUnique = SortedUnique; % unique values in sorted order for the intent
+    TacticSet.SortedLinIdx = SortedIndices; % sorted tacitc-pair linear indices 
+    TacticSet.SortedPairIdx = [r c]; % COLLECT and DRIVE indices for tactic-pairs
+    
+    output.TacticSet    = TacticSet;
+    output.Summary.mean = TacticMatrixMEAN; 
+    output.Summary.std  = TacticMatrixSTD; 
+    output.Summary.iqr  = TacticMatrixIQR; 
+    output.Summary.rng  = TacticMatrixRNG; 
+    output.Summary.se   = TacticMatrixSE; 
+    output.RawData      = RawData;
+
+    %% Calculate the statistical significant data 
+    baselineIdx = TacticSet.SortedPairIdx(1,:); 
+    baselineRef = ['c',num2str(baselineIdx(1)),'d',num2str(baselineIdx(2))];
+    baselineData = RawData.(baselineRef); % full table of data
+    
+    fieldname = fieldnames(RawData); 
+    for iter = 1:numel(fieldname) % https://au.mathworks.com/help/stats/available-hypothesis-tests.html
+        testData = RawData.(fieldname{iter}); % https://au.mathworks.com/help/stats/hypothesis-tests-1.html?s_tid=CRUX_lftnav
+         [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
+         StatsTtest(iter) = hT; 
+         StatsTp(iter) = pT; 
+         StatsTci(iter,:) = ciT; 
+         [hKS, pKS] = kstest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold); % https://stats.stackexchange.com/questions/208517/kolmogorov-smirnov-test-vs-t-test
+         StatsKStest(iter) = hKS; 
+         StatsKSp(iter) = pKS; 
+    end
+
+    StatsTtest = reshape(StatsTtest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsTp = reshape(StatsTp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsKStest = reshape(StatsKStest, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    StatsKSp = reshape(StatsKSp, [size(TacticMatrixMEAN,1), size(TacticMatrixMEAN,2)]);
+    
+    StatsTtest(isnan(StatsTtest)) = 0; % handle NaN values for perfect completions, i.e. value = 1.0
+
+    outStats.ttest2 = StatsTtest'; 
+    outStats.tPval = StatsTp'; 
+    outStats.tCI = StatsTci'; 
+    outStats.kstest2 = StatsKStest'; 
+    outStats.ksPval = StatsKSp';
+
 
 end 
 %
