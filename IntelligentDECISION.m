@@ -140,34 +140,35 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         for DRIVE = 1:length(unique(subsetDF.("Drive Tactic")))
             TacticINDEX = find(subsetDF.("Collect Tactic") == CollectSET(COLLECT) & subsetDF.("Drive Tactic") == DriveSET(DRIVE));
             DF = subsetDF(TacticINDEX,:);
+            DF.("Decision Chg") = DF.("Decision Chg")+1; 
             % Mission Success
             MissionSuccess(COLLECT, DRIVE) = mean(DF.("Mssn Success")); % maximise 
             MissionSuccessSTD(COLLECT, DRIVE) = std(DF.("Mssn Success")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSuccess.RawData.(strName) = DF; 
             % Mission Decision Stability
-            MissionDecisionStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Decision Chg")); % maximise 
-            MissionDecisionStabilitySTD(COLLECT, DRIVE) = std(DF.("Mssn Success")./DF.("Decision Chg")); 
+            MissionDecisionStability(COLLECT, DRIVE) = nanmean(DF.("Mssn Success")./DF.("Decision Chg")); % maximise 
+            MissionDecisionStabilitySTD(COLLECT, DRIVE) = nanstd(DF.("Mssn Success")./DF.("Decision Chg")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionDecisionStability.RawData.(strName) = DF; 
             % Swarm Decision Stability
-            SwarmDecisionStability(COLLECT, DRIVE) = mean(DF.("Avg Num Sep pi")./DF.("Decision Chg")); % minimise 
-            SwarmDecisionStabilitySTD(COLLECT, DRIVE) = std(DF.("Avg Num Sep pi")./DF.("Decision Chg")); 
+            SwarmDecisionStability(COLLECT, DRIVE) = nanmean(DF.("Avg Num Sep pi")./DF.("Decision Chg")); % minimise 
+            SwarmDecisionStabilitySTD(COLLECT, DRIVE) = nanstd(DF.("Avg Num Sep pi")./DF.("Decision Chg")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.SwarmDecisionStability.RawData.(strName) = DF; 
             % Mission Swarm Stability
-            MissionSwarmStability(COLLECT, DRIVE) = mean(DF.("Mssn Success")./DF.("Avg Num Sep pi")); % maximise 
-            MissionSwarmStabilitySTD(COLLECT, DRIVE) = std(DF.("Mssn Success")./DF.("Avg Num Sep pi")); 
+            MissionSwarmStability(COLLECT, DRIVE) = nanmean(DF.("Mssn Success")./DF.("Avg Num Sep pi")); % maximise 
+            MissionSwarmStabilitySTD(COLLECT, DRIVE) = nanstd(DF.("Mssn Success")./DF.("Avg Num Sep pi")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSwarmStability.RawData.(strName) = DF; 
             % Mission Completion Rate
-            MissionCompletionRate(COLLECT, DRIVE) = mean(DF.("Mssn Comp Rate")); % minimise 
-            MissionCompletionRateSTD(COLLECT, DRIVE) = std(DF.("Mssn Comp Rate")); 
+            MissionCompletionRate(COLLECT, DRIVE) = nanmean(DF.("Mssn Comp Rate")); % minimise 
+            MissionCompletionRateSTD(COLLECT, DRIVE) = nanstd(DF.("Mssn Comp Rate")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionCompletionRate.RawData.(strName) = DF; 
             % Mission Speed Ratio
-            MissionSpeedRatio(COLLECT, DRIVE) = mean(DF.("Mssn Speed")); % maximise 
-            MissionSpeedRatioSTD(COLLECT, DRIVE) = std(DF.("Mssn Speed")); 
+            MissionSpeedRatio(COLLECT, DRIVE) = nanmean(DF.("Mssn Speed")); % maximise 
+            MissionSpeedRatioSTD(COLLECT, DRIVE) = nanstd(DF.("Mssn Speed")); 
             strName = ['c',num2str(COLLECT),'d',num2str(DRIVE)]; 
             output.Metrics.MissionSpeedRatio.RawData.(strName) = DF; 
         end
@@ -286,7 +287,6 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.MissionSuccess.ttest2
         fprintf('Mission Decision Stability\n')
         output.Metrics.MissionDecisionStability.mean 
-        output.Metrics.MissionDecisionStability.std
         output.Metrics.MissionDecisionStability.std
         output.Metrics.MissionDecisionStability.ttest2
         fprintf('Swarm Decision Stability\n')
