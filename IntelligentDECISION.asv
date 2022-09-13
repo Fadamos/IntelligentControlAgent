@@ -140,7 +140,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         for DRIVE = 1:length(unique(subsetDF.("Drive Tactic")))
             TacticINDEX = find(subsetDF.("Collect Tactic") == CollectSET(COLLECT) & subsetDF.("Drive Tactic") == DriveSET(DRIVE));
             DF = subsetDF(TacticINDEX,:);
-            DF.("Decision Chg") = DF.("Decision Chg")+1
+            DF.("Decision Chg") = DF.("Decision Chg")+1; 
             % Mission Success
             MissionSuccess(COLLECT, DRIVE) = mean(DF.("Mssn Success")); % maximise 
             MissionSuccessSTD(COLLECT, DRIVE) = std(DF.("Mssn Success")); 
@@ -279,7 +279,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
 
     end
 
-    if Verbose 
+    if Verbose == 1 % for thesis output plotting 
         fprintf('Scenario = %s\n', Scenario)
         fprintf('Mission Success\n')
         output.Metrics.MissionSuccess.mean    
@@ -305,6 +305,74 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.MissionSpeedRatio.mean   
         output.Metrics.MissionSpeedRatio.std
         output.Metrics.MissionSpeedRatio.ttest2
+    elseif Verbose == 2 % summary plotting for journal paper 
+        fprintf('Scenario = %s\n', Scenario)
+
+        fprintf('\nMission Success\n')
+        fprintf('Best = %.2f %s %.2f\n', output.Metrics.MissionSuccess.mean(output.Metrics.MissionSuccess.SortedIndices(1)), '$\pm$', output.Metrics.MissionSuccess.std(output.Metrics.MissionSuccess.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n', output.Metrics.MissionSuccess.HypothTest.ttest2(output.Metrics.MissionSuccess.SortedPairIdx(1,1), output.Metrics.MissionSuccess.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.MissionSuccess.SortedPairIdx(1,2), output.Metrics.MissionSuccess.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSuccess.mean(output.Metrics.MissionSuccess.SortedIndices(end)), '$\pm$', output.Metrics.MissionSuccess.std(output.Metrics.MissionSuccess.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.MissionSuccess.HypothTest.ttest2(output.Metrics.MissionSuccess.SortedPairIdx(end,1), output.Metrics.MissionSuccess.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.MissionSuccess.SortedPairIdx(end,2), output.Metrics.MissionSuccess.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSuccess.mean(5), '$\pm$', output.Metrics.MissionSuccess.std(5))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.MissionSuccess.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')
+
+        fprintf('\nMission Decision Stability\n')
+        fprintf('Best = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionDecisionStability.mean(output.Metrics.MissionDecisionStability.SortedIndices(1)), '$\pm$', output.Metrics.MissionDecisionStability.std(output.Metrics.MissionDecisionStability.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n',  output.Metrics.MissionDecisionStability.HypothTest.ttest2(output.Metrics.MissionDecisionStability.SortedPairIdx(1,1), output.Metrics.MissionDecisionStability.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.MissionDecisionStability.SortedPairIdx(1,2), output.Metrics.MissionDecisionStability.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionDecisionStability.mean(output.Metrics.MissionDecisionStability.SortedIndices(end)), '$\pm$', output.Metrics.MissionDecisionStability.std(output.Metrics.MissionDecisionStability.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.MissionDecisionStability.HypothTest.ttest2(output.Metrics.MissionDecisionStability.SortedPairIdx(end,1), output.Metrics.MissionDecisionStability.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.MissionDecisionStability.SortedPairIdx(end,2), output.Metrics.MissionDecisionStability.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionDecisionStability.mean(5), '$\pm$', output.Metrics.MissionDecisionStability.std(5,1))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.MissionDecisionStability.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')      
+        
+        fprintf('\nSwarm Decision Stability\n')
+        fprintf('Best = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.SwarmDecisionStability.mean(output.Metrics.SwarmDecisionStability.SortedIndices(1)), '$\pm$', output.Metrics.SwarmDecisionStability.std(output.Metrics.SwarmDecisionStability.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n', output.Metrics.SwarmDecisionStability.HypothTest.ttest2(output.Metrics.SwarmDecisionStability.SortedPairIdx(1,1), output.Metrics.SwarmDecisionStability.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.SwarmDecisionStability.SortedPairIdx(1,2), output.Metrics.SwarmDecisionStability.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.SwarmDecisionStability.mean(output.Metrics.SwarmDecisionStability.SortedIndices(end)), '$\pm$', output.Metrics.SwarmDecisionStability.std(output.Metrics.SwarmDecisionStability.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.SwarmDecisionStability.HypothTest.ttest2(output.Metrics.SwarmDecisionStability.SortedPairIdx(end,1), output.Metrics.SwarmDecisionStability.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.SwarmDecisionStability.SortedPairIdx(end,2), output.Metrics.SwarmDecisionStability.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.SwarmDecisionStability.mean(5), '$\pm$', output.Metrics.SwarmDecisionStability.std(5,1))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.SwarmDecisionStability.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')
+
+        fprintf('\nMission Swarm Stability\n')
+        fprintf('Best = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSwarmStability.mean(output.Metrics.MissionSwarmStability.SortedIndices(1)), '$\pm$', output.Metrics.MissionSwarmStability.std(output.Metrics.MissionSwarmStability.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n', output.Metrics.MissionSwarmStability.HypothTest.ttest2(output.Metrics.MissionSwarmStability.SortedPairIdx(1,1), output.Metrics.MissionSwarmStability.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.MissionSwarmStability.SortedPairIdx(1,2), output.Metrics.MissionSwarmStability.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSwarmStability.mean(output.Metrics.MissionSwarmStability.SortedIndices(end)), '$\pm$', output.Metrics.MissionSwarmStability.std(output.Metrics.MissionSwarmStability.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.MissionSwarmStability.HypothTest.ttest2(output.Metrics.MissionSwarmStability.SortedPairIdx(end,1), output.Metrics.MissionSwarmStability.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.MissionSwarmStability.SortedPairIdx(end,2), output.Metrics.MissionSwarmStability.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSwarmStability.mean(5), '$\pm$', output.Metrics.MissionSwarmStability.std(5,1))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.MissionSwarmStability.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')
+
+        fprintf('\nMission Completion Rate\n')
+        fprintf('Best = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionCompletionRate.mean(output.Metrics.MissionCompletionRate.SortedIndices(1)), '$\pm$', output.Metrics.MissionCompletionRate.std(output.Metrics.MissionCompletionRate.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n', output.Metrics.MissionCompletionRate.HypothTest.ttest2(output.Metrics.MissionCompletionRate.SortedPairIdx(1,1), output.Metrics.MissionCompletionRate.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.MissionCompletionRate.SortedPairIdx(1,2), output.Metrics.MissionCompletionRate.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionCompletionRate.mean(output.Metrics.MissionCompletionRate.SortedIndices(end)), '$\pm$', output.Metrics.MissionCompletionRate.std(output.Metrics.MissionCompletionRate.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.MissionCompletionRate.HypothTest.ttest2(output.Metrics.MissionCompletionRate.SortedPairIdx(end,1), output.Metrics.MissionCompletionRate.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.MissionCompletionRate.SortedPairIdx(end,2), output.Metrics.MissionCompletionRate.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionCompletionRate.mean(5), '$\pm$', output.Metrics.MissionCompletionRate.std(5,1))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.MissionCompletionRate.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')
+        
+        fprintf('\nMission Speed Ratio\n')
+        fprintf('Best = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSpeedRatio.mean(output.Metrics.MissionSpeedRatio.SortedIndices(1)), '$\pm$', output.Metrics.MissionSpeedRatio.std(output.Metrics.MissionSpeedRatio.SortedIndices(1)))
+        fprintf('Stat Signif = %d [should be 0]\n', output.Metrics.MissionSpeedRatio.HypothTest.ttest2(output.Metrics.MissionSpeedRatio.SortedPairIdx(1,1), output.Metrics.MissionSpeedRatio.SortedPairIdx(1,2)))
+        fprintf('Best TP = %d %d\n', output.Metrics.MissionSpeedRatio.SortedPairIdx(1,2), output.Metrics.MissionSpeedRatio.SortedPairIdx(1,1))
+        fprintf('Worst = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSpeedRatio.mean(output.Metrics.MissionSpeedRatio.SortedIndices(end)), '$\pm$', output.Metrics.MissionSpeedRatio.std(output.Metrics.MissionSpeedRatio.SortedIndices(end)))
+        fprintf('Stat Signif = %d [could be 0 or 1]\n', output.Metrics.MissionSpeedRatio.HypothTest.ttest2(output.Metrics.MissionSpeedRatio.SortedPairIdx(end,1), output.Metrics.MissionSpeedRatio.SortedPairIdx(end,2)))
+        fprintf('Worst TP = %d %d\n', output.Metrics.MissionSpeedRatio.SortedPairIdx(end,2), output.Metrics.MissionSpeedRatio.SortedPairIdx(end,1))
+        fprintf('Str = %.2f %s %.2f :: Stat Signif = %d \n', output.Metrics.MissionSpeedRatio.mean(5), '$\pm$', output.Metrics.MissionSpeedRatio.std(5,1))
+        fprintf('Stat Signif = %d [could be 0 or 1; must be 0 if Worst is 0]\n', output.Metrics.MissionSpeedRatio.HypothTest.ttest2(5,1))
+        fprintf('Str TP = 1 5\n')
     end 
 
 end 
