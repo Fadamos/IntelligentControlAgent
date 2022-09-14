@@ -119,6 +119,27 @@ end
 
 statsignif/11*100
 
+MetricsFieldname = fieldnames(s0.Metrics);
+for metric = 1:numel(MetricsFieldname)
+    for COLLECT = 1:5
+        for DRIVE = 1:5 
+        statsignifALL(COLLECT,DRIVE, metric) = sum([s1.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+        s2.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s3.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s4.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s5.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s6.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s7.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s8.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s9.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s10.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE), ...
+        s11.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2(COLLECT,DRIVE)]);
+        end
+    end
+end
+
+sum(statsignifALL,3)/66*100
+
 % S_He
 for COLLECT = 1:5
     for DRIVE = 1:5 
@@ -144,7 +165,7 @@ for COLLECT = 1:5
     end
 end
 
-statsignif_Ho/5*100
+statsignif_Ho/7*100
 
 
 
