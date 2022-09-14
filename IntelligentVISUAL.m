@@ -20,13 +20,13 @@ MatData1 = [];
 MetricsFieldname = fieldnames(s0.Metrics);
 for metric = 1:numel(MetricsFieldname)
     for TP = 1:25
-        MatData(TP, 1, metric)  = s0.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData(TP, 2, metric)  = s_He.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData(TP, 3, metric)  = s_Ho.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData1(TP, 1, metric)  = s1.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData1(TP, 2, metric)  = s2.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData1(TP, 3, metric)  = s3.Metrics.(MetricsFieldname{metric}).mean(TP);
-        MatData1(TP, 4, metric)  = s4.Metrics.(MetricsFieldname{metric}).mean(TP);
+        %MatData(TP, 1, metric)  = s0.Metrics.(MetricsFieldname{metric}).mean(TP);
+        %MatData(TP, 2, metric)  = s_He.Metrics.(MetricsFieldname{metric}).mean(TP);
+        %MatData(TP, 3, metric)  = s_Ho.Metrics.(MetricsFieldname{metric}).mean(TP);
+        MatData(TP, 1, metric)  = s1.Metrics.(MetricsFieldname{metric}).mean(TP);
+        MatData(TP, 2, metric)  = s2.Metrics.(MetricsFieldname{metric}).mean(TP);
+        MatData(TP, 3, metric)  = s3.Metrics.(MetricsFieldname{metric}).mean(TP);
+        MatData(TP, 4, metric)  = s4.Metrics.(MetricsFieldname{metric}).mean(TP);
         MatData(TP, 5, metric)  = s5.Metrics.(MetricsFieldname{metric}).mean(TP);
         MatData(TP, 6, metric)  = s6.Metrics.(MetricsFieldname{metric}).mean(TP);
         MatData(TP, 7, metric) = s7.Metrics.(MetricsFieldname{metric}).mean(TP);
@@ -39,38 +39,43 @@ end
 
 
     figure(1) 
-    ylim([0 1.1])
     subplot(2,3,1)
+        ylim([0 1])
         boxplot(MatData(:,:,1)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs', 'interpreter','latex','FontSize', 16)
         title('Metric M1','interpreter','latex', 'FontSize', 16)
         ylabel('Mission Success','interpreter','latex', 'FontSize', 16)
 
     subplot(2,3,2)
+        ylim([0 1])
         boxplot(MatData(:,:,2)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs', 'interpreter','latex','FontSize', 16)
         title('Metric M2', 'interpreter','latex','FontSize', 16)
         ylabel('Mission Decision Stability','interpreter','latex', 'FontSize', 16)
     
     subplot(2,3,3)
+        ylim([0 20])
         boxplot(MatData(:,:,3)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs', 'interpreter','latex','FontSize', 16)
         title('Metric M3', 'interpreter','latex','FontSize', 16)
         ylabel('Swarm Decision Stability','interpreter','latex', 'FontSize', 16)
 
     subplot(2,3,4)
+        ylim([0 0.4])
         boxplot(MatData(:,:,4)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs', 'interpreter','latex','FontSize', 16)
         title('Metric M4','interpreter','latex', 'FontSize', 16)
         ylabel('Mission Swarm Stability','interpreter','latex', 'FontSize', 16)
     
     subplot(2,3,5)
+        ylim([0 9])
         boxplot(MatData(:,:,5)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs','interpreter','latex', 'FontSize', 16)
         title('Metric M5','interpreter','latex', 'FontSize', 16)
         ylabel('Mission Completion Rate','interpreter','latex', 'FontSize', 16)
     
     subplot(2,3,6)
+        ylim([0 0.3])
         boxplot(MatData(:,:,6)', 'Labels', {'TP1' 'TP2' 'TP3' 'TP4' 'TP5' 'TP6' 'TP7' 'TP8' 'TP9' 'TP10' 'T1P1' 'TP12' 'TP13' 'TP14' 'TP15' 'TP16' 'TP17' 'TP18' 'TP19' 'TP20' 'TP21' 'TP22' 'TP23' 'TP24' 'TP25'})
         xlabel('Tactic Pairs','interpreter','latex', 'FontSize', 16)
         title('Metric M6','interpreter','latex', 'FontSize', 16)
@@ -93,7 +98,53 @@ end
         ylim([-0.01 1.1])
 
 
+%% TABLES 
 
+% S0 
+for COLLECT = 1:5
+    for DRIVE = 1:5 
+    statsignif(COLLECT,DRIVE) = sum([s1.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s2.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s3.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s4.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s5.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s6.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s7.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s8.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s9.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s10.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s11.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE)]);
+    end
+end
+
+statsignif/11*100
+
+% S_He
+for COLLECT = 1:5
+    for DRIVE = 1:5 
+    statsignif_He(COLLECT,DRIVE) = sum([s1.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s2.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s3.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s4.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE)]);
+    end
+end
+
+statsignif_He/4*100
+
+% S_Ho
+for COLLECT = 1:5
+    for DRIVE = 1:5 
+    statsignif_Ho(COLLECT,DRIVE) = sum([s5.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s6.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s7.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s8.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s9.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s10.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE), ...
+    s11.Metrics.MissionSuccess.HypothTest.ttest2(COLLECT,DRIVE)]);
+    end
+end
+
+statsignif_Ho/5*100
 
 
 
