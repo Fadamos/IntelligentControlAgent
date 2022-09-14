@@ -167,10 +167,6 @@ end
 
 statsignif_Ho/7*100
 
-
-
-
-
 %% Visualisations
 boxplot(MatData')
 title('Mission Success')
