@@ -231,6 +231,8 @@ RawData = s5.Metrics.MissionDecisionStability.RawData;
 fn = fieldnames(RawData);
 for iter = 1:numel(fn)
     tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Avg Num Sep pi")./RawData.(fn{iter}).("Decision Chg")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Avg Num Sep pi")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Decision Chg")];
     MDS = [MDS; tmp]; 
     clear tmp 
     tmp = [RawData.(fn{iter}).("Drive Tactic") RawData.(fn{iter}).("Collect Tactic")];
@@ -268,8 +270,52 @@ for COLLECT = 1:length(CollectSET)
     end
 end
 
- 
-% (2) MCR/MSp (X) vs MS (Y) 
+% (2) MCR/MSp (X) vs MS (Y)
+
+MDS = []; 
+MDScd = []; 
+RawData = s5.Metrics.MissionSuccess.RawData; 
+fn = fieldnames(RawData);
+for iter = 1:numel(fn)
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")./RawData.(fn{iter}).("Mssn Speed")];
+    tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Speed")];
+    MDS = [MDS; tmp]; 
+    clear tmp 
+    tmp = [RawData.(fn{iter}).("Drive Tactic") RawData.(fn{iter}).("Collect Tactic")];
+    MDScd = [MDScd; tmp];
+end
+
+CollectSET = unique(MDScd(:,2));
+DriveSET = unique(MDScd(:,1)); 
+
+figure(1)
+pltt = 1; 
+for COLLECT = 1:length(CollectSET)
+    for DRIVE = 1:length(DriveSET)
+        idx = find(MDScd(:,1) == DriveSET(DRIVE) & MDScd(:,2) == CollectSET(COLLECT));
+                
+        mdl = fitglm(MDS(idx,2), MDS(idx,1), 'Distribution', 'binomial', 'Link', 'logit');
+        xnew = linspace(0,sqrt(max(MDS(:,2))),1000)';
+        pred = predict(mdl, xnew);
+        
+        score_log = mdl.Fitted.Probability; % Pr estimates
+        try 
+            [Xlog,Ylog,Tlog,AUClog] = perfcurve(MDS(idx,1), score_log, 1);
+        catch
+            AUClog = -1;  
+        end 
+
+        subplot(5,5,pltt)
+        scatter(MDS(idx,2), MDS(idx,1))
+        hold on 
+        plot(xnew,pred)
+        str = sprintf('Drive = %s Collect = %s and Adj. AUC = %f',DriveSET(DRIVE),CollectSET(COLLECT), AUClog);
+        title(str)
+
+        pltt = pltt + 1; 
+    end
+end
 
 % (3) sum(MCR,MSp) (X) vs MS (Y) 
 
