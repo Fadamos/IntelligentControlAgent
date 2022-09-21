@@ -218,7 +218,7 @@ ylabel('Mission Success')
 %%%             %%%     
 %%%%%%%%%%%%%%%%%%%
 
-% (1) MDS (X) vs MS (Y) -- https://au.mathworks.com/matlabcentral/answers/558556-binary-logistic-regression-curve
+% (1) MDS (X) vs MS (Y) 
 
 y = reshape(s0.Metrics.MissionSuccess.mean, 1, []);
 x = reshape(s0.Metrics.MissionDecisionStability.mean, 1, []);
@@ -237,19 +237,19 @@ for iter = 1:numel(fn)
     MDScd = [MDScd; tmp];
 end
 
-
-DRIVE = "DHH";
-COLLECT = "C2D";
-idx = find(MDScd(:,1) == DRIVE & MDScd(:,2) == COLLECT);
+for COLLECT = ["DOAT" "DAH" "DTQH" "DHH" "DQH"]
+    for DRIVE = ["C2D" "C2H" "F2D" "F2H" "F2"]
+        idx = find(MDScd(:,1) == DRIVE & MDScd(:,2) == COLLECT);
         
-mdl = fitglm(MDS(idx,2), MDS(idx,1), "Distribution", "binomial");
-xnew = linspace(0,max(MDS(:,2)),1000)';
-ynew = predict(mdl, xnew);
+        mdl = fitglm(MDS(idx,2), MDS(idx,1), "Distribution", "binomial");
+        xnew = linspace(0,max(MDS(:,2)),1000)';
+        ynew = predict(mdl, xnew);
         
-scatter(MDS(idx,2), MDS(idx,1))
-hold on 
-plot(xnew,ynew)
-
+        scatter(MDS(idx,2), MDS(idx,1))
+        hold on 
+        plot(xnew,ynew)
+    end
+end
  
 % (2) MCR/MSp (X) vs MS (Y) 
 
