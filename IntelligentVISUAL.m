@@ -278,8 +278,8 @@ RawData = s5.Metrics.MissionSuccess.RawData;
 fn = fieldnames(RawData);
 for iter = 1:numel(fn)
     %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")./RawData.(fn{iter}).("Mssn Speed")];
-    tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")];
-    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Speed")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")];
+    tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Speed")];
     MDS = [MDS; tmp]; 
     clear tmp 
     tmp = [RawData.(fn{iter}).("Drive Tactic") RawData.(fn{iter}).("Collect Tactic")];
@@ -317,5 +317,53 @@ for COLLECT = 1:length(CollectSET)
     end
 end
 
-% (3) sum(MCR,MSp) (X) vs MS (Y) 
+% (3) stepwiselm (X) vs MS (Y) - not useful but an interesting experiment nonetheless! 
+
+MDS = []; 
+MDScd = []; 
+RawData = s5.Metrics.MissionSuccess.RawData; 
+fn = fieldnames(RawData);
+for iter = 1:numel(fn)
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")./RawData.(fn{iter}).("Mssn Speed")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Comp Rate")];
+    %tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Speed")];
+    tmp = [RawData.(fn{iter}).("Mssn Success") RawData.(fn{iter}).("Mssn Speed") RawData.(fn{iter}).("Mssn Comp Rate") RawData.(fn{iter}).("Mssn Comp Rate")./RawData.(fn{iter}).("Mssn Speed")];
+    MDS = [MDS; tmp]; 
+    clear tmp 
+    tmp = [RawData.(fn{iter}).("Drive Tactic") RawData.(fn{iter}).("Collect Tactic")];
+    MDScd = [MDScd; tmp];
+end
+
+CollectSET = unique(MDScd(:,2));
+DriveSET = unique(MDScd(:,1)); 
+
+figure(1)
+pltt = 1; 
+for COLLECT = 1:length(CollectSET)
+    for DRIVE = 1:length(DriveSET)
+        idx = find(MDScd(:,1) == DriveSET(DRIVE) & MDScd(:,2) == CollectSET(COLLECT));
+                
+        mdl = stepwiselm(MDS(idx,2:end), MDS(idx,1), 'PEnter', 0.05);
+        x1new = linspace(0,sqrt(max(MDS(:,2))),1000)';
+        x2new = linspace(0,sqrt(max(MDS(:,3))),1000)';
+        x3new = linspace(0,sqrt(max(MDS(:,4))),1000)';
+        pred = predict(mdl, [x1new x2new x3new]);
+        
+        score_log = mdl.Fitted; % Pr estimates
+        try 
+            [Xlog,Ylog,Tlog,AUClog] = perfcurve(MDS(idx,1), score_log, 1);
+        catch
+            AUClog = -1;  
+        end 
+
+        subplot(5,5,pltt)
+        scatter(MDS(idx,2:end), MDS(idx,1))
+        hold on 
+        plot(xnew,pred)
+        str = sprintf('Drive = %s Collect = %s and Adj. AUC = %f',DriveSET(DRIVE),CollectSET(COLLECT), AUClog);
+        title(str)
+
+        pltt = pltt + 1; 
+    end
+end
 
