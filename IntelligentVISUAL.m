@@ -366,3 +366,40 @@ for COLLECT = 1:length(CollectSET)
         pltt = pltt + 1; 
     end
 end
+
+
+%% RANK-SUM TEST 
+RankSumTestMatrix = nan(25,6,14);
+RankSumTestMatrix(:,:,1) = s0.RankVector; 
+RankSumTestMatrix(:,:,2) = s_He.RankVector; 
+RankSumTestMatrix(:,:,3) = s1.RankVector; 
+RankSumTestMatrix(:,:,4) = s2.RankVector; 
+RankSumTestMatrix(:,:,5) = s3.RankVector; 
+RankSumTestMatrix(:,:,6) = s4.RankVector; 
+RankSumTestMatrix(:,:,7) = s_Ho.RankVector; 
+RankSumTestMatrix(:,:,8) = s5.RankVector; 
+RankSumTestMatrix(:,:,9) = s6.RankVector; 
+RankSumTestMatrix(:,:,10) = s7.RankVector; 
+RankSumTestMatrix(:,:,11) = s8.RankVector; 
+RankSumTestMatrix(:,:,12) = s9.RankVector; 
+RankSumTestMatrix(:,:,13) = s10.RankVector; 
+RankSumTestMatrix(:,:,14) = s11.RankVector; 
+
+
+% 1- compare each TP for each metric across given scenarios 
+% ScenarioMatrix = RankSumTestMatrix(:,:,[3 4 5 6]); % Heterogeneous
+% ScenarioMatrix = RankSumTestMatrix(:,:,[8 9 10 11 12 13 14]); % Homogeneous 
+ScenarioMatrix = RankSumTestMatrix(:,:,[3 4 5 6 8 9 10 11 12 13 14]); % All scenarios 
+for k = 1:size(ScenarioMatrix,2) % metric 
+    for i = 1:size(ScenarioMatrix,1) % from TP 
+        for j = 1:size(ScenarioMatrix,1) % to TP 
+            if i ~= j 
+                [p(i,j,k), h(i,j,k)] = ranksum(squeeze(ScenarioMatrix(i,k,:)), squeeze(ScenarioMatrix(j,k,:)));
+            end
+        end
+    end
+end
+
+% the problem with rank-sum tests is that they do not indicate if a TP is 
+% good or bad over these scenarios, only if it is different to other TPs. 
+% This can confirm across multiple metrics our understanding; however

@@ -367,11 +367,33 @@ for COLLECT = 1:length(CollectSET)
     end
 end
 
-%% Test Script 
-[~,idx] = ismember(sort(reshape(s0.Metrics.MissionSuccess.mean,[],1), 'descend'),s0.Metrics.MissionSuccess.mean);
-rankmat = nan(5,5);
-for iter = 1:length(idx)
-    rankmat(idx(iter)) = iter; 
-end
-rankmat
 
+%% RANK-SUM TEST 
+RankSumTestMatrix = nan(25,6,14);
+RankSumTestMatrix(:,:,1) = s0.RankVector; 
+RankSumTestMatrix(:,:,2) = s_He.RankVector; 
+RankSumTestMatrix(:,:,3) = s1.RankVector; 
+RankSumTestMatrix(:,:,4) = s2.RankVector; 
+RankSumTestMatrix(:,:,5) = s3.RankVector; 
+RankSumTestMatrix(:,:,6) = s4.RankVector; 
+RankSumTestMatrix(:,:,7) = s_Ho.RankVector; 
+RankSumTestMatrix(:,:,8) = s5.RankVector; 
+RankSumTestMatrix(:,:,9) = s6.RankVector; 
+RankSumTestMatrix(:,:,10) = s7.RankVector; 
+RankSumTestMatrix(:,:,11) = s8.RankVector; 
+RankSumTestMatrix(:,:,12) = s9.RankVector; 
+RankSumTestMatrix(:,:,13) = s10.RankVector; 
+RankSumTestMatrix(:,:,14) = s11.RankVector; 
+
+
+% 1- compare each TP for each metric across all scenarios 
+
+for k = 1:size(RankSumTestMatrix,2)
+    for i = 1:size(RankSumTestMatrix,1)
+        for j = 1:size(RankSumTestMatrix,1)
+            if i ~= j 
+                [p(i,j,k), h(i,j,k)] = ranksum(squeeze(RankSumTestMatrix(i,k,:)), squeeze(RankSumTestMatrix(j,k,:)));
+            end
+        end
+    end
+end

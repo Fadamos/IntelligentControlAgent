@@ -375,59 +375,52 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         fprintf('Str TP = 1 5\n')
     end 
 
-    
     %% Rank Matrix
     RankMatrix = nan(5,5,6);
     
     % MissionSuccess 
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionSuccess.mean,[],1), 'descend'),output.Metrics.MissionSuccess.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.MissionSuccess.mean(:),'descend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.MissionSuccess.mean));
     RankMatrix(:,:,1) = RankMat; 
 
     % MissionDecisionStability
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionDecisionStability.mean,[],1), 'descend'),output.Metrics.MissionDecisionStability.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.MissionDecisionStability.mean(:),'descend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.MissionDecisionStability.mean));
     RankMatrix(:,:,2) = RankMat; 
 
     % SwarmDecisionStability
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.SwarmDecisionStability.mean,[],1), 'ascend'),output.Metrics.SwarmDecisionStability.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.SwarmDecisionStability.mean(:),'ascend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.SwarmDecisionStability.mean));
     RankMatrix(:,:,3) = RankMat; 
     
     % MissionSwarmStability 
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionSwarmStability.mean,[],1), 'descend'),output.Metrics.MissionSwarmStability.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.MissionSwarmStability.mean(:),'descend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.MissionSwarmStability.mean));
     RankMatrix(:,:,4) = RankMat; 
 
     % MissionCompletionRate
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionCompletionRate.mean,[],1), 'ascend'),output.Metrics.MissionCompletionRate.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.MissionCompletionRate.mean(:),'ascend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.MissionCompletionRate.mean));
     RankMatrix(:,:,5) = RankMat; 
     
     % MissionSpeedRatio
-    RankMat = nan(5,5);
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionSpeedRatio.mean,[],1), 'descend'),output.Metrics.MissionSpeedRatio.mean);
-    for iter = 1:length(idx)
-        RankMat(idx(iter)) = iter; 
-    end
+    [~, vv] = sort(output.Metrics.MissionSpeedRatio.mean(:),'descend');
+    [~, vv] = sort(vv);
+    RankMat = reshape(vv, size(output.Metrics.MissionSpeedRatio.mean));
     RankMatrix(:,:,6) = RankMat; 
 
     output.RankMatrix = RankMatrix; 
+
+    for metric = 1:6
+        RankVec(:,metric) = reshape(output.RankMatrix(:,:,metric), [], 1);
+    end
+
+    output.RankVector = RankVec; 
 
 end 
 %
