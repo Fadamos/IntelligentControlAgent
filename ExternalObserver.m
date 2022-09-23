@@ -83,8 +83,7 @@ function output = ExternalObserver(df, parameters, DecisionWindow, FullSet, Verb
     output.M1.ComputeTime = t; 
     output.M1.ObsRange = [DecisionWindow(1) DecisionWindow(2)];
     output.M2.InteractionAgent = M2.InteractionAgent;
-    output.M2.InteractionFraction = M2.InteractionFraction; 
-    %output.M3. = ;
+    output.M2.InteractionFraction = M2.InteractionFraction;
     output.M4.AttentionAgentIdx = M2.AttentionAgentIdx;
     output.M4.AttentionPoints = M2.AttentionPoints;
 end 
