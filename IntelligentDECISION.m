@@ -380,6 +380,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix = nan(5,5,6);
     
     % MissionSuccess 
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.MissionSuccess.mean,[],1), 'descend'),output.Metrics.MissionSuccess.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
@@ -387,6 +388,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,1) = RankMat; 
 
     % MissionDecisionStability
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.MissionDecisionStability.mean,[],1), 'descend'),output.Metrics.MissionDecisionStability.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
@@ -394,6 +396,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,2) = RankMat; 
 
     % SwarmDecisionStability
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.SwarmDecisionStability.mean,[],1), 'ascend'),output.Metrics.SwarmDecisionStability.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
@@ -401,6 +404,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,3) = RankMat; 
     
     % MissionSwarmStability 
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.MissionSwarmStability.mean,[],1), 'descend'),output.Metrics.MissionSwarmStability.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
@@ -408,6 +412,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,4) = RankMat; 
 
     % MissionCompletionRate
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.MissionCompletionRate.mean,[],1), 'ascend'),output.Metrics.MissionCompletionRate.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
@@ -415,6 +420,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,5) = RankMat; 
     
     % MissionSpeedRatio
+    RankMat = nan(5,5);
     [~,idx] = ismember(sort(reshape(output.Metrics.MissionSpeedRatio.mean,[],1), 'descend'),output.Metrics.MissionSpeedRatio.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
