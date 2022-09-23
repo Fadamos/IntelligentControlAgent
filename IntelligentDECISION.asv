@@ -387,7 +387,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,1) = RankMat; 
 
     % MissionDecisionStability
-    [~,idx] = ismember(sort(reshape(output.Metrics.MissionDecisionStability.mean,[],1), 'descend'),output.Metrics.MissionDecisionStability.mean);
+    [~,idx] = ismember(sort(reshape(output.Metrics.MissionDecisionStability.mean,[],1), ''),output.Metrics.MissionDecisionStability.mean);
     for iter = 1:length(idx)
         RankMat(idx(iter)) = iter; 
     end

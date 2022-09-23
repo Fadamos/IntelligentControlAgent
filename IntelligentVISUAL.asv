@@ -367,3 +367,11 @@ for COLLECT = 1:length(CollectSET)
     end
 end
 
+%% Test Script 
+[~,idx] = ismember(sort(reshape(s0.Metrics.MissionSuccess.mean,[],1), 'descend'),s0.Metrics.MissionSuccess.mean);
+rankmat = nan(5,5);
+for iter = 1:length(idx)
+    rankmat(idx(iter)) = iter; 
+end
+rankmat
+
