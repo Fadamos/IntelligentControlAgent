@@ -459,15 +459,11 @@ FLATidx100_075 = FlatMarkerSwarm(idx100_075,:);
 CLASSidx100_075 = Class2Y(idx100_075,:);
 
 
+
 idx60_025Heterogeneous = find(MasterKeySwarm(:,1)==20 & MasterKeySwarm(:,2)==0.25);
 
-idxHe = find(ClassYswarm == "S1" | ClassYswarm == "S2" | ClassYswarm == "S3" | ClassYswarm == "S4");
-idxHo = find(ClassYswarm == "S5" | ClassYswarm == "S6" | ClassYswarm == "S7" | ClassYswarm == "S8" |  ClassYswarm == "S9" | ClassYswarm == "S10" | ClassYswarm == "S11");
-
-FLATidxHe = SwarmX(idxHe,:);
-FLATidxHo = SwarmX(idxHo,:);
-YclassHe = ClassYswarm(idxHe);
-YclassHo = ClassYswarm(idxHo);
+idxHe = find(ClassYswarm == "S1" | ClassYswarm == "S2" | ClassYswarm == "S3" | ClassYswarm == "S4")
+idxHo = find(ClassYswarm == "S5" | ClassYswarm == "S6" | ClassYswarm == "S7" | ClassYswarm == "S8" |  ClassYswarm == "S8" | ClassYswarm == "S8" | ClassYswarm == "S11" |)
 
 % convert to table 
 clear AgentX AgentY
