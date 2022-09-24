@@ -25,3 +25,9 @@ function output = IntelligentMarkerContro(df, Context, parameters, intent, behav
             % change TP 
 
 end
+
+
+%% Tasks 
+
+% 1- Former model working with C1 only 
+% 2- Former model working with C1,C2,C2_He,C2_Ho 

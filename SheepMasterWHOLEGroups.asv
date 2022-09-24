@@ -1,7 +1,7 @@
 function output = SheepMasterWHOLEGroups(parameters, C1)
 
 % Author: Daniel P. Baxter, Adam J Hepworth
-% LastModified: 2022-08-10
+% LastModified: 2022-08-18
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.
@@ -136,7 +136,9 @@ if ~parameters.IsolatedSim
 end 
 fprintf('Init simulation with Scenario = %s; Replicate = %i of %i\n', ScenarioIndex,SimulationRuns,parameters.replicates)
 fprintf('Collect = %s; Drive = %s; Speed = %s; Collision = %s\n', parameters.DogCollectingTacticIndex, parameters.DogDrivingTacticIndex, parameters.SheepDogVehicleSpeedLimit, parameters.CollisionRange)
-fprintf('Marker Obs Size = %i; Marker Overlap = %f\n',parameters.WindowSize,parameters.Overlap)
+if parameters.InternalMarkerCalculations
+    fprintf('Marker Obs Size = %i; Marker Overlap = %f\n',parameters.WindowSize,parameters.Overlap)
+end
 fprintf('.....Proportion of Agent A1 = %f; A2 = %f; A3 = %f; A4 = %f; A5 = %f; A6 = %f; A7 = %f\n', Scenario(1), Scenario(2), Scenario(3), Scenario(4), Scenario(5) ,Scenario(6) ,Scenario(7))
 
 
@@ -235,7 +237,7 @@ parameters.SwarmAgentTypeDistribution = generateSwarm(parameters.NumberOfSheep,p
 % select behaviour case for swarm agent i
 parameters.SheepBehaviourCase = char(parameters.SwarmAgentTypeDistribution(i));
 
-fprintf('Simulation Time = ')
+fprintf('\n\nSimulation Time = \n')
 while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
         %% Console time counter! 
@@ -495,11 +497,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         CollectingTacticOutput = CollectingTactic(CollectingTacticIndex,SheepMatrix,SheepNotInGoalIndex, ...
                 SheepNotInGoalGCM,SheepNotInGoalNumber,RadiusSheep,NumberOfSheep,Goal,ShepherdMatrix,NumberOfShepherds, ...
                 SheepIndexInBiggestCluster,NumberOfSheepInCluster,BiggestClusterLCM);
-                CollectingTacticNumber = CollectingTacticOutput(3);
+                CollectingTacticNumber = CollectingTacticOutput(4);
     catch
         fprintf('\nTry-catch executed at t=%i for CollectingTactic=%s and DrivingTactic=%s.\n',SimulationTime,parameters.DogCollectingTacticIndex,parameters.DogDrivingTacticIndex)
         parameters.BreakWhile = true; 
-        %break 
     end
 
     %% Update 31/3/22 - Data output generation for Swarm Markers, Recognition and Prediction
@@ -547,8 +548,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         if SimulationTime == 50
             save('output.mat', 'output')
             logic_stmt = py.devDB.logic_tensor(); % you need to add the pyton location to Matlab file path
-            fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n')
-            fprintf('The current state logic is %s\n ', logic_stmt) % fprintf(char(logic_stmt))
+            fprintf('\n----- The current state logic is %s\n ', logic_stmt) % fprintf(char(logic_stmt))
             explanationFlag = true;
             showTime = 1;
         end
@@ -556,8 +556,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         if SimulationTime == 150
             save('output.mat', 'output')
             logic_stmt = py.devDB.logic_tensor();
-            fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n')
-            fprintf('The current state logic is %s\n ', logic_stmt)
+            fprintf('\n----- The current state logic is %s\n ', logic_stmt)
             explanationFlag = true;
             showTime = 1;
         end
@@ -565,8 +564,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         if SimulationTime == 225
             save('output.mat', 'output')
             logic_stmt = py.devDB.logic_tensor();
-            fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n')
-            fprintf('The current state logic is %s\n ', logic_stmt)
+            fprintf('\n----- The current state logic is %s\n ', logic_stmt)
             explanationFlag = true;
             showTime = 1;
         end
@@ -613,13 +611,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
             % M1: classification: agent (capabilities and traits) and swarm (configuration) 
             if parameters.OnlineClassifications
-                yfit = C1.predictFcn(Mrk.M1.ClassData); 
+                yfit = C1.predictFcn(table2array(Mrk.M1.ClassData)); % classifier requires array not table data 
                 for i = 1:length(yfit)
-                    fprintf('Identified Agent No. %i: %s\n', i, yfit(i))
+                    fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
                     ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
                 end
                 fprintf('Classified Agent Distribution:\n')
-                summary(yfit)
+                %summary(yfit)
+                agt = unique(string(yfit))'; 
+                agtCnt = groupcounts(string(yfit))'/parameters.NumberOfSheep; 
+                for i = 1:length(agt)
+                    fprintf('Agent type %s = %2f\n',agt(i),agtCnt(i))
+                end
+                fprintf('\nClassification Result = %2f\n', sum(ClassPredYagent)/length(ClassPredYagent))
+                
 
                 %% TASK: stage-2 classifier for swarm characterisation 
 
@@ -682,12 +687,11 @@ if parameters.OnlineClassifications
     %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
 end
 
-%% Record the movie clip of the simulation run
+% %% Record the movie clip of the simulation run
 % SimulationRunClip = VideoWriter('SimulationClip.avi');
 % open(SimulationRunClip);
 % writeVideo(SimulationRunClip,M);
 % close(SimulationRunClip);
-
 
 % close the figure before completing
 % close(1)

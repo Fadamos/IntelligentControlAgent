@@ -58,7 +58,7 @@ for i = 1 : NumSheep % Go through every sheep.
     if parameters.VerboseBugger && SimulationTime < 2
         fprintf('Agent %i BehaviourCase %s\n', i, parameters.SheepBehaviourCase)
         fprintf('Agent %i Weights [%f %f %f %f %f]\n', i, Weights(1), Weights(2), Weights(3), Weights(4), Weights(5))
-        fprintf('Agent %i Agent Speed %f\n', i, SheepStep)
+        fprintf('Agent %i Agent Speed %f \n\n', i, SheepStep)
     end 
     
     %% Continue Agent Calculations

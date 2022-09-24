@@ -41,16 +41,16 @@ if parameters.Adam % Adam's isolated simulation parameters
     if parameters.IsolatedSim
         parameters.CollisionRange = 'L1';
         parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
-        parameters.DogCollectingTacticIndex = 'F2H';
-        parameters.DogDrivingTacticIndex = 'DHH';
+        parameters.DogCollectingTacticIndex = 'F2G';
+        parameters.DogDrivingTacticIndex = 'DAH';
         parameters.Replicate = 1; 
     end
     % Markers 
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
+    parameters.OnlineClassifications = 1; % if you want to classify in each time step
     parameters.FullSet = true; 
     parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
-    parameters.WindowSize = 100; % number of observations for each marker window --> 100 = optimal 
-    parameters.Overlap = 0.5; % proportion of overlap between each marker --> 0.5 = optimal
+    parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
+    parameters.Overlap = 0.75; % = Proportion of overlap between each marker
     parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
     parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
     % Translator 
@@ -172,10 +172,11 @@ end
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    if parameters.Adam % Adam's isolated simulation paramete
-        % \
-        % rs 
+    if parameters.Adam % Adam's isolated simulation parameters 
         load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_2.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
     else % Daniel's isolated simulation parameters 
         load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
     end

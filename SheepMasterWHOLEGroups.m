@@ -237,7 +237,7 @@ parameters.SwarmAgentTypeDistribution = generateSwarm(parameters.NumberOfSheep,p
 % select behaviour case for swarm agent i
 parameters.SheepBehaviourCase = char(parameters.SwarmAgentTypeDistribution(i));
 
-fprintf('\nSimulation Time = ')
+fprintf('\n\nSimulation Time = \n')
 while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
         %% Console time counter! 
@@ -611,16 +611,23 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
             % M1: classification: agent (capabilities and traits) and swarm (configuration) 
             if parameters.OnlineClassifications
-                yfit = C1.predictFcn(Mrk.M1.ClassData); 
+                yfit = C1.predictFcn(table2array(Mrk.M1.ClassData)); % classifier requires array not table data 
                 for i = 1:length(yfit)
-                    fprintf('Identified Agent No. %i: %s\n', i, yfit(i))
+                    fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
                     ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
                 end
                 fprintf('Classified Agent Distribution:\n')
-                summary(yfit)
+                %summary(yfit)
+                agt = unique(string(yfit))'; 
+                agtCnt = groupcounts(string(yfit))'/parameters.NumberOfSheep; 
+                for i = 1:length(agt)
+                    fprintf('Agent type %s = %2f\n',agt(i),agtCnt(i))
+                end
+                fprintf('\nClassification Result = %2f \n\n\n\n\n', sum(ClassPredYagent)/length(ClassPredYagent))
+                output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
-
+                
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
                 %ClassSwarm = --- may be a little bit of work here! 
