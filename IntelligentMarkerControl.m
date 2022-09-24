@@ -4,7 +4,6 @@ function output = IntelligentMarkerContro(df, Context, parameters, intent, behav
     % Explanaton: Intelligent control agent
 
     %% This is the flow chart as a very simple agent in the first instance
-    
 
     %% C1: Agent Classification (Type = 7 class)
 
