@@ -24,6 +24,15 @@ function output = SheepMasterWHOLEGroups(parameters, C1)
 if ~exist('C1', 'var')
      C1=false; 
 end
+if ~exist('C2', 'var')
+     C1=false; 
+end
+if ~exist('C2_He', 'var')
+     C1=false; 
+end
+if ~exist('C2_Ho', 'var')
+     C1=false; 
+end
 
 %% Initialise Simulation Parameters
 Verbose                                 = parameters.Verbose;
@@ -627,7 +636,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
-                
+                yfit2class = C2.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
+                yfitHe = C2_He.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
+                yfitHo = C2_Ho.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
+
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
                 %ClassSwarm = --- may be a little bit of work here! 

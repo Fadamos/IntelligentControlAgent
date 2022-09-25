@@ -174,7 +174,7 @@ parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 if parameters.InternalMarkerCalculations
     if parameters.Adam % Adam's isolated simulation parameters 
         load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
-        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_2.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
         load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
         load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
     else % Daniel's isolated simulation parameters 
