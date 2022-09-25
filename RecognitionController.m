@@ -177,6 +177,8 @@ if parameters.InternalMarkerCalculations
         load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
         load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
         load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
+        load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
     else % Daniel's isolated simulation parameters 
         load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
     end
