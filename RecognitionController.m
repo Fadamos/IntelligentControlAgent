@@ -4,6 +4,9 @@
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.
 
+clear
+clc
+
 %% Data farming or independent execution
 
 parameters.Adam = true; % set of false for Daniel
@@ -26,7 +29,7 @@ if parameters.Adam % Adam's isolated simulation parameters
     parameters.user = "Adam";
     % Sim params 
     parameters.Verbose = true; % visuals (true) or data only (false)
-    parameters.VerboseBugger = true; % sys print for increased data debugging
+    parameters.VerboseBugger = false; % sys print for increased data debugging
     parameters.visual = "classic"; % 'classic' if using original visuals
     % turn off warnings if not impacting code execution
     warning('off','all')

@@ -80,6 +80,7 @@ if parameters.OnlineClassifications
 end 
 SwarmAgentAttnPoints                    = []; % plotting attention points for agents
 InteractionAgentProp                    = []; % plotting for agent interaction values 
+SwarmClassificationData                 = []; % swarm classification data
 
 %% Get the selection of complexity parameters
 DogSpeedDifferentialIndex               = parameters.SheepDogVehicleSpeedLimit;
@@ -628,42 +629,35 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             if parameters.OnlineClassifications
                 yfit = C1.predictFcn(Mrk.M1.ClassDataArray);
                 for i = 1:length(yfit)
-                    fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
+                    if parameters.VerboseBugger
+                        fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
+                    end
                     ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
                 end
                 fprintf('Classified Agent Distribution:\n')
                 summary(categorical(string(cell2mat(yfit))))
-%                 agt = unique(string(yfit))'; 
-%                 agtCnt = groupcounts(string(yfit))'/parameters.NumberOfSheep; 
-%                 for i = 1:length(agt)
-%                     fprintf('Agent type %s = %2f\n',agt(i),agtCnt(i))
-%                 end
-%                 fprintf('\nClassification Result = %2f \n\n\n\n\n', sum(ClassPredYagent)/length(ClassPredYagent))
-%                 output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
                 yfit2class = C2.predictFcn(Mrk.M3.L2norm);
                 if string(yfit2class) == "Heterogeneous" 
                     yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
+                    yfitHo = "NaN";
                 elseif string(yfit2class) == "Homogeneous" 
                     yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
+                    yfitHe = "NaN";
                 end
                 yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
                 yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);      
                 
                 fprintf('Identified Swarm Type (Classifier C2): %s\n', string(yfit2class))
-                if string(yfit2class) == "Heterogeneous"
-                    fprintf('Identified Swarm Type (Classifier C2_He): %s\n', string(yfitHe))
-                elseif string(yfit2class) == "Homogeneous"
-                    fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
-                end 
-                fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHe2))
-                fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHo2))
-                fprintf('Ground Truth Swarm Type: %s\n\n\n', parameters.ScenarioIndex)
+                fprintf('Identified Swarm Type (Classifier C2_He): %s\n', string(yfitHe))
+                fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
+                fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHe2))
+                fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHo2))
+                fprintf('Ground Truth Swarm Type: %s\n\n\n\n\n', parameters.ScenarioIndex)
 
-                %% TASK: Record performance data here and save it 
-                ActualSwarm = parameters.SwarmAgentTypeDistribution; 
-                %ClassSwarm = --- may be a little bit of work here! 
+                %% Record performance data here and save it 
+                SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
 
                 % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
                 EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
@@ -716,7 +710,8 @@ if parameters.InternalMarkerCalculations
 end
 if parameters.OnlineClassifications
     output.MarkerEvalVOI.Gain = EvalGain; 
-    output.MarkerEvalVOI.ClassPredYagent = MarkerClassPerfagent; 
+    output.MarkerEvalVOI.ClassPredYagent = MarkerClassPerfagent;
+    output.SwarmClassificationData = SwarmClassificationData;     
     %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
 end
 
