@@ -33,6 +33,12 @@ end
 if ~exist('C2_Ho', 'var')
      C2_Ho=false; 
 end
+if ~exist('C2_He2', 'var')
+     C2_He2=false; 
+end
+if ~exist('C2_Ho2', 'var')
+     C2_Ho2=false; 
+end
 
 %% Initialise Simulation Parameters
 Verbose                                 = parameters.Verbose;
@@ -639,6 +645,8 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 yfit2class = C2.predictFcn(Mrk.M3.L2norm); 
                 yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
                 yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
+                yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
+                yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);                 
 
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
