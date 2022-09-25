@@ -643,23 +643,23 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
                 %% TASK: stage-2 classifier for swarm characterisation 
                 yfit2class = C2.predictFcn(Mrk.M3.L2norm);
-                if string(yfit2class) == "Homogeneous"
+                if string(yfit2class) == "Heterogeneous" 
                     yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
-                elseif string(yfit2class) == "Heterogeneous"
+                elseif string(yfit2class) == "Homogeneous" 
                     yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
                 end
                 yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
                 yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);      
                 
                 fprintf('Identified Swarm Type (Classifier C2): %s\n', string(yfit2class))
-                if string(yfit2class) == "Homogeneous"
+                if string(yfit2class) == "Heterogeneous"
                     fprintf('Identified Swarm Type (Classifier C2_He): %s\n', string(yfitHe))
-                elseif string(yfit2class) == "Heterogeneous"
+                elseif string(yfit2class) == "Homogeneous"
                     fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
                 end 
                 fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHe2))
                 fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHo2))
-                fprintf('Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
+                fprintf('Ground Truth Swarm Type: %s\n\n\n', parameters.ScenarioIndex)
 
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
