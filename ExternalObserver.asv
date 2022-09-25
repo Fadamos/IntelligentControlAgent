@@ -105,6 +105,9 @@ function output = ExternalObserver(df, parameters, DecisionWindow, FullSet, Verb
         % L2 norm of each marker 
         L2normSwarm = sqrt(sum(abs(tt),'omitnan'));
 
+        
+
+
     %% output 
     output.MarkerState = MarkerState;
     output.M1.ClassDataTable = Tbl; 
@@ -113,7 +116,6 @@ function output = ExternalObserver(df, parameters, DecisionWindow, FullSet, Verb
     output.M1.ObsRange = [DecisionWindow(1) DecisionWindow(2)];
     output.M2.InteractionAgent = M2.InteractionAgent;
     output.M2.InteractionFraction = M2.InteractionFraction;
-    output.M3.L2norm = L2normSwarm; 
     output.M4.AttentionAgentIdx = M2.AttentionAgentIdx;
     output.M4.AttentionPoints = M2.AttentionPoints;
 end 

@@ -433,6 +433,7 @@ CLASSidx40_075 = Class2Y(idx40_075,:);
 
 FLATidx60_025 = FlatMarkerSwarm(idx60_025,:);
 CLASSidx60_025 = Class2Y(idx60_025,:);
+CLASSidx60_025 = ClassYswarm(idx60_025,:);
 
 FLATidx60_050 = FlatMarkerSwarm(idx60_050,:);
 CLASSidx60_050 = Class2Y(idx60_050,:);
@@ -458,12 +459,18 @@ CLASSidx100_050 = Class2Y(idx100_050,:);
 FLATidx100_075 = FlatMarkerSwarm(idx100_075,:);
 CLASSidx100_075 = Class2Y(idx100_075,:);
 
-
-
 idx60_025Heterogeneous = find(MasterKeySwarm(:,1)==20 & MasterKeySwarm(:,2)==0.25);
 
-idxHe = find(ClassYswarm == "S1" | ClassYswarm == "S2" | ClassYswarm == "S3" | ClassYswarm == "S4")
-idxHo = find(ClassYswarm == "S5" | ClassYswarm == "S6" | ClassYswarm == "S7" | ClassYswarm == "S8" |  ClassYswarm == "S8" | ClassYswarm == "S8" | ClassYswarm == "S11" |)
+idxHe = find(CLASSidx60_025 == "S1" | CLASSidx60_025 == "S2" | CLASSidx60_025 == "S3" | CLASSidx60_025 == "S4");
+idxHo = find(CLASSidx60_025 == "S5" | CLASSidx60_025 == "S6" | CLASSidx60_025 == "S7" | CLASSidx60_025 == "S8" |  CLASSidx60_025 == "S9" | CLASSidx60_025 == "S10" | CLASSidx60_025 == "S11");
+
+ClassYHe = CLASSidx60_025
+CLassYHo = 
+
+FLATidxHe = SwarmX(idxHe,:);
+FLATidxHo = SwarmX(idxHo,:);
+YclassHe = ClassYswarm(idxHe);
+YclassHo = ClassYswarm(idxHo);
 
 % convert to table 
 clear AgentX AgentY

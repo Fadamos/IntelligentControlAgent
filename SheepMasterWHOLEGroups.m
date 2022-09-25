@@ -636,9 +636,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 %                 output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
-                yfit2class = C2.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
-                yfitHe = C2_He.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
-                yfitHo = C2_Ho.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
+                yfit2class = C2.predictFcn(Mrk.M3.L2norm); 
+                yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
+                yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
 
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
