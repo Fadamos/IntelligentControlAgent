@@ -184,7 +184,7 @@ end
 
 %% Main Function Call
 if parameters.InternalMarkerCalculations
-     output = SheepMasterWHOLEGroups(parameters, C1);
+     output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho);
  else
      output = SheepMasterWHOLEGroups(parameters);
  end

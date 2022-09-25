@@ -79,7 +79,8 @@ function output = ExternalObserver(df, parameters, DecisionWindow, FullSet, Verb
     end
     
     output.MarkerState = MarkerState;
-    output.M1.ClassData = Tbl; 
+    output.M1.ClassDataTable = Tbl; 
+    output.M1.ClassDataArray = X;
     output.M1.ComputeTime = t; 
     output.M1.ObsRange = [DecisionWindow(1) DecisionWindow(2)];
     output.M2.InteractionAgent = M2.InteractionAgent;

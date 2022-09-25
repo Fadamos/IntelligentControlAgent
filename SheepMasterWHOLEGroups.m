@@ -1,4 +1,4 @@
-function output = SheepMasterWHOLEGroups(parameters, C1)
+function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho)
 
 % Author: Daniel P. Baxter, Adam J Hepworth
 % LastModified: 2022-08-18
@@ -25,13 +25,13 @@ if ~exist('C1', 'var')
      C1=false; 
 end
 if ~exist('C2', 'var')
-     C1=false; 
+     C2=false; 
 end
 if ~exist('C2_He', 'var')
-     C1=false; 
+     C2_He=false; 
 end
 if ~exist('C2_Ho', 'var')
-     C1=false; 
+     C2_Ho=false; 
 end
 
 %% Initialise Simulation Parameters
@@ -620,20 +620,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
             % M1: classification: agent (capabilities and traits) and swarm (configuration) 
             if parameters.OnlineClassifications
-                yfit = C1.predictFcn(table2array(Mrk.M1.ClassData)); % classifier requires array not table data 
+                yfit = C1.predictFcn(Mrk.M1.ClassDataArray);
                 for i = 1:length(yfit)
                     fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
                     ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
                 end
                 fprintf('Classified Agent Distribution:\n')
-                %summary(yfit)
-                agt = unique(string(yfit))'; 
-                agtCnt = groupcounts(string(yfit))'/parameters.NumberOfSheep; 
-                for i = 1:length(agt)
-                    fprintf('Agent type %s = %2f\n',agt(i),agtCnt(i))
-                end
-                fprintf('\nClassification Result = %2f \n\n\n\n\n', sum(ClassPredYagent)/length(ClassPredYagent))
-                output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
+                summary(categorical(string(cell2mat(yfit))))
+%                 agt = unique(string(yfit))'; 
+%                 agtCnt = groupcounts(string(yfit))'/parameters.NumberOfSheep; 
+%                 for i = 1:length(agt)
+%                     fprintf('Agent type %s = %2f\n',agt(i),agtCnt(i))
+%                 end
+%                 fprintf('\nClassification Result = %2f \n\n\n\n\n', sum(ClassPredYagent)/length(ClassPredYagent))
+%                 output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
                 yfit2class = C2.predictFcn(table2array(Mrk.M1.ClassData)); % NEEDS TO OPERATE ON THE SUMMARY DATA NOT MRK DIRECT
