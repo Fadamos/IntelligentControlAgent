@@ -642,18 +642,24 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 %                 output.PredAgentClass(SimulationTime,:) = ClassPredYagent;    
 
                 %% TASK: stage-2 classifier for swarm characterisation 
-                yfit2class = C2.predictFcn(Mrk.M3.L2norm); 
-                yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
-                yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
+                yfit2class = C2.predictFcn(Mrk.M3.L2norm);
+                if string(yfit2class) == "Homogeneous"
+                    yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
+                elseif string(yfit2class) == "Heterogeneous"
+                    yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
+                end
                 yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
                 yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);      
                 
-                fprintf('Identified Swarm Type (C2): %s\n', string(yfit2class))
-                fprintf('Identified Swarm Type (C2_He): %s\n', string(yfitHe))
-                fprintf('Identified Swarm Type (C2_Ho): %s\n', string(yfitHo))
-                fprintf('Identified Swarm Type (C2_Ho2): %s\n', string(yfitHe2))
-                fprintf('Identified Swarm Type (C2_He2): %s\n', string(yfitHo2))
-                %fprintf('Ground Truth Swarm Type: %s\n', )
+                fprintf('Identified Swarm Type (Classifier C2): %s\n', string(yfit2class))
+                if string(yfit2class) == "Homogeneous"
+                    fprintf('Identified Swarm Type (Classifier C2_He): %s\n', string(yfitHe))
+                elseif string(yfit2class) == "Heterogeneous"
+                    fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
+                end 
+                fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHe2))
+                fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHo2))
+                fprintf('Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
 
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
