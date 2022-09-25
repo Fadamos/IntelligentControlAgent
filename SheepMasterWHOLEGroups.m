@@ -1,7 +1,7 @@
-function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho)
+function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2)
 
-% Author: Daniel P. Baxter, Adam J Hepworth
-% LastModified: 2022-08-18
+% Author: Adam J Hepworth, Daniel P Baxter 
+% LastModified: 2022-09-25
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.
@@ -646,7 +646,14 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
                 yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
                 yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
-                yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);                 
+                yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);      
+                
+                fprintf('Identified Swarm Type (C2): %s\n', string(yfit2class))
+                fprintf('Identified Swarm Type (C2_He): %s\n', string(yfitHe))
+                fprintf('Identified Swarm Type (C2_Ho): %s\n', string(yfitHo))
+                fprintf('Identified Swarm Type (C2_Ho2): %s\n', string(yfitHe2))
+                fprintf('Identified Swarm Type (C2_He2): %s\n', string(yfitHo2))
+                %fprintf('Ground Truth Swarm Type: %s\n', )
 
                 %% TASK: Record performance data here and save it 
                 ActualSwarm = parameters.SwarmAgentTypeDistribution; 
