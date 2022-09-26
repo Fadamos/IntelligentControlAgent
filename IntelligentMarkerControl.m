@@ -70,11 +70,11 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
         yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
-        fprintf('Identified Swarm Type (Tree Classifier    C2        {Homogeneous Heterogeneous})                       %s\n', string(yfit2class))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_He     {S1, S2, S3, S4})                                  %s\n', string(yfitHe))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho     {S5, S6, S7, S8, S9, S10, S11})                    %s\n', string(yfitHo))
-        fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                     %s\n', string(yfitHe2))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})     %s\n', string(yfitHo2))
+        fprintf('Identified Swarm Type (Tree Classifier    C2        {Homogeneous Heterogeneous})                      = %s\n', string(yfit2class))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_He     {S1, S2, S3, S4})                                 = %s\n', string(yfitHe))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho     {S5, S6, S7, S8, S9, S10, S11})                   = %s\n', string(yfitHo))
+        fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s\n', string(yfitHe2))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s\n', string(yfitHo2))
         fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
         
         %% Record performance data here and save it 
