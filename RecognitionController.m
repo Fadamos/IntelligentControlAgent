@@ -18,6 +18,7 @@ if parameters.IsolatedSim
 end 
 
 parameters.user = "Adam";
+
 % Sim params 
 parameters.Verbose = true; % visuals (true) or data only (false)
 parameters.VerboseBugger = false; % sys print for increased data debugging
@@ -51,7 +52,7 @@ parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represen
 % Translator 
 parameters.TranslationController = 0; % translation controller (1=true, 0=false)
 parameters.ShowTimeLength = 20; % length of time the explanation is shown on the screen
-parameters.BehaviourLibrary = 1; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
+parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
 parameters.replicates = 1; 
 
 %% Information Marker Calculations
