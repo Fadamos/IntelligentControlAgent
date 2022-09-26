@@ -84,6 +84,8 @@ CollectingTacticIndex                   = parameters.DogCollectingTacticIndex;
 DrivingTacticIndex                      = parameters.DogDrivingTacticIndex;
 CollisionRangeIndex                     = parameters.CollisionRange;
 
+TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+
 %% Assign the environment boundaries
 MinX = BoundarySize(1);
 MaxX = BoundarySize(2);
@@ -259,6 +261,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             end
         end
         fprintf('%d',SimulationTime)
+
+        if SimulationTime > 1
+            TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+        end
 
         %% Calculate the number of sheep NOT in the goal area
         SheepNotInGoalIndex = find(SheepMatrix(:,6)==0); 
@@ -458,15 +464,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     
                 axis([0 MaxX 0 MaxY]); 
                 title([ ...
-                    'Usr: ', parameters.user,...
-                    ', S: ', ScenarioIndex,...
-                    ', C: ', CollectingTacticIndex ... 
-                    ', D: ', DrivingTacticIndex ...
-                    ', PiSep: ', CollisionRangeIndex ...
-                    ', BetaSpd: ', DogSpeedDifferentialIndex ...
-                    ', t: ', num2str(SimulationTime)])
-                    %', Time: ' num2str(SimulationTime) ...
-                    %', Action Time: ' num2str(ActionTime)])
+                    't: ', num2str(SimulationTime)])
                 xlabel('X position')
                 ylabel('Y position')
                 grid minor
@@ -586,13 +584,13 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
-            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, );
+            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex);
         
             if parameters.TacticPairSelection
                 DrivingTacticIndex = IntelligentAgent.TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.TacticCollect;
             end
-
+            fprintf('Ok, using %s and %s now! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
     end
 

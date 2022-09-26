@@ -84,6 +84,8 @@ CollectingTacticIndex                   = parameters.DogCollectingTacticIndex;
 DrivingTacticIndex                      = parameters.DogDrivingTacticIndex;
 CollisionRangeIndex                     = parameters.CollisionRange;
 
+TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+
 %% Assign the environment boundaries
 MinX = BoundarySize(1);
 MaxX = BoundarySize(2);
@@ -259,6 +261,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             end
         end
         fprintf('%d',SimulationTime)
+
+        if SimulationTime > 1
+            TacticPairRecord(end+1,:) = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+        end
 
         %% Calculate the number of sheep NOT in the goal area
         SheepNotInGoalIndex = find(SheepMatrix(:,6)==0); 
@@ -458,15 +464,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     
                 axis([0 MaxX 0 MaxY]); 
                 title([ ...
-                    'Usr: ', parameters.user,...
-                    ', S: ', ScenarioIndex,...
-                    ', C: ', CollectingTacticIndex ... 
-                    ', D: ', DrivingTacticIndex ...
-                    ', PiSep: ', CollisionRangeIndex ...
-                    ', BetaSpd: ', DogSpeedDifferentialIndex ...
-                    ', t: ', num2str(SimulationTime)])
-                    %', Time: ' num2str(SimulationTime) ...
-                    %', Action Time: ' num2str(ActionTime)])
+                    't: ', num2str(SimulationTime)])
                 xlabel('X position')
                 ylabel('Y position')
                 grid minor
@@ -592,7 +590,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.TacticCollect;
             end
-            fprintf('Ok, using %s and %s now! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
+            fprintf('Ok, now using %s and %s behaviours! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
     end
 
@@ -627,6 +625,7 @@ fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n
 output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
+output.TacticPairRecord = TacticPairRecord; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
     %output.MarkerSet = IntelligentAgent.MarkerSet;

@@ -30,14 +30,14 @@ warning
 parameters.military = 1; % 0 = classic shepherding; 1+ = military 
 % Context-aware intelligent agent setup
 parameters.NumberOfSheep = 20;
-parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 2;
+parameters.NumberOfSteps = 100; %(630 + 20 * parameters.NumberOfSheep) * 2;
 % select either military or classic shepherding visual scenario
 parameters.military = 1; % 0 = classic shepherding; 1+ = military 
 if parameters.IsolatedSim
     parameters.CollisionRange = 'L1';
     parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
-    parameters.DogCollectingTacticIndex = 'F2G';
-    parameters.DogDrivingTacticIndex = 'DAH';
+    parameters.DogCollectingTacticIndex = 'C2D';
+    parameters.DogDrivingTacticIndex = 'DOAT';
     parameters.Replicate = 1; 
 end
 % Markers 

@@ -75,7 +75,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
         fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHe2))
         fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHo2))
-        fprintf('Ground Truth Swarm Type: %s', parameters.ScenarioIndex)
+        fprintf('* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
         
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
@@ -88,13 +88,15 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     %% Current Tactic Pair 
     CurrentTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
-    fprintf('\nCurrent TP: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
+    fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
-    %% Next Tactic Pair 
+    %% Determine Next Behaviour Action 
 
     % Get the right dataset first - subset for metric and classified scenario
     % very simple - select between best TP for Ho or He case only 
 
+
+    %% Context-Awareness Engine 
     % 1 - select right metric/scenario sub-set
     % subcube takes the form [5 5 5] = [drive collect result]
     scenario = string(yfit2class); 
@@ -109,24 +111,26 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Assessed Scenario is Default\n')
     end 
     
+    %% Behaviour Selection Engine
     % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
     viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
     [row,col] = find(viableTP == max(max(viableTP)));
-    viableTP(row,col)
     
     % 3 - rank the means H --> L and select the H 
     
     % 4 - save these for selection
 
-
     % This is where the ANN classifier goes to determine the TP as an output
 
     if parameters.TacticPairSelection
-        %DrivingTacticIndex = ; % re-parameterise the agent for new collect and drive actions 
-        %CollectingTacticIndex = ;
-
-        NextTacticPair = [convertCharsToStrings(parameters.DogDrivingTacticIndex) convertCharsToStrings(parameters.DogCollectingTacticIndex)]; 
-        fprintf('\nCurrent TP: {%s %s}. \n\n\n\n\n',NextTacticPair(1),NextTacticPair(2))
+        DrivingTacticIndex = char(parameters.TacticDriveReference(col)); % re-parameterise the agent for new collect and drive actions 
+        CollectingTacticIndex = char(parameters.TacticCollectReference(row));
+        NextTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
+        if (NextTacticPair(1) == CurrentTacticPair(1))) && (strcmp(NextTacticPair(1) == CurrentTacticPair(2))) 
+            fprintf('Continuing with Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2)))
+        else 
+            fprintf('New Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
+        end
     end
     
     %% Output 
