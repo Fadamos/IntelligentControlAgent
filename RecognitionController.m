@@ -20,11 +20,6 @@ if parameters.IsolatedSim
     workspace;
 end 
 
-%% Complexity pair generation
-% used to pick between the 4 levels of sheep-sheep seperation and 4 levels
-% of dog speed differential
-
-
 if parameters.Adam % Adam's isolated simulation parameters 
     parameters.user = "Adam";
     % Sim params 
@@ -88,6 +83,7 @@ else % Daniel's isolated simulation parameters
     parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 2;
     % select either military or classic shepherding visual scenario
     parameters.military = 1; % 0 = classic shepherding; 1+ = military 
+    BehaviourData = 1; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
 end
 parameters.replicates = 1; 
 
@@ -186,6 +182,12 @@ if parameters.InternalMarkerCalculations
     else % Daniel's isolated simulation parameters 
         load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
     end
+end
+
+if BehaviourLibrary
+    parameters.BehaviourLibrary = BuildBehaviourLibrary();
+else
+    load('/Users/ajh/GitHub/IntelligentControlAgent/BehaviourLibraryData.mat')
 end
 
 %% Main Function Call

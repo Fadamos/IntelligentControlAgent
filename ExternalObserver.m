@@ -1,6 +1,6 @@
 function output = ExternalObserver(df, parameters, DecisionWindow, FullSet, Verbose)
     % Author: Adam J Hepworth
-    % LastModified: 2022-08-10
+    % LastModified: 2022-09-25
     % Explanaton: External observer, kappa
 
     if ~exist('Verbose', 'var')
