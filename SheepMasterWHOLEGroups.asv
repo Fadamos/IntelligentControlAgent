@@ -1,4 +1,4 @@
-function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2)
+function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube)
 
 % Author: Adam J Hepworth, Daniel P Baxter 
 % LastModified: 2022-09-25
@@ -72,12 +72,8 @@ TargetForDOAT                           = parameters.TargetForDOAT; % collection
 FlagDOAT                                = 0; % boolean flag for agent at goal or not
 FullSet                                 = parameters.FullSet; % Complete marker set or not 
 TranslationController                   = parameters.TranslationController; % condition for explanation print on visuals
-if parameters.InternalMarkerCalculations
-    EvalCost                            = []; % Information Markers Value of Information  - Cost
-end 
-if parameters.OnlineClassifications
-    EvalGain                            = []; % Information Markers Value of Information  - Gain 
-end 
+EvalCost                                = []; % Information Markers Value of Information  - Cost
+EvalGain                                = []; % Information Markers Value of Information  - Gain 
 SwarmAgentAttnPoints                    = []; % plotting attention points for agents
 InteractionAgentProp                    = []; % plotting for agent interaction values 
 SwarmClassificationData                 = []; % swarm classification data
@@ -151,11 +147,11 @@ if ~parameters.IsolatedSim
     fprintf('Simulation batch run %i of %i\n', parameters.BatchCurrentRun, parameters.BatchTotalRuns)
 end 
 fprintf('Init simulation with Scenario = %s; Replicate = %i of %i\n', ScenarioIndex,SimulationRuns,parameters.replicates)
-fprintf('Collect = %s; Drive = %s; Speed = %s; Collision = %s\n', parameters.DogCollectingTacticIndex, parameters.DogDrivingTacticIndex, parameters.SheepDogVehicleSpeedLimit, parameters.CollisionRange)
+fprintf('Collect = %s; Drive = %s\n', CollectingTacticIndex, DrivingTacticIndex)
 if parameters.InternalMarkerCalculations
-    fprintf('Marker Obs Size = %i; Marker Overlap = %f\n',parameters.WindowSize,parameters.Overlap)
+    fprintf('Marker Obs Size = %i; Marker Overlap = %.2f\n',parameters.WindowSize,parameters.Overlap)
 end
-fprintf('.....Proportion of Agent A1 = %f; A2 = %f; A3 = %f; A4 = %f; A5 = %f; A6 = %f; A7 = %f\n', Scenario(1), Scenario(2), Scenario(3), Scenario(4), Scenario(5) ,Scenario(6) ,Scenario(7))
+fprintf('.....Proportion of Agent A1 = %.2f; A2 = %.2f; A3 = %.2f; A4 = %.2f; A5 = %.2f; A6 = %.2f; A7 = %.2f\n', Scenario(1), Scenario(2), Scenario(3), Scenario(4), Scenario(5) ,Scenario(6) ,Scenario(7))
 
 
 %% Create initial population of sheep
@@ -515,7 +511,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 SheepIndexInBiggestCluster,NumberOfSheepInCluster,BiggestClusterLCM);
                 CollectingTacticNumber = CollectingTacticOutput(4);
     catch
-        fprintf('\nTry-catch executed at t=%i for CollectingTactic=%s and DrivingTactic=%s.\n',SimulationTime,parameters.DogCollectingTacticIndex,parameters.DogDrivingTacticIndex)
+        fprintf('\nTry-catch executed at t=%i for CollectingTactic=%s and DrivingTactic=%s.\n',SimulationTime,CollectingTacticIndex,DrivingTacticIndex)
         parameters.BreakWhile = true; 
     end
 
@@ -585,14 +581,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             showTime = 1;
         end
     end
-
          
     %% Intelligent Control Agent
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
-            IntelligentAgent = IntelligentMarkerControl(SensedData, parameters, intent, behaviourLibrary); 
+            
+            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, );
+        
+            if parameters.TacticPairSelection
+                DrivingTacticIndex = IntelligentAgent.TacticDrive;
+                CollectingTacticIndex = IntelligentAgent.TacticCollect;
+            end
+
         end
-    end 
+    end
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 
@@ -626,15 +628,16 @@ output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
 if parameters.InternalMarkerCalculations
-    output.MarkerSet = IntelligentAgent.MarkerSet;
-    output.MarkerEvalVOI.Cost = IntelligentAgent.EvalCost;
+   output.IntelligentAgent = IntelligentAgent; 
+    %output.MarkerSet = IntelligentAgent.MarkerSet;
+    %output.MarkerEvalVOI.Cost = IntelligentAgent.EvalCost;
 end
-if parameters.OnlineClassifications
-    output.MarkerEvalVOI.Gain = IntelligentAgent.EvalGain; 
-    output.MarkerEvalVOI.ClassPredYagent = IntelligentAgent.MarkerClassPerfAgent;
-    output.SwarmClassificationData = IntelligentAgent.SwarmClassificationData;     
-    %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
-end
+% if parameters.OnlineClassifications
+%     output.MarkerEvalVOI.Gain = IntelligentAgent.EvalGain; 
+%     output.MarkerEvalVOI.ClassPredYagent = IntelligentAgent.MarkerClassPerfAgent;
+%     output.SwarmClassificationData = IntelligentAgent.SwarmClassificationData;     
+%     %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
+% end
 
 % %% Record the movie clip of the simulation run
 % SimulationRunClip = VideoWriter('SimulationClip.avi');

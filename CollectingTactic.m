@@ -63,5 +63,6 @@ function CollectingTacticCalc = CollectingTactic(CollectingTacticIndex,SheepMatr
             IndexOfTargetSheep = IndexOfClosestSheepToShepherd;
             CollectingTacticNumber = 5;
     end
+    
     CollectingTacticCalc = [CollectingTacticCalculations,IndexOfTargetSheep,CollectingTacticNumber];
 end 

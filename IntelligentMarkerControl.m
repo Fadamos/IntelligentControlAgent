@@ -1,10 +1,10 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex)
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
     
     if ~exist('intent', 'var')
-        paramters.intent = 1; % mission success  
+        parameters.intent = 1; % mission success  
     end
     if ~exist('behaviourLibrary', 'var')
         parameters.behaviourLibrary = -1; % this needs to be the default TP eventually 
@@ -75,7 +75,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
         fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHe2))
         fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHo2))
-        fprintf('Ground Truth Swarm Type: %s\n\n\n\n\n', parameters.ScenarioIndex)
+        fprintf('Ground Truth Swarm Type: %s', parameters.ScenarioIndex)
         
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
@@ -84,6 +84,47 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
         % Save individual classification performances for later
         MarkerClassPerfAgent.(nameAfterDot) = ClassPredYagent; 
+    end
+
+    %% Current Tactic Pair 
+    CurrentTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
+    fprintf('\nCurrent TP: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
+
+    %% Next Tactic Pair 
+
+    % Get the right dataset first - subset for metric and classified scenario
+    % very simple - select between best TP for Ho or He case only 
+
+    % 1 - select right metric/scenario sub-set
+    % subcube takes the form [5 5 5] = [drive collect result]
+    scenario = string(yfit2class); 
+    if strcmp("Homogeneous", scenario)
+        fprintf('Assessed Scenario is Homogeneous\n')
+        subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
+    elseif strcmp("Heterogeneous", scenario)
+        subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
+        fprintf('Assessed Scenario is Heterogeneous\n')
+    else
+        subCube = squeeze(datacube(:, :, parameters.intent, 1, :)); 
+        fprintf('Assessed Scenario is Default\n')
+    end 
+    
+    % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
+    viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
+    [row,col] = find(viableTP == max(max(viableTP)));
+    
+    % 3 - rank the means H --> L and select the H 
+    
+    % 4 - save these for selection
+
+    % This is where the ANN classifier goes to determine the TP as an output
+
+    if parameters.TacticPairSelection
+        DrivingTacticIndex = char(parameters.TacticDriveReference(col)); % re-parameterise the agent for new collect and drive actions 
+        CollectingTacticIndex = char(parameters.TacticCollectReference(row));
+
+        NextTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
+        fprintf('\nCurrent TP: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
     end
     
     %% Output 
@@ -102,21 +143,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     
     % behaviour selection
     if parameters.TacticPairSelection
-        output.TacticPair = TP; 
+        output.TacticDrive = DrivingTacticIndex; 
+        output.TacticCollect = CollectingTacticIndex; 
     end
 
 end
 
 
 %% Tasks 
-
-% 1- 4D behaviour array to select the behaviour (don't parameterise yet - just print it out) 
-
-
-
-
-
-
 
 % This is the flow chart as a very simple agent in the first instance
 

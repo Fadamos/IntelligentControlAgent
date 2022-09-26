@@ -25,7 +25,6 @@ function Target = DrivingTactic(DrivingTacticIndex,parameters)
             MinPercentToDrive = 1;
             DrivingTacticNumber = 5;
 
-    end 
- 
+    end
     Target = [MinPercentToDrive, DrivingTacticNumber];
 end 

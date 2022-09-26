@@ -147,7 +147,7 @@ if ~parameters.IsolatedSim
     fprintf('Simulation batch run %i of %i\n', parameters.BatchCurrentRun, parameters.BatchTotalRuns)
 end 
 fprintf('Init simulation with Scenario = %s; Replicate = %i of %i\n', ScenarioIndex,SimulationRuns,parameters.replicates)
-fprintf('Collect = %s; Drive = %s; Speed = %s; Collision = %s\n', parameters.DogCollectingTacticIndex, parameters.DogDrivingTacticIndex, parameters.SheepDogVehicleSpeedLimit, parameters.CollisionRange)
+fprintf('Collect = %s; Drive = %s\n', CollectingTacticIndex, DrivingTacticIndex)
 if parameters.InternalMarkerCalculations
     fprintf('Marker Obs Size = %i; Marker Overlap = %.2f\n',parameters.WindowSize,parameters.Overlap)
 end
@@ -511,7 +511,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 SheepIndexInBiggestCluster,NumberOfSheepInCluster,BiggestClusterLCM);
                 CollectingTacticNumber = CollectingTacticOutput(4);
     catch
-        fprintf('\nTry-catch executed at t=%i for CollectingTactic=%s and DrivingTactic=%s.\n',SimulationTime,parameters.DogCollectingTacticIndex,parameters.DogDrivingTacticIndex)
+        fprintf('\nTry-catch executed at t=%i for CollectingTactic=%s and DrivingTactic=%s.\n',SimulationTime,CollectingTacticIndex,DrivingTacticIndex)
         parameters.BreakWhile = true; 
     end
 
@@ -581,17 +581,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             showTime = 1;
         end
     end
-
          
     %% Intelligent Control Agent
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
-            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData);
+            
+            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex);
+        
+            if parameters.TacticPairSelection
+                DrivingTacticIndex = IntelligentAgent.TacticDrive;
+                CollectingTacticIndex = IntelligentAgent.TacticCollect;
+            end
+            fprintf('Ok, using %s and %s now! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
-    end 
-
-
-
+    end
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 

@@ -53,7 +53,12 @@ parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represen
 parameters.TranslationController = 0; % translation controller (1=true, 0=false)
 parameters.ShowTimeLength = 20; % length of time the explanation is shown on the screen
 parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
+parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
 parameters.replicates = 1; 
+
+parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
+parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
+
 
 %% Information Marker Calculations
 if parameters.IntelligentControlAgent
