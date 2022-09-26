@@ -1,6 +1,6 @@
 function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold, Verbose)
     % Author: Adam J Hepworth
-    % LastModified: 2022-08-28
+    % LastModified: 2022-09-23
     % Explanaton: Intelligent control agent data library 
 
     % collect = C2D  C2H  F2D  F2G  F2H
