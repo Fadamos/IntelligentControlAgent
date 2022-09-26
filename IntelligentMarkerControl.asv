@@ -1,14 +1,7 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, Ranges, RadiusSheep, NumSheepNeighbours, RadiusShepherd, NumberOfTimeSteps, Goal, GoalRadius, BoundarySize, NumberOfSheep, CohesionRange, SheepInitialRadius, SheepInitialGCMx, SheepInitialGCMy, NumberOfInitialClusters, NumberOfShepherds, ShepherdStep, MaximumSafetyDistance, DrivingCollectingPointsSafetyDistance, SheepDogInitialOffsetFromSheepLocation, PauseLength, ScenarioIndex, Scenario, SimulationRuns, ActionCommitmentTime, TargetForDOAT, FlagDOAT, FullSet, TranslationController, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DogSpeedDifferentialIndex, CollectingTacticIndex, DrivingTacticIndex, CollisionRangeIndex)%, intent, behaviourLibrary
+function output = IntelligentMarkerControl(SensedData, parameters, intent, behaviourLibrary)
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
-
-    if ~exist('intent', 'var')
-        intent = 1; % mission success  
-    end
-    if ~exist('behaviourLibrary', 'var')
-        behaviourLibrary = -1; % this needs to be the default TP eventually 
-    end
 
     % Calculate markers 
             idx = find(SimulationTime==parameters.Windows(:,2)); 
@@ -56,8 +49,6 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
                 fprintf('Classified Agent Distribution:\n')
                 summary(categorical(string(cell2mat(yfit))))
 
-
-
                 %% TASK: stage-2 classifier for swarm characterisation 
                 yfit2class = C2.predictFcn(Mrk.M3.L2norm);
                 if string(yfit2class) == "Heterogeneous" 
@@ -90,11 +81,9 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
             % marker calculation 
             output.MarkerSet = MarkerSet; 
             output.EvalCost = EvalCost; 
-            output.SwarmAgentAttnPoints = SwarmAgentAttnPoints; 
-            output.InteractionAgentProp = InteractionAgentProp; 
             
             % onlineclassifications
-            if parameters.OnlineClassifications
+            if parameters.OnelineClassifications
                 output.EvalGain = EvalGain; 
                 output.MarkerClassPerfAgent = MarkerClassPerfAgent; 
                 output.SwarmClassificationData = SwarmClassificationData; 

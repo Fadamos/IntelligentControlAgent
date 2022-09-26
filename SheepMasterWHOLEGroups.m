@@ -72,12 +72,8 @@ TargetForDOAT                           = parameters.TargetForDOAT; % collection
 FlagDOAT                                = 0; % boolean flag for agent at goal or not
 FullSet                                 = parameters.FullSet; % Complete marker set or not 
 TranslationController                   = parameters.TranslationController; % condition for explanation print on visuals
-if parameters.InternalMarkerCalculations
-    EvalCost                            = []; % Information Markers Value of Information  - Cost
-end 
-if parameters.OnlineClassifications
-    EvalGain                            = []; % Information Markers Value of Information  - Gain 
-end 
+EvalCost                                = []; % Information Markers Value of Information  - Cost
+EvalGain                                = []; % Information Markers Value of Information  - Gain 
 SwarmAgentAttnPoints                    = []; % plotting attention points for agents
 InteractionAgentProp                    = []; % plotting for agent interaction values 
 SwarmClassificationData                 = []; % swarm classification data
@@ -587,91 +583,15 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     end
 
          
-    %% Information Markers 
+    %% Intelligent Control Agent
     if parameters.InternalMarkerCalculations
-        
         if sum(SimulationTime==parameters.Windows(:,2))>0
-            % Calculate markers 
-            idx = find(SimulationTime==parameters.Windows(:,2)); 
-            DecisionWindow = parameters.Windows(idx,:);
-            Mrk = ExternalObserver(SensedData, parameters, DecisionWindow, FullSet); 
-            
-            % C1: Cost per marker set and C2: Cumulative cost across total simulation 
-            EvalCost = [EvalCost; SimulationTime Mrk.M1.ComputeTime nan];
-            EvalCost(end,end) = sum(EvalCost(:,2));
-
-            % Save the markers! 
-            nameAfterDot = ['Iter',num2str(SimulationTime)];
-            MarkerSet.(nameAfterDot) = Mrk; 
-            
-            SwarmAgentAttnPoints = [SwarmAgentAttnPoints; Mrk.M4.AttentionPoints];
-            InteractionAgentProp = [InteractionAgentProp; Mrk.M2.InteractionFraction];
-
-            %% Task for Adam: Add sub-title with identified swarm type and current tactics selected (dynamic)
-            % M2, M4 Marker Analysis Visualisation
-            if Verbose
-                % figure
-                figure(1)
-                % swarm attention points 
-                subplot(2,2,2)
-                stackedplot(SwarmAgentAttnPoints) % need to go from the start of the vector! 
-                % swarm number of attention points 
-                subplot(2,2,3) 
-                plot(sum(SwarmAgentAttnPoints,2))
-                % swarm interaction summary values 
-                subplot(2,2,4)
-                if size(InteractionAgentProp,1) > 1
-                    contourf(InteractionAgentProp') 
-                end
-            end
-
-            % M1: classification: agent (capabilities and traits) and swarm (configuration) 
-            if parameters.OnlineClassifications
-                yfit = C1.predictFcn(Mrk.M1.ClassDataArray);
-                for i = 1:length(yfit)
-                    if parameters.VerboseBugger
-                        fprintf('Identified Agent No. %i: %s\n', i, yfit{i})
-                    end
-                    ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
-                end
-                fprintf('Classified Agent Distribution:\n')
-                summary(categorical(string(cell2mat(yfit))))
-
-                %% TASK: stage-2 classifier for swarm characterisation 
-                yfit2class = C2.predictFcn(Mrk.M3.L2norm);
-                if string(yfit2class) == "Heterogeneous" 
-                    yfitHe = C2_He.predictFcn(Mrk.M3.L2norm); 
-                    yfitHo = "NaN";
-                elseif string(yfit2class) == "Homogeneous" 
-                    yfitHo = C2_Ho.predictFcn(Mrk.M3.L2norm); 
-                    yfitHe = "NaN";
-                end
-                yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
-                yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);      
-                
-                fprintf('Identified Swarm Type (Classifier C2): %s\n', string(yfit2class))
-                fprintf('Identified Swarm Type (Classifier C2_He): %s\n', string(yfitHe))
-                fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
-                fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHe2))
-                fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHo2))
-                fprintf('Ground Truth Swarm Type: %s\n\n\n\n\n', parameters.ScenarioIndex)
-
-                %% Record performance data here and save it 
-                SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
-
-                % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
-                EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
-                % Save individual classification performances for later
-                MarkerClassPerfagent.(nameAfterDot) = ClassPredYagent; 
-            end
-
-            % marker-based intelligent agent 
-            if parameters.IntelligentControlAgent
-                % select tactic-pair strategy here
-                TacticPair = IntelligentMarkerControl(SensedData, Context, parameters);
-            end 
+            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, Ranges, RadiusSheep, NumSheepNeighbours, RadiusShepherd, NumberOfTimeSteps, Goal, GoalRadius, BoundarySize, NumberOfSheep, CohesionRange, SheepInitialRadius, SheepInitialGCMx, SheepInitialGCMy, NumberOfInitialClusters, NumberOfShepherds, ShepherdStep, MaximumSafetyDistance, DrivingCollectingPointsSafetyDistance, SheepDogInitialOffsetFromSheepLocation, PauseLength, ScenarioIndex, Scenario, SimulationRuns, ActionCommitmentTime, TargetForDOAT, FlagDOAT, FullSet, TranslationController, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DogSpeedDifferentialIndex, CollectingTacticIndex, DrivingTacticIndex, CollisionRangeIndex);%, intent, behaviourLibrary); 
         end
     end 
+
+
+
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 
@@ -705,15 +625,16 @@ output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
 if parameters.InternalMarkerCalculations
-    output.MarkerSet = MarkerSet;
-    output.MarkerEvalVOI.Cost = EvalCost;
+   output.IntelligentAgent = IntelligentAgent; 
+    %output.MarkerSet = IntelligentAgent.MarkerSet;
+    %output.MarkerEvalVOI.Cost = IntelligentAgent.EvalCost;
 end
-if parameters.OnlineClassifications
-    output.MarkerEvalVOI.Gain = EvalGain; 
-    output.MarkerEvalVOI.ClassPredYagent = MarkerClassPerfagent;
-    output.SwarmClassificationData = SwarmClassificationData;     
-    %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
-end
+% if parameters.OnlineClassifications
+%     output.MarkerEvalVOI.Gain = IntelligentAgent.EvalGain; 
+%     output.MarkerEvalVOI.ClassPredYagent = IntelligentAgent.MarkerClassPerfAgent;
+%     output.SwarmClassificationData = IntelligentAgent.SwarmClassificationData;     
+%     %output.MarkerEvalVOI.ClassPredYswarm = MarkerClassPerfswarm; 
+% end
 
 % %% Record the movie clip of the simulation run
 % SimulationRunClip = VideoWriter('SimulationClip.avi');

@@ -50,6 +50,7 @@ if parameters.Adam % Adam's isolated simulation parameters
     end
     % Markers 
     parameters.OnlineClassifications = 1; % if you want to classify in each time step
+    parameters.TacticPairSelection = 0; % 1 = select new tactic pair behaviour and 0 = do not select
     parameters.FullSet = true; 
     parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
     parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
