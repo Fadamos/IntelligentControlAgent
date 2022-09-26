@@ -13,7 +13,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         SignifThreshold = 0.05; % statistical significance threshold for testing
     end
     if ~exist('Verbose', 'var')
-        SignifThreshold = 0.05; % statistical significance threshold for testing
+        Verbose = 0; % 1 = thesis; 2 = journal
     end
     
     if Scenario == "S0"
@@ -305,6 +305,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.MissionSpeedRatio.mean   
         output.Metrics.MissionSpeedRatio.std
         output.Metrics.MissionSpeedRatio.ttest2
+    
     elseif Verbose == 2 % summary plotting for journal paper 
         fprintf('Scenario = %s\n', Scenario)
 

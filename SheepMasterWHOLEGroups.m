@@ -1,4 +1,4 @@
-function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2)
+function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube)
 
 % Author: Adam J Hepworth, Daniel P Baxter 
 % LastModified: 2022-09-25
@@ -149,9 +149,9 @@ end
 fprintf('Init simulation with Scenario = %s; Replicate = %i of %i\n', ScenarioIndex,SimulationRuns,parameters.replicates)
 fprintf('Collect = %s; Drive = %s; Speed = %s; Collision = %s\n', parameters.DogCollectingTacticIndex, parameters.DogDrivingTacticIndex, parameters.SheepDogVehicleSpeedLimit, parameters.CollisionRange)
 if parameters.InternalMarkerCalculations
-    fprintf('Marker Obs Size = %i; Marker Overlap = %f\n',parameters.WindowSize,parameters.Overlap)
+    fprintf('Marker Obs Size = %i; Marker Overlap = %.2f\n',parameters.WindowSize,parameters.Overlap)
 end
-fprintf('.....Proportion of Agent A1 = %f; A2 = %f; A3 = %f; A4 = %f; A5 = %f; A6 = %f; A7 = %f\n', Scenario(1), Scenario(2), Scenario(3), Scenario(4), Scenario(5) ,Scenario(6) ,Scenario(7))
+fprintf('.....Proportion of Agent A1 = %.2f; A2 = %.2f; A3 = %.2f; A4 = %.2f; A5 = %.2f; A6 = %.2f; A7 = %.2f\n', Scenario(1), Scenario(2), Scenario(3), Scenario(4), Scenario(5) ,Scenario(6) ,Scenario(7))
 
 
 %% Create initial population of sheep
@@ -586,7 +586,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     %% Intelligent Control Agent
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
-            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, Ranges, RadiusSheep, NumSheepNeighbours, RadiusShepherd, NumberOfTimeSteps, Goal, GoalRadius, BoundarySize, NumberOfSheep, CohesionRange, SheepInitialRadius, SheepInitialGCMx, SheepInitialGCMy, NumberOfInitialClusters, NumberOfShepherds, ShepherdStep, MaximumSafetyDistance, DrivingCollectingPointsSafetyDistance, SheepDogInitialOffsetFromSheepLocation, PauseLength, ScenarioIndex, Scenario, SimulationRuns, ActionCommitmentTime, TargetForDOAT, FlagDOAT, FullSet, TranslationController, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DogSpeedDifferentialIndex, CollectingTacticIndex, DrivingTacticIndex, CollisionRangeIndex);%, intent, behaviourLibrary); 
+            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData);
         end
     end 
 

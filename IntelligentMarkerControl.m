@@ -1,4 +1,4 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, Ranges, RadiusSheep, NumSheepNeighbours, RadiusShepherd, NumberOfTimeSteps, Goal, GoalRadius, BoundarySize, NumberOfSheep, CohesionRange, SheepInitialRadius, SheepInitialGCMx, SheepInitialGCMy, NumberOfInitialClusters, NumberOfShepherds, ShepherdStep, MaximumSafetyDistance, DrivingCollectingPointsSafetyDistance, SheepDogInitialOffsetFromSheepLocation, PauseLength, ScenarioIndex, Scenario, SimulationRuns, ActionCommitmentTime, TargetForDOAT, FlagDOAT, FullSet, TranslationController, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DogSpeedDifferentialIndex, CollectingTacticIndex, DrivingTacticIndex, CollisionRangeIndex)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData)
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
@@ -46,6 +46,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     
     % M1: classification: agent (capabilities and traits) and swarm (configuration) 
     if parameters.OnlineClassifications
+        fprintf('\n')
         yfit = C1.predictFcn(Mrk.M1.ClassDataArray);
         for i = 1:length(yfit)
             if parameters.VerboseBugger
@@ -53,7 +54,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
             end
             ClassPredYagent(i) = (string(yfit(i)) == parameters.SwarmAgentTypeDistribution(i));
         end
-        fprintf('Classified Agent Distribution:\n')
+        fprintf('\nClassified Agent Distribution:\n')
         summary(categorical(string(cell2mat(yfit))))
         
         
