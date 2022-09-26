@@ -126,8 +126,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         DrivingTacticIndex = char(parameters.TacticDriveReference(col)); % re-parameterise the agent for new collect and drive actions 
         CollectingTacticIndex = char(parameters.TacticCollectReference(row));
         NextTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
-        if ((NextTacticPair(1) == CurrentTacticPair(1)) && (NextTacticPair(1) == CurrentTacticPair(2))) % THIS IS NOT TESTING CORRECTLY, BUT CODE EXECUTES FINE
-            fprintf('Continuing with Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
+        if NextTacticPair == CurrentTacticPair 
+            fprintf('Continuing with Tactic Pair: {%s %s}.\n', NextTacticPair(1), NextTacticPair(2))
         else 
             fprintf('New Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
         end

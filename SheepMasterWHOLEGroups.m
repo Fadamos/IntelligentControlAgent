@@ -590,7 +590,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.TacticCollect;
             end
-            fprintf('Ok, now using %s and %s behaviours! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
+            fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
     end
 
