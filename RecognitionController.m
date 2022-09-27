@@ -30,7 +30,7 @@ warning
 parameters.military = 1; % 0 = classic shepherding; 1+ = military 
 % Context-aware intelligent agent setup
 parameters.NumberOfSheep = 20;
-parameters.NumberOfSteps = 100; %(630 + 20 * parameters.NumberOfSheep) * 2;
+parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 2;
 % select either military or classic shepherding visual scenario
 parameters.military = 1; % 0 = classic shepherding; 1+ = military 
 if parameters.IsolatedSim
