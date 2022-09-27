@@ -45,6 +45,7 @@ parameters.OnlineClassifications = 1; % if you want to classify in each time ste
 parameters.TacticPairSelection = 0; % 1 = select new tactic pair behaviour and 0 = do not select
 parameters.FullSet = true; 
 parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
+parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
 parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
 parameters.Overlap = 0.75; % = Proportion of overlap between each marker
 parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 

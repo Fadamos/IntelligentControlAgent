@@ -382,7 +382,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                  y_high = ShepherdMatrix(:,2) + DogImgSize(2)/2;%//Top edge of marker
                 % figure
                 figure(1)
-                if parameters.InternalMarkerCalculations      
+                if parameters.InternalMarkerCalculationsVisual      
                     subplot(2,2,1)
                 end
                 if ~parameters.military
@@ -464,7 +464,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     
                 axis([0 MaxX 0 MaxY]); 
                 title([ ...
-                    't: ', num2str(SimulationTime)])
+                    'Drive = ', DrivingTacticIndex,...
+                    ', Collect = ', CollectingTacticIndex,...
+                    ', t = ', num2str(SimulationTime)])
                 xlabel('X position')
                 ylabel('Y position')
                 grid minor
@@ -593,6 +595,12 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
     end
+
+    %% AGENT 2: BEHAVIOUR SELECTION BETWEEN COLLECT AND DRIVE 
+    % <SCRIPT HERE>
+
+    %% AGENT 2: MODULATION SELECTION SCRIPT HERE
+    % <SCRIPT HERE>
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 

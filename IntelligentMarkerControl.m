@@ -10,7 +10,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         parameters.behaviourLibrary = -1; % this needs to be the default TP eventually 
     end
     
-    %% External Observer Agent
+    %% AGENT 1: External Observer Agent
+    % <SCRIPT HERE>
     idx = find(SimulationTime==parameters.Windows(:,2)); 
     DecisionWindow = parameters.Windows(idx,:);
     Mrk = ExternalObserver(SensedData, parameters, DecisionWindow, FullSet); 
@@ -28,7 +29,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     
     %% Task for Adam: Add sub-title with identified swarm type and current tactics selected (dynamic)
     % M2, M4 Marker Analysis Visualisation
-    if Verbose
+    if parameters.InternalMarkerCalculationsVisual
         % figure
         figure(1)
         % swarm attention points 
@@ -96,7 +97,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     % very simple - select between best TP for Ho or He case only 
 
 
-    %% Context-Awareness Engine 
+    %% Context-Awareness Engine (part of agent 1)
     % 1 - select right metric/scenario sub-set
     % subcube takes the form [5 5 5] = [drive collect result]
     scenario = string(yfit2class); 
@@ -111,7 +112,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Assessed Scenario is Default\n')
     end 
     
-    %% Behaviour Selection Engine
+    %% Behaviour Parameterisation Engine
     % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
     viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
     [row,col] = find(viableTP == max(max(viableTP)));

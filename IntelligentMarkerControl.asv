@@ -10,7 +10,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         parameters.behaviourLibrary = -1; % this needs to be the default TP eventually 
     end
     
-    %% External Observer Agent
+    %% AGENT 1: External Observer Agent
+    % <SCRIPT HERE>
     idx = find(SimulationTime==parameters.Windows(:,2)); 
     DecisionWindow = parameters.Windows(idx,:);
     Mrk = ExternalObserver(SensedData, parameters, DecisionWindow, FullSet); 
@@ -70,12 +71,12 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         yfitHe2 = C2_He2.predictFcn(Mrk.M3.L2norm); 
         yfitHo2 = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
-        fprintf('Identified Swarm Type (Classifier C2): %s\n', string(yfit2class))
-        fprintf('Identified Swarm Type (ClassC2_He): %s\n', string(yfitHe))
-        fprintf('Identified Swarm Type (Classifier C2_Ho): %s\n', string(yfitHo))
-        fprintf('Identified Swarm Type (Classifier C2_He2): %s\n', string(yfitHe2))
-        fprintf('Identified Swarm Type (Classifier C2_Ho2): %s\n', string(yfitHo2))
-        fprintf('* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
+        fprintf('Identified Swarm Type (Tree Classifier    C2        {Homogeneous Heterogeneous})                      = %s\n', string(yfit2class))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_He     {S1, S2, S3, S4})                                 = %s\n', string(yfitHe))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho     {S5, S6, S7, S8, S9, S10, S11})                   = %s\n', string(yfitHo))
+        fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s\n', string(yfitHe2))
+        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s\n', string(yfitHo2))
+        fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
         
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
@@ -96,7 +97,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     % very simple - select between best TP for Ho or He case only 
 
 
-    %% Context-Awareness Engine 
+    %% Context-Awareness Engine (part of agent 1)
     % 1 - select right metric/scenario sub-set
     % subcube takes the form [5 5 5] = [drive collect result]
     scenario = string(yfit2class); 
