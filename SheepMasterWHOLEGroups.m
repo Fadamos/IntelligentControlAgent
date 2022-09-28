@@ -582,7 +582,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         end
     end
          
-    %% Intelligent Control Agent
+    %% AGENT 1: CONTEXT-AWARE INTELLIGENT DECISION SUPPORT SYSTEM 
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
@@ -597,10 +597,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     end
 
     %% AGENT 2: BEHAVIOUR SELECTION BETWEEN COLLECT AND DRIVE 
-    % <SCRIPT HERE>
+    % <SCRIPT HERE> -- cognitive agent 
 
-    %% AGENT 2: MODULATION SELECTION SCRIPT HERE
-    % <SCRIPT HERE>
+    %% AGENT 3: MODULATION SELECTION SCRIPT HERE
+    % <SCRIPT HERE> -- sheepdog agent 
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 
