@@ -20,9 +20,10 @@ end
 parameters.user = "Adam";
 
 % Sim params 
-parameters.Verbose = false; % visuals (true) or data only (false)
+parameters.ImageVisual = false; % true = images; false = scatter plot 
+parameters.Verbose = true; % visuals (true) or data only (false)
 parameters.VerboseBugger = false; % sys print for increased data debugging
-parameters.visual = 'classic'; % 'classic' if using original visuals for orientation
+parameters.visual = "classic"; % 'classic' if using original visuals for orientation
 % turn off warnings if not impacting code execution
 warning('off','all')
 warning

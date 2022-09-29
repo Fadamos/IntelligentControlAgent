@@ -332,11 +332,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             if FlagSigma % continue behaviour or calculate a new one 
                 if FlagSigma1 > SimulationTime % if drive
                     if FlagSigma1pos > SimulationTime % continue with current P_\beta
-                        ShepherdMatrix = ShepherdCollect(FlagSigma1SheepMat,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        ShepherdMatrix = ShepherdDrive(DriveSheepMatrix,ShepherdMatrix,Goal,...
+                            DriveRadiusSheep,DriveRadiusShepherd,DogSpeedDifferentialIndex,DriveCollectingTacticIndex,...
+                            DriveCohesionRange,SimulationTime,DriveDrivingTacticIndex,BoundarySize,DriveSheepIndexInBiggestCluster,...
+                            DriveNumberOfSheepInCluster,DriveBiggestClusterLCM);
                     else % new P_\beta
                         ShepherdMatrix = ShepherdDrive(SheepMatrix,ShepherdMatrix,Goal, ...
                             RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
@@ -356,18 +355,18 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         SwarmState = 1; % "Clustered";
                 elseif FlagSigma2 > SimulationTime % if collect 
                     if FlagSigma2pos > SimulationTime % continue with current P_\beta
-                        ShepherdMatrix = ShepherdCollect(FlagSigma2SheepMat,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        ShepherdMatrix = ShepherdCollect(CollectSheepMatrix,ShepherdMatrix,Goal,...
+                            CollectRadiusSheep,CollectRadiusShepherd,DogSpeedDifferentialIndex,CollectCollectingTacticIndex,...
+                            CollectCohesionRange,SimulationTime,CollectDrivingTacticIndex,BoundarySize,CollectSheepIndexInBiggestCluster,...
+                            CollectNumberOfSheepInCluster,CollectBiggestClusterLCM,CollectSheepNotInGoalIndex,CollectSheepNotInGoalNumber,...
+                            CollectSheepNotInGoalGCM);
                     else % new P_\beta
                         % Determine which sheep to collect as per Collect Tactic and collect that sheep
                         ShepherdMatrix = ShepherdCollect(SheepMatrix,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
+                        SheepNotInGoalGCM(SimulationTime,:));
                         FlagSigma2pos = SimulationTime + parameters.SigmaPositioningPoint; 
                     end
                     % Use this when want to convert shepherd heading from deg to compass 
@@ -391,6 +390,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
                         NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:));
                     FlagSigma1SheepMat = SheepMatrix; % save the current positions and use these over the period determined 
+                        DriveSheepMatrix = SheepMatrix;
+                        DriveShepherdMatrix = ShepherdMatrix;
+                        DriveGoal = Goal;
+                        DriveRadiusSheep = RadiusSheep;
+                        DriveRadiusShepherd = RadiusShepherd;
+                        DriveDogSpeedDifferentialIndex = DogSpeedDifferentialIndex;
+                        DriveCollectingTacticIndex = CollectingTacticIndex;
+                        DriveCohesionRange = CohesionRange;
+                        DriveSimulationTime = SimulationTime;
+                        DriveDrivingTacticIndex = DrivingTacticIndex;
+                        DriveBoundarySize = BoundarySize;
+                        DriveSheepIndexInBiggestCluster = SheepIndexInBiggestCluster;
+                        DriveNumberOfSheepInCluster = NumberOfSheepInCluster;
+                        DriveBiggestClusterLCM = BiggestClusterLCM(SimulationTime,:);
                     ShepherdIndividualBehaviour = 1; % "Driving";
                     FlagSigma1 = SimulationTime + parameters.SigmaLength;
                     FlagSigma1pos = SimulationTime + parameters.SigmaPositioningPoint; 
@@ -409,6 +422,23 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
                         SheepNotInGoalGCM(SimulationTime,:));
                     FlagSigma2SheepMat = SheepMatrix; % save the current positions and use these over the period determined 
+                        CollectSheepMatrix  = SheepMatrix;
+                        CollectShepherdMatrix  = ShepherdMatrix;
+                        CollectGoal  = Goal;
+                        CollectRadiusSheep  = RadiusSheep;
+                        CollectRadiusShepherd  = RadiusShepherd;
+                        CollectDogSpeedDifferentialIndex  = DogSpeedDifferentialIndex;
+                        CollectCollectingTacticIndex  = CollectingTacticIndex;
+                        CollectCohesionRange  = CohesionRange;
+                        CollectSimulationTime  = SimulationTime;
+                        CollectDrivingTacticIndex  = DrivingTacticIndex;
+                        CollectBoundarySize  = BoundarySize;
+                        CollectSheepIndexInBiggestCluster  = SheepIndexInBiggestCluster;
+                        CollectNumberOfSheepInCluster  = NumberOfSheepInCluster;
+                        CollectBiggestClusterLCM = BiggestClusterLCM(SimulationTime,:);
+                        CollectSheepNotInGoalIndex  = SheepNotInGoalIndex;
+                        CollectSheepNotInGoalNumber  = SheepNotInGoalNumber;
+                        CollectSheepNotInGoalGCM = SheepNotInGoalGCM(SimulationTime,:);               
                     ShepherdIndividualBehaviour = 2; % "Collecting";
                     FlagSigma2 = SimulationTime + parameters.SigmaLength;
                     FlagSigma2pos= SimulationTime + parameters.SigmaPositioningPoint; 
@@ -447,105 +477,126 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             
             %% Main Simulation Plot
             if Verbose
-                 x_low = ShepherdMatrix(:,1) - DogImgSize(1)/2; %//Left edge of marker
-                 x_high = ShepherdMatrix(:,1) + DogImgSize(1)/2;%//Right edge of marker
-                 y_low = ShepherdMatrix(:,2) - DogImgSize(2)/2; %//Bottom edge of marker
-                 y_high = ShepherdMatrix(:,2) + DogImgSize(2)/2;%//Top edge of marker
-                % figure
-                figure(1)
-                if parameters.InternalMarkerCalculationsVisual      
-                    subplot(2,2,1)
-                end
-                if ~parameters.military
-                    % paddock background 
-                    imagesc([MinX MaxX], [MinY MaxY],paddock)
-                    if parameters.visual == "flipped"
-                        set(gca,'YDir','normal'); % flips the y-axis back to [0 0] origin
+              if parameters.ImageVisual
+                     x_low = ShepherdMatrix(:,1) - DogImgSize(1)/2; %//Left edge of marker
+                     x_high = ShepherdMatrix(:,1) + DogImgSize(1)/2;%//Right edge of marker
+                     y_low = ShepherdMatrix(:,2) - DogImgSize(2)/2; %//Bottom edge of marker
+                     y_high = ShepherdMatrix(:,2) + DogImgSize(2)/2;%//Top edge of marker
+                    % figure
+                    figure(1)
+                    if parameters.InternalMarkerCalculationsVisual      
+                        subplot(2,2,1)
                     end
-                       
-                    hold on
-                end 
-                for SheepIter = 1:NumberOfSheep
-                    x_sheep_low = SheepMatrix(SheepIter,1) - SheepImgSize(1)/2; %//Left edge of marker
-                    x_sheep_high = SheepMatrix(SheepIter,1) + SheepImgSize(1)/2;%//Right edge of marker
-                    y_sheep_low = SheepMatrix(SheepIter,2) - SheepImgSize(2)/2; %//Bottom edge of marker
-                    y_sheep_high = SheepMatrix(SheepIter,2) + SheepImgSize(2)/2;%//Top edge of marker
-                    %fprintf('%i: XL=%f XH=%f YL=%f YH=%f\n',SimulationTime,x_sheep_low,x_sheep_high,y_sheep_low,y_sheep_high)
-                    try 
-                        imagesc([x_sheep_low x_sheep_high], [y_sheep_low y_sheep_high],SheepImg);
-                    catch 
-                        fprintf('Unable to render Agent %i at t=%i\n', SheepIter, SimulationTime            )
-                        fprintf('Error using image. Nan is not supported.\n')
+                    if ~parameters.military
+                        % paddock background 
+                        imagesc([MinX MaxX], [MinY MaxY],paddock)
+                        if parameters.visual == "flipped"
+                            set(gca,'YDir','normal'); % flips the y-axis back to [0 0] origin
+                        end
+                           
+                        hold on
                     end 
+                    for SheepIter = 1:NumberOfSheep
+                        x_sheep_low = SheepMatrix(SheepIter,1) - SheepImgSize(1)/2; %//Left edge of marker
+                        x_sheep_high = SheepMatrix(SheepIter,1) + SheepImgSize(1)/2;%//Right edge of marker
+                        y_sheep_low = SheepMatrix(SheepIter,2) - SheepImgSize(2)/2; %//Bottom edge of marker
+                        y_sheep_high = SheepMatrix(SheepIter,2) + SheepImgSize(2)/2;%//Top edge of marker
+                        %fprintf('%i: XL=%f XH=%f YL=%f YH=%f\n',SimulationTime,x_sheep_low,x_sheep_high,y_sheep_low,y_sheep_high)
+                        try 
+                            imagesc([x_sheep_low x_sheep_high], [y_sheep_low y_sheep_high],SheepImg);
+                        catch 
+                            fprintf('Unable to render Agent %i at t=%i\n', SheepIter, SimulationTime            )
+                            fprintf('Error using image. Nan is not supported.\n')
+                        end 
+                        if parameters.visual == "flipped"
+                            set(gca,'YDir','normal'); % flips the y-axis back to [0 0] origin
+                        end
+                        hold on
+                    end
+                    hold on
+                    if parameters.visual == "classic"
+                        imagesc([x_low x_high], [y_low y_high],DogImg)
+                    elseif parameters.visual == "flipped"
+                        % Hussein's code to direct the nose of the picture to the direstion
+                        Theta = asin(abs(ShepherdMatrix(1) / (0.01 + norm([ShepherdMatrix(1),ShepherdMatrix(2)])))) * 180 / pi;
+                        if ShepherdMatrix(1) > 0
+                            if ShepherdMatrix(2) < 0
+                                Theta = - Theta;
+                            end
+                        else
+                            if ShepherdMatrix(2) > 0
+                                Theta = 180 - Theta;
+                            else
+                                Theta = 180 + Theta;
+                            end
+                        end
+                        angle = Theta - 180;        
+                        img_i = imrotate(DogImg, angle);
+                        alpha_i = imrotate(DogM, angle);
+                        ImageHandler=image(ShepherdMatrix(1), ShepherdMatrix(2), img_i);
+                        ImageHandler.AlphaData = alpha_i;
+                        % End of Hussein's code to direct the nose
+                    end
+    
                     if parameters.visual == "flipped"
                         set(gca,'YDir','normal'); % flips the y-axis back to [0 0] origin
                     end
-                    hold on
-                end
-                hold on
-                if parameters.visual == "classic"
-                    imagesc([x_low x_high], [y_low y_high],DogImg)
-                elseif parameters.visual == "flipped"
-                    % Hussein's code to direct the nose of the picture to the direstion
-                    Theta = asin(abs(ShepherdMatrix(1) / (0.01 + norm([ShepherdMatrix(1),ShepherdMatrix(2)])))) * 180 / pi;
-                    if ShepherdMatrix(1) > 0
-                        if ShepherdMatrix(2) < 0
-                            Theta = - Theta;
-                        end
-                    else
-                        if ShepherdMatrix(2) > 0
-                            Theta = 180 - Theta;
-                        else
-                            Theta = 180 + Theta;
-                        end
-                    end
-                    angle = Theta - 180;        
-                    img_i = imrotate(DogImg, angle );
-                    alpha_i = imrotate(DogM, angle );
-                    ImageHandler=image(ShepherdMatrix(1), ShepherdMatrix(2), img_i);
-                    ImageHandler.AlphaData = alpha_i;
-                    % End of Hussein's code to direct the nose
-                end
-
-                if parameters.visual == "flipped"
-                    set(gca,'YDir','normal'); % flips the y-axis back to [0 0] origin
-                end
-                % red star marker - GCM 
-                plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10);
-                % blue diamond marker - LCM of largest cluster
-                plot(BiggestClusterLCM(SimulationTime,1),BiggestClusterLCM(SimulationTime,2),'bd','markersize',10) 
-                Theta = 0:pi/50:2*pi;
-                xunit = GoalRadius * cos(Theta) + Goal(1);
-                yunit = GoalRadius * sin(Theta) + Goal(2);
-                plot(Goal(1,1),Goal(1,2),'g*','markersize',10);
-                plot(xunit, yunit,'g');
-                %     image('XData', ShepherdMatrix(:,1),'YData', ShepherdMatrix(:,2),'CData', C) need to resize and flip
-                
-                % if the explanation flag is set, print the explanation to screen
-                if TranslationController == 1
-                    if explanationFlag == true
-                        % show the explanation for the specified amount of time
-                        if showTime <= parameters.ShowTimeLength
-                            txt = char(logic_stmt);
-                            text(0,MinY,txt)
-                        end
-                    end
-                end
-                hold off
+                    % red star marker - GCM 
+                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10);
+                    % blue diamond marker - LCM of largest cluster
+                    plot(BiggestClusterLCM(SimulationTime,1),BiggestClusterLCM(SimulationTime,2),'bd','markersize',10) 
+                    Theta = 0:pi/50:2*pi;
+                    xunit = GoalRadius * cos(Theta) + Goal(1);
+                    yunit = GoalRadius * sin(Theta) + Goal(2);
+                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10);
+                    plot(xunit, yunit,'g');
+                    %     image('XData', ShepherdMatrix(:,1),'YData', ShepherdMatrix(:,2),'CData', C) need to resize and flip
                     
-                axis([0 MaxX 0 MaxY]); 
-                title([ ...
-                    'Drive = ', DrivingTacticIndex,...
-                    ', Collect = ', CollectingTacticIndex,...
-                    ', t = ', num2str(SimulationTime)])
-                xlabel('X position')
-                ylabel('Y position')
-                grid minor
-                axis manual
-                axis([MinX MaxX MinY MaxY]); 
-                if parameters.visual == "classic"
-                    M(SimulationTime) = getframe; % Makes a movie clip from the plot
-                end 
+                    % if the explanation flag is set, print the explanation to screen
+                    if TranslationController == 1
+                        if explanationFlag == true
+                            % show the explanation for the specified amount of time
+                            if showTime <= parameters.ShowTimeLength
+                                txt = char(logic_stmt);
+                                text(0,MinY,txt)
+                            end
+                        end
+                    end
+                    hold off
+                        
+                    axis([0 MaxX 0 MaxY]); 
+                    title([ ...
+                        'Drive = ', DrivingTacticIndex,...
+                        ', Collect = ', CollectingTacticIndex,...
+                        ', t = ', num2str(SimulationTime)])
+                    xlabel('X position')
+                    ylabel('Y position')
+                    grid minor
+                    axis manual
+                    axis([MinX MaxX MinY MaxY]); 
+                    if parameters.visual == "classic"
+                        M(SimulationTime) = getframe; % Makes a movie clip from the plot
+                    end 
+              else 
+                  figure(1)
+                  scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
+                  hold on 
+                  scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 100, 'filled', 'MarkerEdgeColor',[201/255 223/255 236/255], 'MarkerFaceColor', [242/255 92/255 0/255], 'LineWidth', 1.5)
+                  hold on 
+                    % red star marker - GCM 
+                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10);
+                    % blue diamond marker - LCM of largest cluster
+                    plot(BiggestClusterLCM(SimulationTime,1),BiggestClusterLCM(SimulationTime,2),'bd','markersize',10) 
+                    Theta = 0:pi/50:2*pi;
+                    xunit = GoalRadius * cos(Theta) + Goal(1);
+                    yunit = GoalRadius * sin(Theta) + Goal(2);
+                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10);
+                    plot(xunit, yunit,'g');
+                    hold off 
+                    axis([0 MaxX 0 MaxY]); 
+                    pause(0.1)
+              end 
+
             end
             % Hold the explanation on the GUI for XX time
             showTime = showTime + 1;

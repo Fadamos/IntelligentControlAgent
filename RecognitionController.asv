@@ -20,9 +20,10 @@ end
 parameters.user = "Adam";
 
 % Sim params 
+parameters.ImageVisual = false; % true = images; fal
 parameters.Verbose = true; % visuals (true) or data only (false)
 parameters.VerboseBugger = false; % sys print for increased data debugging
-parameters.visual = "classic"; % 'classic' if using original visuals
+parameters.visual = "classic"; % 'classic' if using original visuals for orientation
 % turn off warnings if not impacting code execution
 warning('off','all')
 warning
@@ -55,6 +56,8 @@ parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a p
 parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
 parameters.replicates = 1; 
 
+parameters.TimePrinter = 0; % print time out or not
+
 %% Clocks 
 
 % Context-Aware Markers
@@ -62,9 +65,10 @@ parameters.WindowSize = 60; % number of observations for each marker window --> 
 parameters.Overlap = 0.75; % = Proportion of overlap between each marker
 
 % Behaviour re-assessment clock 
-parameters.BehaviourLength 
+parameters.SigmaLength = 15; % 1 = strombom; > 1 = novel 
 
 % Behaviour execution point re-assessment clock
+parameters.SigmaPositioningPoint = 10;  % 1 = strombom; > 1 = novel 
 
 parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
 parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
