@@ -332,11 +332,10 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             if FlagSigma % continue behaviour or calculate a new one 
                 if FlagSigma1 > SimulationTime % if drive
                     if FlagSigma1pos > SimulationTime % continue with current P_\beta
-                        ShepherdMatrix = ShepherdCollect(FlagSigma1SheepMat,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        ShepherdMatrix = ShepherdDrive(DriveSheepMatrix,ShepherdMatrix,Goal,...
+                            DriveRadiusSheep,DriveRadiusShepherd,DogSpeedDifferentialIndex,DriveCollectingTacticIndex,...
+                            DriveCohesionRange,SimulationTime,DriveDrivingTacticIndex,BoundarySize,DriveSheepIndexInBiggestCluster,...
+                            DriveNumberOfSheepInCluster,DriveBiggestClusterLCM);
                     else % new P_\beta
                         ShepherdMatrix = ShepherdDrive(SheepMatrix,ShepherdMatrix,Goal, ...
                             RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
@@ -356,18 +355,18 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         SwarmState = 1; % "Clustered";
                 elseif FlagSigma2 > SimulationTime % if collect 
                     if FlagSigma2pos > SimulationTime % continue with current P_\beta
-                        ShepherdMatrix = ShepherdCollect(FlagSigma2SheepMat,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        ShepherdMatrix = ShepherdCollect(CollectSheepMatrix,ShepherdMatrix,Goal,...
+                            CollectRadiusSheep,CollectRadiusShepherd,DogSpeedDifferentialIndex,CollectCollectingTacticIndex,...
+                            CollectCohesionRange,SimulationTime,CollectDrivingTacticIndex,BoundarySize,CollectSheepIndexInBiggestCluster,...
+                            CollectNumberOfSheepInCluster,CollectBiggestClusterLCM,CollectSheepNotInGoalIndex,CollectSheepNotInGoalNumber,...
+                            CollectSheepNotInGoalGCM);
                     else % new P_\beta
                         % Determine which sheep to collect as per Collect Tactic and collect that sheep
                         ShepherdMatrix = ShepherdCollect(SheepMatrix,ShepherdMatrix,Goal, ...
-                            RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                            CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                            NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                            SheepNotInGoalGCM(SimulationTime,:));
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
+                        SheepNotInGoalGCM(SimulationTime,:));
                         FlagSigma2pos = SimulationTime + parameters.SigmaPositioningPoint; 
                     end
                     % Use this when want to convert shepherd heading from deg to compass 
@@ -391,6 +390,20 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
                         NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:));
                     FlagSigma1SheepMat = SheepMatrix; % save the current positions and use these over the period determined 
+                        DriveSheepMatrix = SheepMatrix;
+                        DriveShepherdMatrix = ShepherdMatrix;
+                        DriveGoal = Goal;
+                        DriveRadiusSheep = RadiusSheep;
+                        DriveRadiusShepherd = RadiusShepherd;
+                        DriveDogSpeedDifferentialIndex = DogSpeedDifferentialIndex;
+                        DriveCollectingTacticIndex = CollectingTacticIndex;
+                        DriveCohesionRange = CohesionRange;
+                        DriveSimulationTime = SimulationTime;
+                        DriveDrivingTacticIndex = DrivingTacticIndex;
+                        DriveBoundarySize = BoundarySize;
+                        DriveSheepIndexInBiggestCluster = SheepIndexInBiggestCluster;
+                        DriveNumberOfSheepInCluster = NumberOfSheepInCluster;
+                        DriveBiggestClusterLCM = BiggestClusterLCM(SimulationTime,:);
                     ShepherdIndividualBehaviour = 1; % "Driving";
                     FlagSigma1 = SimulationTime + parameters.SigmaLength;
                     FlagSigma1pos = SimulationTime + parameters.SigmaPositioningPoint; 
@@ -409,6 +422,23 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
                         SheepNotInGoalGCM(SimulationTime,:));
                     FlagSigma2SheepMat = SheepMatrix; % save the current positions and use these over the period determined 
+                        CollectSheepMatrix  = SheepMatrix;
+                        CollectShepherdMatrix  = ShepherdMatrix;
+                        CollectGoal  = Goal;
+                        CollectRadiusSheep  = RadiusSheep;
+                        CollectRadiusShepherd  = RadiusShepherd;
+                        CollectDogSpeedDifferentialIndex  = DogSpeedDifferentialIndex;
+                        CollectCollectingTacticIndex  = CollectingTacticIndex;
+                        CollectCohesionRange  = CohesionRange;
+                        CollectSimulationTime  = SimulationTime;
+                        CollectDrivingTacticIndex  = DrivingTacticIndex;
+                        CollectBoundarySize  = BoundarySize;
+                        CollectSheepIndexInBiggestCluster  = SheepIndexInBiggestCluster;
+                        CollectNumberOfSheepInCluster  = NumberOfSheepInCluster;
+                        CollectBiggestClusterLCM = BiggestClusterLCM(SimulationTime,:);
+                        CollectSheepNotInGoalIndex  = SheepNotInGoalIndex;
+                        CollectSheepNotInGoalNumber  = SheepNotInGoalNumber;
+                        CollectSheepNotInGoalGCM = SheepNotInGoalGCM(SimulationTime,:);               
                     ShepherdIndividualBehaviour = 2; % "Collecting";
                     FlagSigma2 = SimulationTime + parameters.SigmaLength;
                     FlagSigma2pos= SimulationTime + parameters.SigmaPositioningPoint; 
@@ -548,20 +578,31 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         M(SimulationTime) = getframe; % Makes a movie clip from the plot
                     end 
               else 
-                  scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
-                  hold on 
-                  scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [242/255 92/ .7], 'LineWidth', 1.5)
-                  hold on 
+                    figure(1)
+                    scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
+                    hold on 
+                    scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 100, 'filled', 'MarkerEdgeColor',[201/255 223/255 236/255], 'MarkerFaceColor', [242/255 92/255 0/255], 'LineWidth', 1.5)
                     % red star marker - GCM 
-                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10);
+                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10)
                     % blue diamond marker - LCM of largest cluster
                     plot(BiggestClusterLCM(SimulationTime,1),BiggestClusterLCM(SimulationTime,2),'bd','markersize',10) 
+                    % drive/collect position
+                    plot(ShepherdMatrix(:,7), ShepherdMatrix(:,8), 'pentagram', 'markersize', 15)
                     Theta = 0:pi/50:2*pi;
                     xunit = GoalRadius * cos(Theta) + Goal(1);
                     yunit = GoalRadius * sin(Theta) + Goal(2);
-                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10);
+                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10,'MarkerFaceColor',[201/255 223/255 236/255]);
                     plot(xunit, yunit,'g');
                     hold off 
+                    axis([0 MaxX 0 MaxY]); 
+                    title(['Drive = ', DrivingTacticIndex,...
+                           ', Collect = ', CollectingTacticIndex,...
+                           ', t = ', num2str(SimulationTime),...
+                           '$\sigma$',ShepherdIndividualBehaviour,],...
+                           'Interpreter','latex','FontSize',16)
+                    legend({'$\Pi$','$\beta$','GCM','Largest Cluster LCM','$P_{\beta}$'},'Location','southoutside','Orientation','horizontal','Interpreter','latex','FontSize',16)
+                    pause(0.1)
+                    fprintf('t = %i with behaviour = %i ||| FlagSigma = %i ||| FlagSigma1 = %i FlagSigma2 = %i ||| FlagSigma1pos = %i FlagSigma2pos = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
               end 
 
             end

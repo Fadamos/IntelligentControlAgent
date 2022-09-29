@@ -451,7 +451,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     SwarmState = 2; % "Dispersed";
                 end
             end
-            fprintf('t = %i with behaviour = %i ||| FlagSigma = %i ||| FlagSigma1 = %i FlagSigma2 = %i ||| FlagSigma1pos = %i FlagSigma2pos = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
+            fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
 
             %% Calculate sheeps new positions
             % New heading of the sheep
@@ -578,22 +578,29 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         M(SimulationTime) = getframe; % Makes a movie clip from the plot
                     end 
               else 
-                  figure(1)
-                  scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
-                  hold on 
-                  scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 100, 'filled', 'MarkerEdgeColor',[201/255 223/255 236/255], 'MarkerFaceColor', [242/255 92/255 0/255], 'LineWidth', 1.5)
-                  hold on 
+                    figure(1)
+                    scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
+                    hold on 
+                    scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 100, 'filled', 'MarkerEdgeColor',[201/255 223/255 236/255], 'MarkerFaceColor', [242/255 92/255 0/255], 'LineWidth', 1.5)
                     % red star marker - GCM 
-                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10);
+                    plot(SheepNotInGoalGCM(SimulationTime,1),SheepNotInGoalGCM(SimulationTime,2),'r*','markersize',10)
                     % blue diamond marker - LCM of largest cluster
                     plot(BiggestClusterLCM(SimulationTime,1),BiggestClusterLCM(SimulationTime,2),'bd','markersize',10) 
+                    % drive/collect position
+                    plot(ShepherdMatrix(:,7), ShepherdMatrix(:,8), 'pentagram', 'markersize', 15)
                     Theta = 0:pi/50:2*pi;
                     xunit = GoalRadius * cos(Theta) + Goal(1);
                     yunit = GoalRadius * sin(Theta) + Goal(2);
-                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10);
+                    plot(Goal(1,1),Goal(1,2),'g*','markersize',10,'MarkerFaceColor',[201/255 223/255 236/255]);
                     plot(xunit, yunit,'g');
                     hold off 
                     axis([0 MaxX 0 MaxY]); 
+                    title(['$\sigma_1$ = ', DrivingTacticIndex,...
+                           ' $\sigma_2$ = ', CollectingTacticIndex,...
+                           ' t = ', num2str(SimulationTime),...
+                           ' $\sigma$ = ', num2str(ShepherdIndividualBehaviour)],...
+                           'Interpreter','latex','FontSize',16)
+                    legend({'$\Pi$','$\beta$','GCM','Largest Cluster LCM','$P^t_{\beta\sigma}$'},'Location','southoutside','Orientation','horizontal','Interpreter','latex','FontSize',16)
                     pause(0.1)
               end 
 

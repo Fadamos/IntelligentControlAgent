@@ -35,7 +35,7 @@ MaxY                 = BoundarySize(4);
 % ShepherdRepulsionFactor  = 500; % Shepherd to shepherd repulsion factor
 % ShepherdAttractionFactor = 0.5; % Shepherd to shepherd attraction factor
 
-ShepherdCollectiveUpdate = zeros(NumShepherds,6); % For simultaneous update of shepherds
+ShepherdCollectiveUpdate = zeros(NumShepherds,8); % For simultaneous update of shepherds
 
     for y = 1:NumShepherds
     
@@ -101,6 +101,9 @@ ShepherdCollectiveUpdate = zeros(NumShepherds,6); % For simultaneous update of s
             % Shepherd direction the position behind the furthest sheep + inter-shepherd attraction and repulsion
             ShepherdDirection = ShepherdCollectingPosition - GoalToShepherdVector;
             ShepherdCollectiveUpdate(y,6) = 1; % dog is running
+
+            ShepherdCollectiveUpdate(y,7) = ShepherdCollectingPosition(1,1);
+            ShepherdCollectiveUpdate(y,8) = ShepherdCollectingPosition(1,2);
     
         end
          
