@@ -67,7 +67,7 @@ PauseLength                             = parameters.PauseLength;
 ScenarioIndex                           = parameters.ScenarioIndex;
 Scenario                                = parameters.Scenario;
 SimulationRuns                          = parameters.Replicate;
-ActionCommitmentTime                    = parameters.ActionCommitTime;
+%ActionCommitmentTime                    = parameters.ActionCommitTime;
 TargetForDOAT                           = parameters.TargetForDOAT; % collection of agent IDs 
 FlagDOAT                                = 0; % boolean flag for agent at goal or not
 FullSet                                 = parameters.FullSet; % Complete marker set or not 
@@ -85,6 +85,9 @@ DrivingTacticIndex                      = parameters.DogDrivingTacticIndex;
 CollisionRangeIndex                     = parameters.CollisionRange;
 
 TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+
+FlagSigma                               = flase; 
+FlagSigmaLength                         = flase; 
 
 %% Assign the environment boundaries
 MinX = BoundarySize(1);
@@ -263,7 +266,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         fprintf('%d',SimulationTime)
 
         if SimulationTime > 1
-            TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
+            TacticPairRecord(end+1,:) = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
         end
 
         %% Calculate the number of sheep NOT in the goal area
@@ -316,40 +319,81 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         % calculate the number of sheep separated from the biggest cluster 
         NumberOfSheepSeparated = SheepNotInGoalNumber - NumberOfSheepInCluster;
 
-        %% For the time applied to the action
-        for ActionTime = 1:ActionCommitmentTime
+        %% Select the action
             BiggestClusterLCM(SimulationTime,:) = [mean(SheepMatrix(SheepIndexInBiggestCluster(:),1)),mean(SheepMatrix(SheepIndexInBiggestCluster(:),2))];
-            if NumberOfSheepInCluster(1) >= MinimumClusterSize
-                % Drive as per Drive Tactic
-                ShepherdMatrix = ShepherdDrive(SheepMatrix,ShepherdMatrix,Goal, ...
-                    RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                    CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                    NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:));
-                % Use this when want to convert shepherd heading from deg to compass 
-                % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
-                ShepherdIndividualBehaviour = 1; % "Driving";
-                if ShepherdMatrix(:,6) == 0
-                    ShepherdsIndividualAction = "Standing";
-                elseif ShepherdMatrix(:,6) == 1
-                    ShepherdsIndividualAction = "Running";
+            if FlagSigma % parameters.SigmaLength = 1; % 1 = strombom; > 1 = novel 
+                if FlagSigma1 > SimulationTime
+                    ShepherdMatrix = ShepherdDrive(SheepMatrix,ShepherdMatrix,Goal, ...
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:));
+                    % Use this when want to convert shepherd heading from deg to compass 
+                    % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
+                    ShepherdIndividualBehaviour = 1; % "Driving";
+                    FlagSigma = true; 
+                    if ShepherdMatrix(:,6) == 0
+                        ShepherdsIndividualAction = "Standing";
+                    elseif ShepherdMatrix(:,6) == 1
+                        ShepherdsIndividualAction = "Running";
+                    end
+                    SwarmState = 1; % "Clustered";
+                elseif FlagSigma2
+                    % Determine which sheep to collect as per Collect Tactic and collect that sheep
+                    ShepherdMatrix = ShepherdCollect(SheepMatrix,ShepherdMatrix,Goal, ...
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
+                        SheepNotInGoalGCM(SimulationTime,:));
+                    % Use this when want to convert shepherd heading from deg to compass 
+                    % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
+                    ShepherdIndividualBehaviour = 2; % "Collecting";
+                    FlagSigma1 = false; % drive = false
+                    FlagSigma2 = true; % collect = true
+                    if ShepherdMatrix(:,6) == 0
+                        ShepherdsIndividualAction = "Standing";
+                    elseif ShepherdMatrix(:,6) == 1
+                        ShepherdsIndividualAction = "Running";
+                    end
+                    SwarmState = 2; % "Dispersed";
                 end
-                SwarmState = 1; % "Clustered";
-            else 
-                % Determine which sheep to collect as per Collect Tactic and collect that sheep
-                ShepherdMatrix = ShepherdCollect(SheepMatrix,ShepherdMatrix,Goal, ...
-                    RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
-                    CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
-                    NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
-                    SheepNotInGoalGCM(SimulationTime,:));
-                % Use this when want to convert shepherd heading from deg to compass 
-                % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
-                ShepherdIndividualBehaviour = 2; % "Collecting";
-                if ShepherdMatrix(:,6) == 0
-                    ShepherdsIndividualAction = "Standing";
-                elseif ShepherdMatrix(:,6) == 1
-                    ShepherdsIndividualAction = "Running";
+            else % base case --> determine Collect or Drive here
+                if NumberOfSheepInCluster(1) >= MinimumClusterSize
+                    % Drive as per Drive Tactic
+                    ShepherdMatrix = ShepherdDrive(SheepMatrix,ShepherdMatrix,Goal, ...
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:));
+                    % Use this when want to convert shepherd heading from deg to compass 
+                    % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
+                    ShepherdIndividualBehaviour = 1; % "Driving";
+                    FlagSigmaBehaviour = 1; % drive
+                    FlagSigma = SimulationTime + ; 
+                    if ShepherdMatrix(:,6) == 0
+                        ShepherdsIndividualAction = "Standing";
+                    elseif ShepherdMatrix(:,6) == 1
+                        ShepherdsIndividualAction = "Running";
+                    end
+                    SwarmState = 1; % "Clustered";
+                else 
+                    % Determine which sheep to collect as per Collect Tactic and collect that sheep
+                    ShepherdMatrix = ShepherdCollect(SheepMatrix,ShepherdMatrix,Goal, ...
+                        RadiusSheep,RadiusShepherd,DogSpeedDifferentialIndex,CollectingTacticIndex, ...
+                        CohesionRange,SimulationTime,DrivingTacticIndex,BoundarySize,SheepIndexInBiggestCluster, ...
+                        NumberOfSheepInCluster,BiggestClusterLCM(SimulationTime,:),SheepNotInGoalIndex,SheepNotInGoalNumber, ...
+                        SheepNotInGoalGCM(SimulationTime,:));
+                    % Use this when want to convert shepherd heading from deg to compass 
+                    % ShepherdDirection = CompassHeadings(ShepherdMatrix(3));
+                    ShepherdIndividualBehaviour = 2; % "Collecting";
+                    FlagSigmaBehaviour = 2; % collect
+                    FlagSigma1 = false; % drive = false
+                    FlagSigma2 = true; % collect = true
+                    if ShepherdMatrix(:,6) == 0
+                        ShepherdsIndividualAction = "Standing";
+                    elseif ShepherdMatrix(:,6) == 1
+                        ShepherdsIndividualAction = "Running";
+                    end
+                    SwarmState = 2; % "Dispersed";
                 end
-                SwarmState = 2; % "Dispersed";
             end
 
             %% Calculate sheeps new positions
@@ -382,7 +426,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                  y_high = ShepherdMatrix(:,2) + DogImgSize(2)/2;%//Top edge of marker
                 % figure
                 figure(1)
-                if parameters.InternalMarkerCalculations      
+                if parameters.InternalMarkerCalculationsVisual      
                     subplot(2,2,1)
                 end
                 if ~parameters.military
@@ -464,7 +508,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     
                 axis([0 MaxX 0 MaxY]); 
                 title([ ...
-                    't: ', num2str(SimulationTime)])
+                    'Drive = ', DrivingTacticIndex,...
+                    ', Collect = ', CollectingTacticIndex,...
+                    ', t = ', num2str(SimulationTime)])
                 xlabel('X position')
                 ylabel('Y position')
                 grid minor
@@ -476,8 +522,6 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             end
             % Hold the explanation on the GUI for XX time
             showTime = showTime + 1;
-            
-        end
     
     if SheepNotInGoalNumber(1) == 0
         AllSheepWithinGoal = 1; % Call to terminate sim
@@ -580,7 +624,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         end
     end
          
-    %% Intelligent Control Agent
+    %% AGENT 1: CONTEXT-AWARE INTELLIGENT DECISION SUPPORT SYSTEM 
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
@@ -590,9 +634,15 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.TacticCollect;
             end
-            fprintf('Ok, using %s and %s now! \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
+            fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
     end
+
+    %% AGENT 2: BEHAVIOUR SELECTION BETWEEN COLLECT AND DRIVE 
+    % <SCRIPT HERE> -- cognitive agent 
+
+    %% AGENT 3: MODULATION SELECTION SCRIPT HERE
+    % <SCRIPT HERE> -- sheepdog agent 
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 
@@ -625,6 +675,7 @@ fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n
 output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
+output.TacticPairRecord = TacticPairRecord; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
     %output.MarkerSet = IntelligentAgent.MarkerSet;

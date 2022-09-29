@@ -46,8 +46,6 @@ parameters.TacticPairSelection = 0; % 1 = select new tactic pair behaviour and 0
 parameters.FullSet = true; 
 parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
 parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
-parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
-parameters.Overlap = 0.75; % = Proportion of overlap between each marker
 parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
 parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
 % Translator 
@@ -56,6 +54,18 @@ parameters.ShowTimeLength = 20; % length of time the explanation is shown on the
 parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
 parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
 parameters.replicates = 1; 
+
+%% Clocks 
+
+% Context-Aware Markers
+parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
+parameters.Overlap = 0.75; % = Proportion of overlap between each marker
+
+% Behaviour re-assessment clock 
+parameters.SigmaLength = 10; % 1 = strombom; > 1 = novel 
+
+% Behaviour execution point re-assessment clock
+parameters.SigmaPositioningPoint = 5;  % 1 = strombom; > 1 = novel 
 
 parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
 parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
@@ -88,7 +98,6 @@ parameters.SheepInitialCentreOfMass = [0.5*parameters.MaxX, 0.5*parameters.MaxY]
 
 %% Standard Agent Parameters 
 parameters.PauseLength = 0.0;
-parameters.ActionCommitTime = 1;
 parameters.SheepInitialRadius = 150; %100
 parameters.SheepInitialGCMx = parameters.MaxX /4;
 parameters.SheepInitialGCMy = parameters.MaxY /4;
