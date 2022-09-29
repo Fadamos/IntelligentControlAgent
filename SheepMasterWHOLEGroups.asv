@@ -451,7 +451,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     SwarmState = 2; % "Dispersed";
                 end
             end
-            fprintf('t = %i with behaviour = %i ||| FlagSigma = %i ||| FlagSigma1 = %i FlagSigma2 = %i ||| FlagSigma1pos = %i FlagSigma2pos = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
+            fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
 
             %% Calculate sheeps new positions
             % New heading of the sheep
@@ -595,14 +595,13 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     plot(xunit, yunit,'g');
                     hold off 
                     axis([0 MaxX 0 MaxY]); 
-                    title(['Drive = ', DrivingTacticIndex,...
-                           ', Collect = ', CollectingTacticIndex,...
-                           ', t = ', num2str(SimulationTime),...
-                           '$\sigma$',ShepherdIndividualBehaviour,],...
+                    title(['$\sigma_1$ = ', DrivingTacticIndex,...
+                           ' $\sigma_2$ = ', CollectingTacticIndex,...
+                           ' t = ', num2str(SimulationTime),...
+                           ' $\sigma$ = ', num2str(ShepherdIndividualBehaviour)],...
                            'Interpreter','latex','FontSize',16)
-                    legend({'$\Pi$','$\beta$','GCM','Largest Cluster LCM','$P_{\beta}$'},'Location','southoutside','Orientation','horizontal','Interpreter','latex','FontSize',16)
+                    legend({'$\Pi$','$\beta$','GCM','Largest Cluster LCM','$P^t_{\beta\sigma}$'},'Location','southoutside','Orientation','horizontal','Interpreter','latex','FontSize',16)
                     pause(0.1)
-                    fprintf('t = %i with behaviour = %i ||| FlagSigma = %i ||| FlagSigma1 = %i FlagSigma2 = %i ||| FlagSigma1pos = %i FlagSigma2pos = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
               end 
 
             end
