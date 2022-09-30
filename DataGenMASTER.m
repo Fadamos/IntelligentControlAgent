@@ -11,29 +11,16 @@
     % user set this
     parameters.Adam = true; 
     
-    if parameters.Adam 
-        parameters.ScenarioIterator = "S1";%["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11"]; % manually set per terminal! 
+        parameters.ScenarioIterator = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11"]; % manually set per terminal! 
         parameters.CollisonIterator = "L1"; 
         parameters.SheepDogVehicleSpeedIterator = "Dog1.5";
         parameters.CollectIterator = ["F2H","C2H","F2G","F2D","C2D"];
         parameters.DriveIterator = ["DOAT","DQH","DHH","DTQH","DAH"]; 
-        parameters.ObservationWindow = [20 40 60 80 100];
-        parameters.OverlapWindow = [0.25 0.5 0.75];
+        parameters.ObservationWindow = 60;%[20 40 60 80 100];
+        parameters.OverlapWindow = 0.25;%[0.25 0.5 0.75];
         parameters.replicates = 30; 
         parameters.BatchCurrentRun = 0; 
         parameters.BatchTotalRuns = (length(parameters.ScenarioIterator) * length(parameters.CollisonIterator) * length(parameters.SheepDogVehicleSpeedIterator) * length(parameters.CollectIterator) * length(parameters.DriveIterator) * parameters.replicates); % per terminal above i.e. = 750 
-    else
-        parameters.ScenarioIterator = "S5"; 
-        parameters.CollisonIterator = ["L1","L2","L3","L4"]; 
-        parameters.SheepDogVehicleSpeedIterator = ["Dog1.25","Dog1.5","Dog1.75","Dog2.0"];
-        parameters.CollectIterator = ["F2H","C2H","F2G","F2D","C2D"];
-        parameters.DriveIterator = ["DOAT","DQH","DHH","DTQH","DAH"]; 
-        parameters.ObservationWindow = [20 40 60 80 100];
-        parameters.OverlapWindow = [0.25 0.5 0.75];
-        parameters.replicates = 30; 
-        parameters.BatchCurrentRun = 0; 
-        parameters.BatchTotalRuns = (length(parameters.ScenarioIterator) * length(parameters.CollisonIterator) * length(parameters.SheepDogVehicleSpeedIterator) * length(parameters.CollectIterator) * length(parameters.DriveIterator) * parameters.replicates); % per terminal above i.e. = 750 
-    end 
     
     parameters.seedGen = randperm(1000000,30); % seed already generated here and saved as 'seed.mat' for 
     parameters.seed = parameters.seedGen;
@@ -151,14 +138,9 @@
                                     else 
                                         varName = [parameters.ScenarioIndex,'_r',num2str(parameters.BatchCurrentRun),'-',num2str(parameters.BatchTotalRuns),'_seed',num2str(parameters.seed(iterator)),'_L',num2str(collision),'_speed',num2str(dogspeed),'_tc',num2str(collect),'_td',num2str(drive)];       
                                     end
-                                    if parameters.Adam 
-                                        save(sprintf('/Users/ajh/GitHub/RecognitionController/SimData/DOE/%s.mat',varName),'output') % macOS-mini
+                                        save(sprintf('/Users/ajh/GitHub/IntelligentControlAgent/SimData/DOE/%s.mat',varName),'output') % macOS-mini
                                         %save(sprintf('/Users/fadamos/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % macOS-mbp
                                         %save(sprintf('C:/Users/danie/OneDrive/Documents/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % WIN
-                                    else 
-                                        save(sprintf('C:/Users/danie/OneDrive/Documents/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % WIN
-                                        save(sprintf('C:/Users/danie/OneDrive - UNSW/DataGenSIMULATION/%s.mat',varName),'output') % WIN
-                                    end
                                 %end
                             %end
                         end

@@ -5,7 +5,6 @@
 
 % parameters.Adam = true; --> This is now set in DataGenMASTER
 
-if parameters.Adam % Adam's isolated simulation parameters 
     parameters.user = "Adam";
     % Sim params 
     parameters.Verbose = false; % visuals (true) or data only (false)
@@ -20,31 +19,37 @@ if parameters.Adam % Adam's isolated simulation parameters
     parameters.NumberOfSheep = 20;
     parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 5;
     % Markers 
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
+    parameters.OnlineClassifications = 1; % if you want to classify in each time step
+    parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
     parameters.FullSet = true; 
-    parameters.InternalMarkerCalculations = 0; % 1 = observer or 0 = standard simulation
+    parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
+    parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
     parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
     parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
     % Translator 
     parameters.TranslationController = 0; % translation controller (1=true, 0=false)
-else % Daniel's isolated simulation parameters 
-    parameters.user = "Daniel";
-    % Sim params 
-    parameters.Verbose = false; % visuals (true) or data only (false)
-    parameters.VerboseBugger = false; % sys print for increased data debugging
-    % Markers
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
-    parameters.FullSet = true; 
-    parameters.InternalMarkerCalculations = 0; % 1 = observer or 0 = standard simulation
-    parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
-    % Translator 
-    parameters.TranslationController = 0; % translation controller (1=true, 0=false) 
-    % Context-aware intelligent agent setup
-    parameters.NumberOfSheep = 20;
-    parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 5;
-    % select either military or classic shepherding visual scenario
-    parameters.military = 1; % 0 = classic shepherding; 1+ = military 
-end
+    parameters.ShowTimeLength = 20; % length of time the explanation is shown on the screen
+    parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
+    parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
+    parameters.replicates = 1; 
+
+parameters.TimePrinter = 0; % print time out or not
+
+%% Clocks 
+
+% Context-Aware Markers
+parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
+parameters.Overlap = 0.75; % = Proportion of overlap between each marker
+
+% Behaviour re-assessment clock 
+parameters.SigmaLength = 15; % 1 = strombom; > 1 = novel 
+
+% Behaviour execution point re-assessment clock
+parameters.SigmaPositioningPoint = 10;  % 1 = strombom; > 1 = novel 
+
+parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
+parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
+
 
 %% Information Marker Calculations
 if parameters.IntelligentControlAgent
@@ -124,16 +129,29 @@ parameters.usr = [0    0    1    0    0    0    0]; % all values must = 1; see S
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    if parameters.Adam % Adam's isolated simulation parameters 
-        load('/Users/ajh/GitHub/RecognitionController/C1.mat')
-    else % Daniel's isolated simulation parameters 
-        load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
-    end
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
+end
+
+if parameters.BehaviourLibrary
+    fprintf('Loading behaviour data...\n')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/df.mat')
+    fprintf('Building behaviour library...\n')
+    datacube = BuildBehaviourLibrary(df);
+    fprintf('Complete...\n\n\n')
+else
+    fprintf('Loading behaviour library...\n')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/datacube.mat')
+    fprintf('Complete...\n\n\n')
 end
 
 %% Main Function Call
 if parameters.InternalMarkerCalculations
-     output = SheepMasterWHOLEGroups(parameters, C1);
+     output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube);
  else
      output = SheepMasterWHOLEGroups(parameters);
  end

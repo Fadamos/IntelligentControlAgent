@@ -43,7 +43,7 @@ if parameters.IsolatedSim
 end
 % Markers 
 parameters.OnlineClassifications = 1; % if you want to classify in each time step
-parameters.TacticPairSelection = 0; % 1 = select new tactic pair behaviour and 0 = do not select
+parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
 parameters.FullSet = true; 
 parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
 parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
