@@ -1,5 +1,5 @@
 % Author: Adam J Hepworth, Daniel P. Baxter
-% LastModified: 2022-08-10
+% LastModified: 2022-09-30
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.

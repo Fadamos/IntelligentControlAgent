@@ -451,7 +451,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     SwarmState = 2; % "Dispersed";
                 end
             end
-            fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
+            if parameters.Verbose 
+                fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
+            end
 
             %% Calculate sheeps new positions
             % New heading of the sheep
@@ -757,6 +759,7 @@ end
 fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n')
 
 % Save all data! 
+output.AgentSummary = 
 output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
