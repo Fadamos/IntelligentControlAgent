@@ -86,6 +86,7 @@ CollisionRangeIndex                     = parameters.CollisionRange;
 
 TacticPairRecord                        = {DrivingTacticIndex CollectingTacticIndex}; % record the tactic pair for each time step
 
+Flags                                   = []; 
 FlagSigma                               = 0; 
 FlagSigmaLength                         = 0; 
 FlagSigma1                              = 0; 
@@ -454,6 +455,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             if parameters.Verbose 
                 fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
             end
+            nameAfterDot = ['t',num2str(SimulationTime)]; 
+            Flags = [Flags; SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
+
 
             %% Calculate sheeps new positions
             % New heading of the sheep
@@ -715,11 +719,13 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
-            IntelligentAgent = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex);
+            nameAfterDot = ['t',num2str(SimulationTime)]; 
+            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex);
+            IntelligentAgent.(nameAfterDot).FLAGS = [SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
         
             if parameters.TacticPairSelection
-                DrivingTacticIndex = IntelligentAgent.TacticDrive;
-                CollectingTacticIndex = IntelligentAgent.TacticCollect;
+                DrivingTacticIndex = IntelligentAgent.(nameAfterDot).TacticDrive;
+                CollectingTacticIndex = IntelligentAgent.(nameAfterDot).TacticCollect;
             end
             fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
         end
@@ -759,11 +765,12 @@ end
 fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n')
 
 % Save all data! 
-output.AgentSummary = 
+%output.AgentSummary = 
 output.SensedData = SensedData;
 output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
 output.TacticPairRecord = TacticPairRecord; 
+output.Flags = Flags; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
 end
