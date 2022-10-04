@@ -279,7 +279,8 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.(MetricsFieldname{metric}).kstest2 = [rKS,cKS]; 
 
     end
-
+    
+    %% outputs for data
     if Verbose == 1 % for thesis output plotting 
         fprintf('Scenario = %s\n', Scenario)
         fprintf('Mission Success\n')
@@ -377,7 +378,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         fprintf('Str TP = 1 5\n')
     end 
 
-    %% Rank Matrix
+    %% Rank Matrix for RankSum Test 
     RankMatrix = nan(5,5,6);
     
     % MissionSuccess 
