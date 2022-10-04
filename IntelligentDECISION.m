@@ -244,7 +244,8 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         baselineData = output.Metrics.(MetricsFieldname{metric}).RawData.(baselineRef); 
 
         RawDataFieldname = fieldnames(output.Metrics.(MetricsFieldname{metric}).RawData); 
-
+        
+        %% Statistical Testing Code Here
         for iter = 1:numel(RawDataFieldname)
             testData = output.Metrics.(MetricsFieldname{metric}).RawData.(RawDataFieldname{iter});
             [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
