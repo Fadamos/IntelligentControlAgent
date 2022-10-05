@@ -403,3 +403,104 @@ end
 % the problem with rank-sum tests is that they do not indicate if a TP is 
 % good or bad over these scenarios, only if it is different to other TPs. 
 % This can confirm across multiple metrics our understanding; however
+
+% RANK-SUM PART 2 - Hussein Code 
+RankSumMatrix(:,:,:,1) = s0.RankSums.rnk;
+RankSumMatrix(:,:,:,2) = s_He.RankSums.rnk;
+RankSumMatrix(:,:,:,3) = s1.RankSums.rnk;
+RankSumMatrix(:,:,:,4) = s2.RankSums.rnk;
+RankSumMatrix(:,:,:,5) = s3.RankSums.rnk;
+RankSumMatrix(:,:,:,6) = s4.RankSums.rnk;
+RankSumMatrix(:,:,:,7) = s_Ho.RankSums.rnk;
+RankSumMatrix(:,:,:,8) = s5.RankSums.rnk;
+RankSumMatrix(:,:,:,9) = s6.RankSums.rnk;
+RankSumMatrix(:,:,:,10) = s7.RankSums.rnk;
+RankSumMatrix(:,:,:,11) = s8.RankSums.rnk;
+RankSumMatrix(:,:,:,12) = s9.RankSums.rnk;
+RankSumMatrix(:,:,:,13) = s10.RankSums.rnk;
+RankSumMatrix(:,:,:,14) = s11.RankSums.rnk;
+
+
+%% REQUIRES df and execution of code at the top of this script
+
+
+%% SCENARIO 1 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND ALL METRICS 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,:,:)), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.ALL.p = p; 
+RankSumData.ALL.h = h; 
+
+%% SCENARIO 2 - COMPARE ALL TPs ACROSS HOMOGENEOUS SCENARIOS AND ALL METRICS 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,:,[8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.Ho.p = p; 
+RankSumData.Ho.h = h; 
+
+%% SCENARIO 3 - COMPARE ALL TPs ACROSS HETEROGENEOUS SCENARIOS AND ALL METRICS 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,:,[3 4 5 6])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.He.p = p; 
+RankSumData.He.h = h; 

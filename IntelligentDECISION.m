@@ -435,10 +435,10 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         MetricsFieldname = fieldnames(output.Metrics); 
         %% Statistical Testing Code Here
         for iter = 1:numel(MetricsFieldname)
-            dat = output.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2; 
+            dat = output.Metrics.(MetricsFieldname{iter}).HypothTest.ttest2; 
             RankSums.h(iter,:) = [25-sum(dat(dat==1)) sum(dat(dat==1))];
-            RankSums.mid(iter,:) = [ceil(median(1:h(1))) ceil(median((h(1)+1):(h(1)+h(2))))];
-            RankSums.rnk(:,:,iter) = mid(1)*(dat==0) + mid(2)*(dat==1); 
+            RankSums.mid(iter,:) = [ceil(median(1:RankSums.h(iter,1))) ceil(median((RankSums.h(iter,1)+1):(RankSums.h(iter,1)+RankSums.h(iter,2))))];
+            RankSums.rnk(:,:,iter) = RankSums.mid(iter,1)*(dat==0) + RankSums.mid(iter,2)*(dat==1); 
         end
 
         output.RankSums = RankSums; 
