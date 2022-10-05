@@ -425,5 +425,23 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
 
     output.RankVector = RankVec; 
 
+    %% Hussein Rank Test Stuff 
+    % When possibility here is to define a threshold. 
+    % X is greater than Y does not mean X is better unless the difference is > the threshold. 
+    % When multiple TP are not better than a particular TP, they all get the same rank, which is the mid point in their range. 
+    % For example, 1, 2, 3, 4, 5, 10 --> assuming a threshold is 4, only 10 is higher than 5, so the ranks will be 3, 3, 3, 3, 3, 6.
+
+    % 1-  conduct t-test and select each dataset 
+        MetricsFieldname = fieldnames(output.Metrics); 
+        %% Statistical Testing Code Here
+        for iter = 1:numel(MetricsFieldname)
+            dat = output.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2; 
+            RankSums.h(iter,:) = [25-sum(dat(dat==1)) sum(dat(dat==1))];
+            RankSums.mid(iter,:) = [ceil(median(1:h(1))) ceil(median((h(1)+1):(h(1)+h(2))))];
+            RankSums.rnk(:,:,iter) = mid(1)*(dat==0) + mid(2)*(dat==1); 
+        end
+
+        output.RankSums = RankSums; 
+
 end 
 %

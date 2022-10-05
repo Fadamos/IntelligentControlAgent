@@ -1,6 +1,6 @@
 function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold, Verbose)
     % Author: Adam J Hepworth
-    % LastModified: 2022-08-28
+    % LastModified: 2022-09-23
     % Explanaton: Intelligent control agent data library 
 
     % collect = C2D  C2H  F2D  F2G  F2H
@@ -13,7 +13,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         SignifThreshold = 0.05; % statistical significance threshold for testing
     end
     if ~exist('Verbose', 'var')
-        SignifThreshold = 0.05; % statistical significance threshold for testing
+        Verbose = 0; % 1 = thesis; 2 = journal
     end
     
     if Scenario == "S0"
@@ -244,7 +244,8 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         baselineData = output.Metrics.(MetricsFieldname{metric}).RawData.(baselineRef); 
 
         RawDataFieldname = fieldnames(output.Metrics.(MetricsFieldname{metric}).RawData); 
-
+        
+        %% Statistical Testing Code Here
         for iter = 1:numel(RawDataFieldname)
             testData = output.Metrics.(MetricsFieldname{metric}).RawData.(RawDataFieldname{iter});
             [hT, pT, ciT] = ttest2(table2array(baselineData(:,1)), table2array(testData(:,1)), 'Alpha', SignifThreshold);
@@ -278,7 +279,8 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.(MetricsFieldname{metric}).kstest2 = [rKS,cKS]; 
 
     end
-
+    
+    %% outputs for data
     if Verbose == 1 % for thesis output plotting 
         fprintf('Scenario = %s\n', Scenario)
         fprintf('Mission Success\n')
@@ -305,6 +307,7 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         output.Metrics.MissionSpeedRatio.mean   
         output.Metrics.MissionSpeedRatio.std
         output.Metrics.MissionSpeedRatio.ttest2
+    
     elseif Verbose == 2 % summary plotting for journal paper 
         fprintf('Scenario = %s\n', Scenario)
 
@@ -375,20 +378,8 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
         fprintf('Str TP = 1 5\n')
     end 
 
-
-
-    %% Rank Matrix
+    %% Rank Matrix for RankSum Test 
     RankMatrix = nan(5,5,6);
-
-
-
-               = MissionSuccess; 
-     = MissionDecisionStability; 
-    output.Metrics.SwarmDecisionStability.mean   = SwarmDecisionStability; 
-    output.Metrics.MissionSwarmStability.mean    = MissionSwarmStability;
-    output.Metrics.MissionCompletionRate.mean    = MissionCompletionRate;
-    output.Metrics.MissionSpeedRatio.mean        = MissionSpeedRatio; 
-
     
     % MissionSuccess 
     [~, vv] = sort(output.Metrics.MissionSuccess.mean(:),'descend');
@@ -403,27 +394,27 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     RankMatrix(:,:,2) = RankMat; 
 
     % SwarmDecisionStability
-    [~, vv] = sort(s1.Metrics.MissionDecisionStability.mean(:),'ascend');
+    [~, vv] = sort(output.Metrics.SwarmDecisionStability.mean(:),'ascend');
     [~, vv] = sort(vv);
-    RankMat = reshape(vv, size(s1.Metrics.MissionDecisionStability.mean));
+    RankMat = reshape(vv, size(output.Metrics.SwarmDecisionStability.mean));
     RankMatrix(:,:,3) = RankMat; 
     
     % MissionSwarmStability 
-    [~, vv] = sort(s1.Metrics.MissionDecisionStability.mean(:),'descend');
+    [~, vv] = sort(output.Metrics.MissionSwarmStability.mean(:),'descend');
     [~, vv] = sort(vv);
-    RankMat = reshape(vv, size(s1.Metrics.MissionDecisionStability.mean));
+    RankMat = reshape(vv, size(output.Metrics.MissionSwarmStability.mean));
     RankMatrix(:,:,4) = RankMat; 
 
     % MissionCompletionRate
-    [~, vv] = sort(s1.Metrics.MissionDecisionStability.mean(:),'ascend');
+    [~, vv] = sort(output.Metrics.MissionCompletionRate.mean(:),'ascend');
     [~, vv] = sort(vv);
-    RankMat = reshape(vv, size(s1.Metrics.MissionDecisionStability.mean));
+    RankMat = reshape(vv, size(output.Metrics.MissionCompletionRate.mean));
     RankMatrix(:,:,5) = RankMat; 
     
     % MissionSpeedRatio
-    [~, vv] = sort(s1.Metrics.MissionDecisionStability.mean(:),'descend');
+    [~, vv] = sort(output.Metrics.MissionSpeedRatio.mean(:),'descend');
     [~, vv] = sort(vv);
-    RankMat = reshape(vv, size(s1.Metrics.MissionDecisionStability.mean));
+    RankMat = reshape(vv, size(output.Metrics.MissionSpeedRatio.mean));
     RankMatrix(:,:,6) = RankMat; 
 
     output.RankMatrix = RankMatrix; 
@@ -433,6 +424,24 @@ function output = IntelligentDECISION(library, Intent, Scenario, SignifThreshold
     end
 
     output.RankVector = RankVec; 
+
+    %% Hussein Rank Test Stuff 
+    % When possibility here is to define a threshold. 
+    % X is greater than Y does not mean X is better unless the difference is > the threshold. 
+    % When multiple TP are not better than a particular TP, they all get the same rank, which is the mid point in their range. 
+    % For example, 1, 2, 3, 4, 5, 10 --> assuming a threshold is 4, only 10 is higher than 5, so the ranks will be 3, 3, 3, 3, 3, 6.
+
+    % 1-  conduct t-test and select each dataset 
+        MetricsFieldname = fieldnames(output.Metrics); 
+        %% Statistical Testing Code Here
+        for iter = 1:numel(MetricsFieldname)
+            dat = output.Metrics.(MetricsFieldname{metric}).HypothTest.ttest2; 
+            h = [25-sum(dat(dat==1)) sum(dat(dat==1))];
+            mid = [ceil(median(1:h(1))) ceil(median((h(1)+1):(h(1)+h(2))))];
+            rnk = mid(1)*(dat==0) + mid(2)*(dat==1); 
+        end
+
+        output.RankSums = RankSums; 
 
 end 
 %
