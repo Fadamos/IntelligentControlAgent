@@ -736,71 +736,25 @@ size(ResMat)
 
 A = double(~ResMat); % invert numbers 
 
-%% PLOT MASTER BHOT 
+%% M1 
 set(groot,'defaulttextinterpreter','latex');  
 set(groot, 'defaultAxesTickLabelInterpreter','latex');  
 set(groot, 'defaultLegendInterpreter','latex'); 
 
-figure(1) 
-subplot(2,3,1)
-map = [254/255 254/255 254/255
-       1/255 1/255 1/255];
+%figure(1) 
+%subplot(2,3,1)
+map = [61/255 169/255 169/255
+       0/255 154/255 68/255];
 h = heatmap(A(:,:,1), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
 h.Title = {'Metric M1'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
-% x = gca; 
-% ax.XData = ["s_1" "s_2" "s_3" "s_4" "s_5" "s_6" "s_7" "s_8" "s_9" "s_{10}" "s_{11}"];
-% ax.YData = ["TP_1" "TP_2" "TP_3" "TP_4" "TP_5" "TP_6" "TP_7" "TP_8" "TP_9" "TP_{10}" "TP_{11}" "TP_{12}" "TP_{13}" "TP_{14}" "TP_{15}" "TP_{16}" "TP_{17}" "TP_{18}" "TP_{19}" "TP_{20}" "TP_{21}" "TP_{22}" "TP_{23}" "TP_{24}" "TP_{25}"];
-% 
-% h.NodeChildren(3).XAxis.Label.Interpreter = 'latex';
-% h.NodeChildren(3).YAxis.Label.Interpreter = 'latex';
-% h.NodeChildren(3).Title.Interpreter = 'latex';
+x = gca; 
+ax.XData = ["s_1" "s_2" "s_3" "s_4" "s_5" "s_6" "s_7" "s_8" "s_9" "s_{10}" "s_{11}"];
+ax.YData = ["TP_1" "TP_2" "TP_3" "TP_4" "TP_5" "TP_6" "TP_7" "TP_8" "TP_9" "TP_{10}" "TP_{11}" "TP_{12}" "TP_{13}" "TP_{14}" "TP_{15}" "TP_{16}" "TP_{17}" "TP_{18}" "TP_{19}" "TP_{20}" "TP_{21}" "TP_{22}" "TP_{23}" "TP_{24}" "TP_{25}"];
 
-subplot(2,3,2)
-h = heatmap(A(:,:,2), 'CellLabelColor','none', 'Colormap', map);
-h.XLabel = {'Scenario'};
-h.YLabel = {'Tactic Pair'};
-h.Title = {'Metric M2'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
+h.NodeChildren(3).XAxis.Label.Interpreter = 'latex';
+h.NodeChildren(3).YAxis.Label.Interpreter = 'latex';
+h.NodeChildren(3).Title.Interpreter = 'latex';
 
-subplot(2,3,3)
-h = heatmap(A(:,:,3), 'CellLabelColor','none', 'Colormap', map);
-h.XLabel = {'Scenario'};
-h.YLabel = {'Tactic Pair'};
-h.Title = {'Metric M3'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
 
-subplot(2,3,4)
-h = heatmap(A(:,:,4), 'CellLabelColor','none', 'Colormap', map);
-h.XLabel = {'Scenario'};
-h.YLabel = {'Tactic Pair'};
-h.Title = {'Metric M4'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
-
-subplot(2,3,5)
-h = heatmap(A(:,:,5), 'CellLabelColor','none', 'Colormap', map);
-h.XLabel = {'Scenario'};
-h.YLabel = {'Tactic Pair'};
-h.Title = {'Metric M5'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
-
-subplot(2,3,6)
-h = heatmap(A(:,:,6), 'CellLabelColor','none', 'Colormap', map);
-h.XLabel = {'Scenario'};
-h.YLabel = {'Tactic Pair'};
-h.Title = {'Metric M6'};
-h.GridVisible = 'off';
-h.ColorbarVisible = 'off';
-h.FontSize = 14;
