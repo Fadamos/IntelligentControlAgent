@@ -14,6 +14,21 @@ s9      = IntelligentDECISION(df, 1, "S9", 0.05, 1);
 s10     = IntelligentDECISION(df, 1, "S10", 0.05, 1);
 s11     = IntelligentDECISION(df, 1, "S11", 0.05, 1);
 
+dat.s0 = s0; 
+dat.s1 = s1; 
+dat.s2 = s2; 
+dat.s3 = s3; 
+dat.s4 = s4; 
+dat.s5 = s5; 
+dat.s6 = s6; 
+dat.s7 = s7; 
+dat.s8 = s8; 
+dat.s9 = s9;
+dat.s10 = s10; 
+dat.s11 = s11;
+dat.s_He = s_He; 
+dat.s_Ho = s_Ho; 
+
 MatData = []; 
 MatData1 = []; 
 
@@ -404,7 +419,10 @@ end
 % good or bad over these scenarios, only if it is different to other TPs. 
 % This can confirm across multiple metrics our understanding; however
 
-% RANK-SUM PART 2 - Hussein Code 
+%% RANK-SUM PART 2 - Hussein Code 
+
+% requires df --> sX at the top of the page and then execute this 
+
 RankSumMatrix(:,:,:,1) = s0.RankSums.rnk;
 RankSumMatrix(:,:,:,2) = s_He.RankSums.rnk;
 RankSumMatrix(:,:,:,3) = s1.RankSums.rnk;
@@ -421,9 +439,6 @@ RankSumMatrix(:,:,:,13) = s10.RankSums.rnk;
 RankSumMatrix(:,:,:,14) = s11.RankSums.rnk;
 
 
-%% REQUIRES df and execution of code at the top of this script
-
-
 %% SCENARIO 1 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND ALL METRICS 
 clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
 
@@ -432,7 +447,7 @@ TransMat = [];
 
 for COLLECT = 1:5 
     for DRIVE = 1:5
-            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,:,:)), [], 1)];
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,:,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
     end
 end
 
@@ -504,3 +519,233 @@ h
 
 RankSumData.He.p = p; 
 RankSumData.He.h = h; 
+
+%% SCENARIO 4 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M1 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,1,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M1.p = p; 
+RankSumData.M1.h = h; 
+
+%% SCENARIO 5 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M2 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,2,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M2.p = p; 
+RankSumData.M2.h = h; 
+
+%% SCENARIO 6 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M3 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,3,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M3.p = p; 
+RankSumData.M3.h = h; 
+
+%% SCENARIO 7 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M4
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,4,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M4.p = p; 
+RankSumData.M4.h = h; 
+
+%% SCENARIO 8 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M5 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,5,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M5.p = p; 
+RankSumData.M5.h = h; 
+
+%% SCENARIO 9 - COMPARE ALL TPs ACROSS ALL SCENARIOS AND M6 
+clear sumary h p COLLECT DRIVE METRIC SCENARIO TransMat SOURCE TARGET
+
+% Transform 5x5 TP matrix to 25x25 matrix 
+TransMat = []; 
+
+for COLLECT = 1:5 
+    for DRIVE = 1:5
+            TransMat = [TransMat, reshape(squeeze(RankSumMatrix(COLLECT,DRIVE,6,[3 4 5 6 8 9 10 11 12 13 14])), [], 1)];
+    end
+end
+
+TransMat
+
+for SOURCE = 1:size(TransMat,2)
+    for TARGET = 1:size(TransMat,2)
+        if SOURCE ~= TARGET
+            [p(SOURCE,TARGET), h(SOURCE,TARGET)] = ranksum(TransMat(:,SOURCE), TransMat(:,TARGET));
+        end
+    end
+end
+p
+h
+
+RankSumData.M6.p = p; 
+RankSumData.M6.h = h; 
+
+%% PLOT TIME 
+
+figure(1)
+subplot(3,3,1)
+spy(triu(RankSumData.ALL.h))
+title('All metrics and all scenarios')
+subplot(3,3,2)
+spy(triu(RankSumData.He.h))
+title('All metrics and Heterogeneous Scenarios')
+subplot(3,3,3)
+spy(triu(RankSumData.Ho.h))
+title('All metrics and Homogeneous Scenarios')
+subplot(3,3,4)
+spy(triu(RankSumData.M1.h))
+title('M1 All Scenarios')
+subplot(3,3,5)
+spy(triu(RankSumData.M2.h))
+title('M2 All Scenarios')
+subplot(3,3,6)
+spy(triu(RankSumData.M3.h))
+title('M3 All Scenarios')
+subplot(3,3,7)
+spy(triu(RankSumData.M4.h))
+title('M4 All Scenarios')
+subplot(3,3,8)
+spy(triu(RankSumData.M5.h))
+title('M5 All Scenarios')
+subplot(3,3,9)
+spy(triu(RankSumData.M6.h))
+title('M6 All Scenarios')
+
+
+% NOW >>> COMPARE THE SIMILARITY BETWEEN EACH TRIU() MATRIX AND REPORT FOR EACH METRIC/SCENARIO TYPE 
+
+
+
+
+%% Colour Plots for ttest results
+
+load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/dat.mat')
+
+scenariosFn = fieldnames(dat);
+metricsFn = fieldnames(dat.s0.Metrics);
+
+for METRIC = 1:numel(metricsFn)
+    for SCENARIO = 2:12
+        ResMat(:,SCENARIO-1,METRIC) = reshape(dat.(scenariosFn{SCENARIO}).Metrics.(metricsFn{METRIC}).HypothTest.ttest2, [], 1);
+    end
+end
+
+size(ResMat)
+
+A = double(~ResMat); % invert numbers 
+
+%% M1 
+set(groot,'defaulttextinterpreter','latex');  
+set(groot, 'defaultAxesTickLabelInterpreter','latex');  
+set(groot, 'defaultLegendInterpreter','latex'); 
+
+%figure(1) 
+%subplot(2,3,1)
+h = heatmap(A(:,:,1), 'CellLabelColor','none');
+h.XLabel = {'Scenario'};
+ax = gca; 
+ax.XData = ["s_1" "s_2" "s_3" "s_4" "s_5" "s_6" "s_7" "s_8" "s_9" "s_10" "s_{11}"] 
+
+
