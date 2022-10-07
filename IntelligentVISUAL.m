@@ -737,14 +737,15 @@ size(ResMat)
 A = double(~ResMat); % invert numbers 
 
 %% PLOT MASTER BHOT 
-set(groot,'defaulttextinterpreter','latex');  
-set(groot, 'defaultAxesTickLabelInterpreter','latex');  
-set(groot, 'defaultLegendInterpreter','latex'); 
+%set(groot,'defaulttextinterpreter','latex');  
+%set(groot, 'defaultAxesTickLabelInterpreter','latex');  
+%set(groot, 'defaultLegendInterpreter','latex'); 
 
-figure(1) 
-subplot(2,3,1)
 map = [254/255 254/255 254/255
        1/255 1/255 1/255];
+
+figure(1) 
+subplot(3,2,1)
 h = heatmap(A(:,:,1), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
@@ -760,7 +761,7 @@ h.FontSize = 14;
 % h.NodeChildren(3).YAxis.Label.Interpreter = 'latex';
 % h.NodeChildren(3).Title.Interpreter = 'latex';
 
-subplot(2,3,2)
+subplot(3,2,2)
 h = heatmap(A(:,:,2), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
@@ -769,7 +770,7 @@ h.GridVisible = 'off';
 h.ColorbarVisible = 'off';
 h.FontSize = 14;
 
-subplot(2,3,3)
+subplot(3,2,3)
 h = heatmap(A(:,:,3), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
@@ -778,7 +779,7 @@ h.GridVisible = 'off';
 h.ColorbarVisible = 'off';
 h.FontSize = 14;
 
-subplot(2,3,4)
+subplot(3,2,4)
 h = heatmap(A(:,:,4), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
@@ -787,7 +788,7 @@ h.GridVisible = 'off';
 h.ColorbarVisible = 'off';
 h.FontSize = 14;
 
-subplot(2,3,5)
+subplot(3,2,5)
 h = heatmap(A(:,:,5), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
@@ -796,7 +797,7 @@ h.GridVisible = 'off';
 h.ColorbarVisible = 'off';
 h.FontSize = 14;
 
-subplot(2,3,6)
+subplot(3,2,6)
 h = heatmap(A(:,:,6), 'CellLabelColor','none', 'Colormap', map);
 h.XLabel = {'Scenario'};
 h.YLabel = {'Tactic Pair'};
