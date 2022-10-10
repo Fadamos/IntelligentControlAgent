@@ -79,23 +79,13 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s Pr(%.2f) \n', string(yfitHe2), max(yfitHe2SCORE))
         fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s Pr(%.2f) \n', string(yfitHo2), max(yfitHo2SCORE))
         fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
+        
+        ClassPredict.C1.yfit = yfit; 
+        ClassPredict.C1.
 
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
         
-        ClassPredict.C1.yfit = yfit; 
-        ClassPredict.C1.score = yfitSCORE; 
-        ClassPredict.C2.yfit = yfit2class; 
-        ClassPredict.C2.score = yfit2classSCORE; 
-        ClassPredict.C2He.yfit = yfitHe; 
-        ClassPredict.C2He.score = yfitHeSCORE; 
-        ClassPredict.C2Ho.yfit = yfitHo;
-        ClassPredict.C2Ho.score = yfitHoSCORE;
-        ClassPredict.C2He2.yfit = yfitHe2;
-        ClassPredict.C2He2.score = yfitHe2SCORE;
-        ClassPredict.C2Ho2.yfit = yfitHo2;
-        ClassPredict.C2Ho2.score = yfitHo2SCORE;
-
         % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
         % Save individual classification performances for later
@@ -155,7 +145,6 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     output.EvalCost = EvalCost; 
     output.SwarmAgentAttnPoints = SwarmAgentAttnPoints; 
     output.InteractionAgentProp = InteractionAgentProp; 
-    output.ClassPredict = ClassPredict; 
     
     % onlineclassifications
     if parameters.OnlineClassifications
