@@ -61,15 +61,15 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
-        if string(yfit2class) == "Heterogeneous" 
+        %if string(yfit2class) == "Heterogeneous" 
             [yfitHe, yfitHeSCORE]  = C2_He.predictFcn(Mrk.M3.L2norm); 
-            yfitHo = "NaN";
-            yfitHoSCORE = 0; 
-        elseif string(yfit2class) == "Homogeneous" 
+            %yfitHo = "NaN";
+            %yfitHoSCORE = 0; 
+        %elseif string(yfit2class) == "Homogeneous" 
             [yfitHo, yfitHoSCORE] = C2_Ho.predictFcn(Mrk.M3.L2norm); 
-            yfitHe = "NaN";
-            yfitHeSCORE = 0; 
-        end
+            %yfitHe = "NaN";
+            %yfitHeSCORE = 0; 
+        %end
         [yfitHe2, yfitHe2SCORE] = C2_He2.predictFcn(Mrk.M3.L2norm); 
         [yfitHo2, yfitHo2SCORE] = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
@@ -79,13 +79,39 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s Pr(%.2f) \n', string(yfitHe2), max(yfitHe2SCORE))
         fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s Pr(%.2f) \n', string(yfitHo2), max(yfitHo2SCORE))
         fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
-        
-        ClassPredict.C1.yfit = yfit; 
-        ClassPredict.C1.
 
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
         
+        ClassPredict.C1.yfit = yfit; 
+        ClassPredict.C1.score = yfitSCORE; 
+        ClassPredict.C2.yfit = yfit2class; 
+        ClassPredict.C2.score = yfit2classSCORE; 
+        ClassPredict.C2He.yfit = yfitHe; 
+        ClassPredict.C2He.score = yfitHeSCORE; 
+        ClassPredict.C2Ho.yfit = yfitHo;
+        ClassPredict.C2Ho.score = yfitHoSCORE;
+        ClassPredict.C2He2.yfit = yfitHe2;
+        ClassPredict.C2He2.score = yfitHe2SCORE;
+        ClassPredict.C2Ho2.yfit = yfitHo2;
+        ClassPredict.C2Ho2.score = yfitHo2SCORE;
+    
+                              % A1 - A2 - A3 - A4 - A5 - A6 - A7 - He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
+        ClassPredict.score = [ClassPredict.C1.score                                        % A1-A
+            mean([ClassPredict.C2.score(1) ClassPredict.C2Ho2.score(1)])                   % He 
+            mean([ClassPredict.C2.score(2) ClassPredict.C2He2.score(1)])                   % Ho
+            mean([ClassPredict.C2He.score(1) ClassPredict.C2He2.score(2)])                 % S1
+            mean([ClassPredict.C2He.score(2) ClassPredict.C2He2.score(3)])                 % S2                                        
+            mean([ClassPredict.C2He.score(3) ClassPredict.C2He2.score(4)])                 % S3                                        
+            mean([ClassPredict.C2He.score(4) ClassPredict.C2He2.score(5)])                 % S4                                        
+            mean([ClassPredict.C2Ho.score(3) ClassPredict.C2Ho2.score(4)])                 % S5                                        
+            mean([ClassPredict.C2Ho.score(4) ClassPredict.C2Ho2.score(5)])                 % S6                                         
+            mean([ClassPredict.C2Ho.score(5) ClassPredict.C2Ho2.score(6)])                 % S7                                         
+            mean([ClassPredict.C2Ho.score(6) ClassPredict.C2Ho2.score(7)])                 % S8                                         
+            mean([ClassPredict.C2Ho.score(7) ClassPredict.C2Ho2.score(8)])                 % S9                                         
+            mean([ClassPredict.C2Ho.score(1) ClassPredict.C2Ho2.score(2)])                 % S10                                         
+            mean([ClassPredict.C2Ho.score(2) ClassPredict.C2Ho2.score(3)])];               % S11                                        
+
         % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
         % Save individual classification performances for later
@@ -145,6 +171,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     output.EvalCost = EvalCost; 
     output.SwarmAgentAttnPoints = SwarmAgentAttnPoints; 
     output.InteractionAgentProp = InteractionAgentProp; 
+    output.ClassPredict = ClassPredict; 
     
     % onlineclassifications
     if parameters.OnlineClassifications

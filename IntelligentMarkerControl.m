@@ -61,15 +61,15 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
-        if string(yfit2class) == "Heterogeneous" 
+        %if string(yfit2class) == "Heterogeneous" 
             [yfitHe, yfitHeSCORE]  = C2_He.predictFcn(Mrk.M3.L2norm); 
-            yfitHo = "NaN";
-            yfitHoSCORE = 0; 
-        elseif string(yfit2class) == "Homogeneous" 
+            %yfitHo = "NaN";
+            %yfitHoSCORE = 0; 
+        %elseif string(yfit2class) == "Homogeneous" 
             [yfitHo, yfitHoSCORE] = C2_Ho.predictFcn(Mrk.M3.L2norm); 
-            yfitHe = "NaN";
-            yfitHeSCORE = 0; 
-        end
+            %yfitHe = "NaN";
+            %yfitHeSCORE = 0; 
+        %end
         [yfitHe2, yfitHe2SCORE] = C2_He2.predictFcn(Mrk.M3.L2norm); 
         [yfitHo2, yfitHo2SCORE] = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
@@ -95,6 +95,21 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         ClassPredict.C2He2.score = yfitHe2SCORE;
         ClassPredict.C2Ho2.yfit = yfitHo2;
         ClassPredict.C2Ho2.score = yfitHo2SCORE;
+    
+                              % He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
+        ClassPredict.score = [mean([ClassPredict.C2.score(1) ClassPredict.C2Ho2.score(1)]) % He 
+            mean([ClassPredict.C2.score(2) ClassPredict.C2He2.score(1)])                   % Ho
+            mean([ClassPredict.C2He.score(1) ClassPredict.C2He2.score(2)])                 % S1
+            mean([ClassPredict.C2He.score(2) ClassPredict.C2He2.score(3)])                 % S2                                        
+            mean([ClassPredict.C2He.score(3) ClassPredict.C2He2.score(4)])                 % S3                                        
+            mean([ClassPredict.C2He.score(4) ClassPredict.C2He2.score(5)])                 % S4                                        
+            mean([ClassPredict.C2Ho.score(3) ClassPredict.C2Ho2.score(4)])                 % S5                                        
+            mean([ClassPredict.C2Ho.score(4) ClassPredict.C2Ho2.score(5)])                 % S6                                         
+            mean([ClassPredict.C2Ho.score(5) ClassPredict.C2Ho2.score(6)])                 % S7                                         
+            mean([ClassPredict.C2Ho.score(6) ClassPredict.C2Ho2.score(7)])                 % S8                                         
+            mean([ClassPredict.C2Ho.score(7) ClassPredict.C2Ho2.score(8)])                 % S9                                         
+            mean([ClassPredict.C2Ho.score(1) ClassPredict.C2Ho2.score(2)])                 % S10                                         
+            mean([ClassPredict.C2Ho.score(2) ClassPredict.C2Ho2.score(3)])];               % S11                                        
 
         % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
