@@ -2,6 +2,12 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
+
+    if parameters.SET_CLOCK
+        output.TacticDrive = parameters.DogDrivingTacticIndex; 
+        output.TacticCollect = parameters.DogCollectingTacticIndex; 
+        return
+    end
     
     if ~exist('intent', 'var')
         parameters.intent = 1; % mission success  
