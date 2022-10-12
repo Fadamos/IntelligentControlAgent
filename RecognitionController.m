@@ -20,7 +20,7 @@ end
 parameters.user = "Adam";
 
 % system wide test param
-parameters.SET_CLOCK = 'true'; 
+parameters.SET_CLOCK = true; 
 
 % Sim params 
 parameters.ImageVisual = false; % true = images; false = scatter plot 

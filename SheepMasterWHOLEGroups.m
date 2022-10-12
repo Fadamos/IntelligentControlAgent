@@ -1,7 +1,7 @@
 function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube)
 
 % Author: Adam J Hepworth, Daniel P Baxter 
-% LastModified: 2022-09-25
+% LastModified: 2022-10-11
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.
@@ -158,6 +158,7 @@ if ~parameters.IsolatedSim
 end 
 fprintf('Init simulation with Scenario = %s; Replicate = %i of %i\n', ScenarioIndex,SimulationRuns,parameters.replicates)
 fprintf('Collect = %s; Drive = %s\n', CollectingTacticIndex, DrivingTacticIndex)
+fprintf('CLOCK_1 = %i; CLOCK_2 = %i; CLOCK_3 = %i\n', parameters.WindowSize, parameters.SigmaLength, parameters.SigmaPositioningPoint)
 if parameters.InternalMarkerCalculations
     fprintf('Marker Obs Size = %i; Marker Overlap = %.2f\n',parameters.WindowSize,parameters.Overlap)
 end
@@ -727,7 +728,9 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.(nameAfterDot).TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.(nameAfterDot).TacticCollect;
             end
-            fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
+            if ~parameters.SET_CLOCK
+                fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
+            end
         end
     end
 
@@ -762,7 +765,7 @@ elseif AllSheepWithinGoal == 1
 else
     fprintf('code 0: review simulation output log.\n')
 end
-fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n')
+% fprintf('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n')
 
 % Save all data! 
 %output.AgentSummary = 

@@ -1,11 +1,13 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-08-10
+% LastModified: 2022-09-11
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection for batch processing. 
 
-parameters.Adam = true; 
+% parameters.Adam = true; --> This is now set in DataGenMASTER
 
-if parameters.Adam % Adam's isolated simulation parameters 
+    % system wide test param
+    parameters.SET_CLOCK = 'true';  
+
     parameters.user = "Adam";
     % Sim params 
     parameters.Verbose = false; % visuals (true) or data only (false)
@@ -18,35 +20,33 @@ if parameters.Adam % Adam's isolated simulation parameters
     parameters.military = 1; % 0 = classic shepherding; 1+ = military 
     % Context-aware intelligent agent setup
     parameters.NumberOfSheep = 20;
-    parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 2;
-    % select either military or classic shepherding visual scenario
-    parameters.military = 1; % 0 = classic shepherding; 1+ = military 
+    parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 5;
     % Markers 
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
+    parameters.OnlineClassifications = 1; % if you want to classify in each time step
+    parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
     parameters.FullSet = true; 
     parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
+    parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
     parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
     parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
     % Translator 
     parameters.TranslationController = 0; % translation controller (1=true, 0=false)
-else % Daniel's isolated simulation parameters 
-    parameters.user = "Daniel";
-    % Sim params 
-    parameters.Verbose = true; % visuals (true) or data only (false)
-    parameters.VerboseBugger = true; % sys print for increased data debugging
-    % Markers
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
-    parameters.FullSet = true; 
-    parameters.InternalMarkerCalculations = 0; % 1 = observer or 0 = standard simulation
-    parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
-    % Translator 
-    parameters.TranslationController = 0; % translation controller (1=true, 0=false) 
-    % Context-aware intelligent agent setup
-    parameters.NumberOfSheep = 20;
-    parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 2;
-    % select either military or classic shepherding visual scenario
-    parameters.military = 1; % 0 = classic shepherding; 1+ = military 
-end
+    parameters.ShowTimeLength = 20; % length of time the explanation is shown on the screen
+    parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
+    parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
+    parameters.replicates = 1; 
+
+parameters.TimePrinter = 0; % print time out or not
+
+%% Clocks 
+
+% Context-Aware Markers
+parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
+parameters.Overlap = 0.75; % = Proportion of overlap between each marker
+
+parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
+parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
+
 
 %% Information Marker Calculations
 if parameters.IntelligentControlAgent
@@ -55,7 +55,8 @@ if parameters.IntelligentControlAgent
     parameters.InternalMarkerCalculations = 1; 
 end
 if parameters.InternalMarkerCalculations
-     parameters.Windows = WindowSegments(1:parameters.NumberOfSteps,parameters.WindowSize,parameters.Overlap,0,1); % flag for calculating a new marker set <-- do not chagne
+    % needs 1 - overlap as it actually calculates the 'remaining' window i.e.the reverse! 
+     parameters.Windows = WindowSegments(1:parameters.NumberOfSteps,parameters.WindowSize,(1-parameters.Overlap),0,1); % flag for calculating a new marker set <-- do not chagne
 end
 
 %% TranslationController
@@ -69,6 +70,7 @@ parameters.MinX = 0;
 parameters.MaxX = 250;
 parameters.MinY = 0;
 parameters.MaxY = 250;
+parameters.Area = (parameters.MaxX - parameters.MinX)*(parameters.MaxY - parameters.MinY);
 parameters.Boundary = [parameters.MinX,parameters.MaxX,parameters.MinY,parameters.MaxY];
 parameters.SheepInitialCentreOfMass = [0.5*parameters.MaxX, 0.5*parameters.MaxY];
 
@@ -86,8 +88,10 @@ parameters.MaximumSafetyDistance = 1;
 % Sheep Behaviours 
 parameters.SheepBehaviorModels = ["A1"    "A2"    "A3"    "A4"    "A5"    "A6"    "A7"]; % sheep behaviour identifiers
 parameters.SheepStepSize = [1.5 0.75 1.0 1.0 1.0 0.75 1.0]; % s_pi
+parameters.CollisionRange = 'L1';
 
 % Sheepdog Behaviour 
+parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
 parameters.DrivingCollectingPointsSafetyDistance = 5;
 % parameters.SheepDogVehicleSpeedLimit = 1.5; % s_beta **this is now automated selection
 
@@ -124,16 +128,29 @@ parameters.usr = [0    0    1    0    0    0    0]; % all values must = 1; see S
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    if parameters.Adam % Adam's isolated simulation parameters 
-        load('/Users/ajh/GitHub/RecognitionController/C1.mat')
-    else % Daniel's isolated simulation parameters 
-        load('C:\Users\danie\OneDrive\Documents\GitHub\RecognitionController\C1.mat')
-    end
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
+end
+
+if parameters.BehaviourLibrary
+    fprintf('Loading behaviour data...\n')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/df.mat')
+    fprintf('Building behaviour library...\n')
+    datacube = BuildBehaviourLibrary(df);
+    fprintf('Complete...\n\n\n')
+else
+    fprintf('Loading behaviour library...\n')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/datacube.mat')
+    fprintf('Complete...\n\n\n')
 end
 
 %% Main Function Call
 if parameters.InternalMarkerCalculations
-     output = SheepMasterWHOLEGroups(parameters, C1);
+     output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube);
  else
      output = SheepMasterWHOLEGroups(parameters);
  end

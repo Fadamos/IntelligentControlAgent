@@ -1,9 +1,12 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-08-11
+% LastModified: 2022-09-11
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection for batch processing. 
 
 % parameters.Adam = true; --> This is now set in DataGenMASTER
+
+    % system wide test param
+    parameters.SET_CLOCK = 'true';  
 
     parameters.user = "Adam";
     % Sim params 
@@ -40,12 +43,6 @@ parameters.TimePrinter = 0; % print time out or not
 % Context-Aware Markers
 parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
 parameters.Overlap = 0.75; % = Proportion of overlap between each marker
-
-% Behaviour re-assessment clock 
-parameters.SigmaLength = 15; % 1 = strombom; > 1 = novel 
-
-% Behaviour execution point re-assessment clock
-parameters.SigmaPositioningPoint = 10;  % 1 = strombom; > 1 = novel 
 
 parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
 parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};
@@ -91,8 +88,10 @@ parameters.MaximumSafetyDistance = 1;
 % Sheep Behaviours 
 parameters.SheepBehaviorModels = ["A1"    "A2"    "A3"    "A4"    "A5"    "A6"    "A7"]; % sheep behaviour identifiers
 parameters.SheepStepSize = [1.5 0.75 1.0 1.0 1.0 0.75 1.0]; % s_pi
+parameters.CollisionRange = 'L1';
 
 % Sheepdog Behaviour 
+parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
 parameters.DrivingCollectingPointsSafetyDistance = 5;
 % parameters.SheepDogVehicleSpeedLimit = 1.5; % s_beta **this is now automated selection
 
