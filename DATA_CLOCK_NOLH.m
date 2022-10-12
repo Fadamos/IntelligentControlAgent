@@ -49,7 +49,7 @@
             fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * \n')
             fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
             fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
-            fprintf('\nSim failed for: sim run=%i; iterator=%i, collect=%i; drive=%i; window=%i; overlap=%d\n',parameters.BatchCurrentRun,iterator,DOE_DRIVE(iterator),DOE_COLLECT(iterator))
+            fprintf('\nSim failed for: sim run=%i; iterator=%i, collect=%i; drive=%i\n',parameters.BatchCurrentRun,iterator,DOE_DRIVE(iterator),DOE_COLLECT(iterator))
             fprintf('\n * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
             fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
             fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * \n')
