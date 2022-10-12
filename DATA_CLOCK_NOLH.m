@@ -80,7 +80,11 @@
             
             for i = 1:MissionRunTime(end)
                 FlockGCM(i,:) = MARKERS.CentreOfMassMarker(SheepX, SheepY, NumSheep, i); % GCM positions over segment 
-                [~,chull(i)] = convhull(output.SensedData.SheepX(i,:), output.SensedData.SheepY(i,:));
+                try 
+                    [~,chull(i)] = convhull(output.SensedData.SheepX(i,:), output.SensedData.SheepY(i,:));
+                catch 
+                    chull(i) = chull(i-1);
+                end
             end
             
             FlockDiff = [diff(FlockGCM,1); FlockGCM(end,:)-FlockGCM(1,:)];
