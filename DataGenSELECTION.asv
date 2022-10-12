@@ -1,5 +1,5 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-08-18
+% LastModified: 2022-09-12
 % Explanaton: Summarise tactic-pair methods from generated data to
 % determine optimal assignments, for a given set of simulation parameters
 
@@ -8,16 +8,18 @@
 clear
 clc
 
-topLevelFolder = '/Users/ajh/UNSW/Sky Shepherds - FINALv2'; 
+% topLevelFolder = '/Users/ajh/UNSW/Sky Shepherds - FINALv2';
+
+topLevelFolder = '/Users/ajh/GitHub/IntelligentControlAgent/SimData/DOE_CLOCK'; 
+
 %[listOfFolderNames, listOfFileNames, numberOfFolders, allFileInfo, thisFolder, totalNumberOfFiles, baseNameNoExt] = RecurseFolderStructure(myDir);
 
 ScenarioKEY = [];
-CollisionKEY = [];
-SpeedKEY = []; 
+AgentKEY = []; 
 MPstats = []; 
 CollectKEY = []; 
 DriveKEY = []; 
-
+CLOCK_3 = [] 
 
     % Initialization steps:
     clc;    % Clear the command window.
@@ -26,7 +28,7 @@ DriveKEY = [];
     format compact;
     
     % Specify the file pattern.
-    filePattern = sprintf('%s/**/*.mat', topLevelFolder);
+    filePattern = sprintf('%s/*.mat', topLevelFolder);
     allFileInfo = dir(filePattern);
     
     % Throw out any folders.  We want files only, not folders.
@@ -62,8 +64,7 @@ DriveKEY = [];
             % MissionPerformanceStats
             MPstats = [MPstats; dat.MissionPerformanceStatistics];
             ScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
-            SpeedKEY = [SpeedKEY; dat.parameters.SheepDogVehicleSpeedLimit];
-            CollisionKEY = [CollisionKEY; dat.parameters.CollisionRange];
+            AgentKEY = [AgentKEY; dat.parameters.Scenario]; 
             CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
             DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
 	    end
@@ -73,8 +74,8 @@ DriveKEY = [];
     fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
 
 % arrange data 
-df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY);
-df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Sep pi" ""];
+df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY);
+df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution" "CLOCK_2" "CLOCK_3"];
 
 
 

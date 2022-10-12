@@ -19,10 +19,10 @@
     parameters.ObservationWindow = 60;%[20 40 60 80 100];
     parameters.OverlapWindow = 0.25;%[0.25 0.5 0.75];    parameters.replicates = 1; 
     parameters.Replicate = 1; 
-    parameters.BatchCurrentRun = 191; 
-    parameters.BatchTotalRuns = 262;
+    parameters.BatchCurrentRun = 0; 
+    parameters.BatchTotalRuns = numel(DOE_SCENARIO);
     
-    for iterator = 192:numel(DOE_SCENARIO)
+    for iterator = 1:numel(DOE_SCENARIO)
         
         rng(parameters.seed(iterator))
         
@@ -126,3 +126,8 @@
                 %save(sprintf('/Users/fadamos/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % macOS-mbp
     
     end
+
+
+
+    %% Data Extraction 
+    
