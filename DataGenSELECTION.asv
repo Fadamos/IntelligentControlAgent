@@ -19,7 +19,8 @@ AgentKEY = [];
 MPstats = []; 
 CollectKEY = []; 
 DriveKEY = []; 
-CLOCK_3 = [] 
+CLOCK_2 = []; 
+CLOCK_3 = [];
 
     % Initialization steps:
     clc;    % Clear the command window.
@@ -67,6 +68,8 @@ CLOCK_3 = []
             AgentKEY = [AgentKEY; dat.parameters.Scenario]; 
             CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
             DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
+            CLOCK_2 = [CLOCK_2; dat.parameters.SigmaLength];
+            CLOCK_3 = [CLOCK_3; dat.parameters.SigmaPositioningPoint];
 	    end
     else
 	    fprintf('     Folder %s has no files in it.\n', thisFolder);
@@ -74,11 +77,22 @@ CLOCK_3 = []
     fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
 
 % arrange data 
-df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY);
+df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY, CLOCK_2, CLOCK_3);
 df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution" "CLOCK_2" "CLOCK_3"];
 
+%% REGRESSION MODEL --> CLOCK_2 and CLOCK_3 
+
+df_CLOCK_2 = removevars(df, 'CLOCK_3');
+df_CLOCK_3 = removevars(df, 'CLOCK_2');
+
+mdl = fitglm(df_CLOCK_2, 'ResponseVar', 'CLOCK_2')
 
 
+
+
+
+
+%% OLD FOR SWARM ANALYTICS PAPER 
 
 
 % organise data by collect and drive tactic pairs PER scenario, speed or collision (needs to be manually changed)

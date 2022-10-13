@@ -80,8 +80,23 @@ CLOCK_3 = [];
 df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY, CLOCK_2, CLOCK_3);
 df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution" "CLOCK_2" "CLOCK_3"];
 
+%% REGRESSION MODEL --> CLOCK_2 and CLOCK_3 
+
+load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/CLOCK.mat')
+
+df_CLOCK_2 = removevars(df, {'CLOCK_3', 'Decision Chg', 'Mssn Length', 'Mssn Speed', 'Mssn Comp Rate', 'Swarm Total Dist', 'Swarm Avg Dist', 'Cntrl Total Dist', 'Cntrl Avg Dist', 'Runtime', 'Avg Num Sep pi', 'Paddock Area'});
+df_CLOCK_3 = removevars(df, {'CLOCK_2', 'Decision Chg', 'Mssn Length', 'Mssn Speed', 'Mssn Comp Rate', 'Swarm Total Dist', 'Swarm Avg Dist', 'Cntrl Total Dist', 'Cntrl Avg Dist', 'Runtime', 'Avg Num Sep pi', 'Paddock Area'});
+
+mdl_2 = fitglm(df_CLOCK_2, 'ResponseVar', 'CLOCK_2');
+New2 = step(mdl_2, 'NSteps', 100); 
+mdl_3 = fitglm(df_CLOCK_3, 'ResponseVar', 'CLOCK_3');
+New3 = step(mdl_3, 'NSteps', 100); 
 
 
+
+
+
+%% OLD FOR SWARM ANALYTICS PAPER 
 
 
 % organise data by collect and drive tactic pairs PER scenario, speed or collision (needs to be manually changed)
