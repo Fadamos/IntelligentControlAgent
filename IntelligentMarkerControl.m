@@ -1,4 +1,4 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, C2_CLOCK_regmdl, C3_CLOCK_regmdl)
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
@@ -169,6 +169,10 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
             fprintf('New Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
         end
     end
+
+    %% Determine Clock Frequency
+
+    
     
     %% Output 
     % marker calculation 

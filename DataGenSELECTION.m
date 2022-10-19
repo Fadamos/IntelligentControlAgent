@@ -84,13 +84,40 @@ df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn
 
 load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/CLOCK.mat')
 
-df_CLOCK_2 = removevars(df, {'CLOCK_3', 'Decision Chg', 'Mssn Length', 'Mssn Speed', 'Mssn Comp Rate', 'Swarm Total Dist', 'Swarm Avg Dist', 'Cntrl Total Dist', 'Cntrl Avg Dist', 'Runtime', 'Avg Num Sep pi', 'Paddock Area'});
-df_CLOCK_3 = removevars(df, {'CLOCK_2', 'Decision Chg', 'Mssn Length', 'Mssn Speed', 'Mssn Comp Rate', 'Swarm Total Dist', 'Swarm Avg Dist', 'Cntrl Total Dist', 'Cntrl Avg Dist', 'Runtime', 'Avg Num Sep pi', 'Paddock Area'});
+% if CLOCK_3 > CLOCK_2, then set CLOCK_3 = CLOCK 2
+for  i = 1:size(df,1)
+    if df.CLOCK_3(i) > df.CLOCK_2(i)
+        df.CLOCK_3(i) = df.CLOCK_2(i); 
+    end 
+end
 
-mdl_2 = fitglm(df_CLOCK_2, 'ResponseVar', 'CLOCK_2');
-New2 = step(mdl_2, 'NSteps', 100); 
-mdl_3 = fitglm(df_CLOCK_3, 'ResponseVar', 'CLOCK_3');
-New3 = step(mdl_3, 'NSteps', 100); 
+% ensure we only train for successful cases (i.e. we don't want to optimise for bad outcomes) 
+df_SUB = df(df.("Mssn Success") == 1,:);
+
+df_CLOCK_2 = table(df_SUB.Scenario, df_SUB.("Drive Tactic"), df_SUB.("Collect Tactic"), df_SUB.CLOCK_2); 
+df_CLOCK_3 = table(df_SUB.Scenario, df_SUB.("Drive Tactic"), df_SUB.("Collect Tactic"), df_SUB.CLOCK_3);
+
+%df_CLOCK_2 = renamevars(df_CLOCK_2, ["Var1", "Var2", "Var3", "Var4"], ["Scenario", "DriveTactic", "CollectTactic", "CLOCK_2"]);
+%df_CLOCK_3 = renamevars(df_CLOCK_3, ["Var1", "Var2", "Var3", "Var4"], ["Scenario", "DriveTactic", "CollectTactic", "CLOCK_3"]);
+
+v1 = categorical(df_CLOCK_2.Var1);
+v2 = categorical(df_CLOCK_2.Var2);
+v3 = categorical(df_CLOCK_2.Var3);
+
+[logr, dev, stats] = mnrfit(df.CLOCK_2, categorical(df.("Mssn Success"))); 
+
+X = [v1 v2 v3];
+
+fitlm(df_CLOCK_2.Var4, X)
+
+% Tree Regression for simplicity here as a module in the system 
+
+CLOCK_2_regmdl = fitrtree(df_CLOCK_2,'Var4');
+
+xnew = table("S11", "DHH", "F2D"); % how we have to predict the data (easily done in the main code) 
+out = predict(tr, df_CLOCK_2(:,1:3));
+
+CLOCK_3_regmdl = fitrtree(df_CLOCK_3,'Var4');
 
 
 

@@ -1,4 +1,4 @@
-function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube)
+function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, CLOCK_2_regmdl, CLOCK_3_regmdl)
 
 % Author: Adam J Hepworth, Daniel P Baxter 
 % LastModified: 2022-10-11
@@ -38,6 +38,12 @@ if ~exist('C2_He2', 'var')
 end
 if ~exist('C2_Ho2', 'var')
      C2_Ho2=false; 
+end
+if ~exist('CLOCK_2_regmdl', 'var')
+     CLOCK_2_regmdl=false; 
+end
+if ~exist('CLOCK_3_regmdl', 'var')
+     CLOCK_3_regmdl=false; 
 end
 
 %% Initialise Simulation Parameters
@@ -721,7 +727,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
             nameAfterDot = ['t',num2str(SimulationTime)]; 
-            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex);
+            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, C2_CLOCK_regmdl, C3_CLOCK_regmdl);
             IntelligentAgent.(nameAfterDot).FLAGS = [SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
         
             if parameters.TacticPairSelection
