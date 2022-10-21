@@ -20,7 +20,7 @@ end
 parameters.user = "Adam";
 
 % system wide test param
-parameters.SET_CLOCK = true; 
+parameters.SET_CLOCK = false; 
 
 % Sim params 
 parameters.ImageVisual = false; % true = images; false = scatter plot 
@@ -163,6 +163,8 @@ if parameters.InternalMarkerCalculations
     load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
     load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
     load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/CLOCK_2_regmdl.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/CLOCK_3_regmdl.mat')
 end
 
 if parameters.BehaviourLibrary

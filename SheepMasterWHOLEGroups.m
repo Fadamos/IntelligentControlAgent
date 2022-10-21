@@ -83,6 +83,8 @@ EvalGain                                = []; % Information Markers Value of Inf
 SwarmAgentAttnPoints                    = []; % plotting attention points for agents
 InteractionAgentProp                    = []; % plotting for agent interaction values 
 SwarmClassificationData                 = []; % swarm classification data
+BehaviourProportions                    = []; % running total of behaviour proportions 
+ClockTimesDist                          = [parameters.SigmaLength parameters.SigmaPositioningPoint];
 
 %% Get the selection of complexity parameters
 DogSpeedDifferentialIndex               = parameters.SheepDogVehicleSpeedLimit;
@@ -591,7 +593,15 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                         M(SimulationTime) = getframe; % Makes a movie clip from the plot
                     end 
               else 
-                    figure(1)
+                    PropCollect = round(100*(((1+sum(Flags(:,2) == 2)))/((((1+sum(Flags(:,2) == 2)))+(((1+sum(Flags(:,2) == 1)))))))); 
+                    PropDrive = round(100*(((1+sum(Flags(:,2) == 1)))/((((1+sum(Flags(:,2) == 2))) + (((1+sum(Flags(:,2) == 1))))))));
+                    if ShepherdIndividualBehaviour == 1
+                        DriveOrCollect = '$\sigma_1$'; 
+                    else
+                        DriveOrCollect = '$\sigma_2$';
+                    end
+                    f = figure(1);
+                    f.Position = [100 100 1100 1100];
                     scatter(SheepMatrix(:,1), SheepMatrix(:,2), 'filled', 'MarkerEdgeColor',[0 .5 .5], 'MarkerFaceColor', [0 .7 .7], 'LineWidth', 1.5)
                     hold on 
                     scatter(ShepherdMatrix(:,1), ShepherdMatrix(:,2), 100, 'filled', 'MarkerEdgeColor',[201/255 223/255 236/255], 'MarkerFaceColor', [242/255 92/255 0/255], 'LineWidth', 1.5)
@@ -608,14 +618,19 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     plot(xunit, yunit,'g');
                     hold off 
                     axis([0 MaxX 0 MaxY]); 
-                    title(['$\sigma_1$ = ', DrivingTacticIndex,...
-                           ' $\sigma_2$ = ', CollectingTacticIndex,...
-                           ' t = ', num2str(SimulationTime),...
-                           ' $\sigma$ = ', num2str(ShepherdIndividualBehaviour)],...
+                    title(['t= ', num2str(SimulationTime),...
+                           ' | $\sigma_1, \sigma_2$= \{', DrivingTacticIndex, ', ', CollectingTacticIndex, '\}',...
+                           ' | $\sigma^t$= ', DriveOrCollect,...
+                           ' | $\sigma_1^{\Delta t}$= ', num2str(PropDrive), '\%',...
+                           ' | $\sigma_2^{\Delta t}$= ', num2str(PropCollect), '\%',...
+                           ' | $C_2$= ',num2str(parameters.SigmaLength),...
+                           ' | $C_3$= ',num2str(parameters.SigmaPositioningPoint)],...
                            'Interpreter','latex','FontSize',16)
                     legend({'$\Pi$','$\beta$','GCM','Largest Cluster LCM','$P^t_{\beta\sigma}$'},'Location','southoutside','Orientation','horizontal','Interpreter','latex','FontSize',16)
                     pause(0.1)
+                    
               end 
+              BehaviourProportions = [BehaviourProportions; PropDrive PropCollect];
 
             end
             % Hold the explanation on the GUI for XX time
@@ -722,14 +737,24 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         end
     end
          
-    %% AGENT 1: CONTEXT-AWARE INTELLIGENT DECISION SUPPORT SYSTEM 
+    %% CONTEXT-AWARE INTELLIGENT DECISION SUPPORT SYSTEM 
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
             nameAfterDot = ['t',num2str(SimulationTime)]; 
-            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, C2_CLOCK_regmdl, C3_CLOCK_regmdl);
+            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl);; 
             IntelligentAgent.(nameAfterDot).FLAGS = [SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
         
+            % Stats for plotting 
+            
+            % Behaviour re-assessment clock 
+            parameters.SigmaLength = IntelligentAgent.(nameAfterDot).Clock2; 
+
+            % Behaviour execution point re-assessment clock
+            parameters.SigmaPositioningPoint = IntelligentAgent.(nameAfterDot).Clock3;
+
+            ClockTimesDist = [ClockTimesDist; parameters.SigmaLength parameters.SigmaPositioningPoint];
+
             if parameters.TacticPairSelection
                 DrivingTacticIndex = IntelligentAgent.(nameAfterDot).TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.(nameAfterDot).TacticCollect;
@@ -740,11 +765,49 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
         end
     end
 
-    %% AGENT 2: BEHAVIOUR SELECTION BETWEEN COLLECT AND DRIVE 
-    % <SCRIPT HERE> -- cognitive agent 
+    %% Stats & Data Plotting 
+    if Verbose
+        f2 = figure(2); 
+        f2.Position = [1300 100 2300 1100];
+                  
+        subplot(3,3,1)
+            plot(BehaviourProportions, 'LineWidth', 3)
+            ylim([0 100])
+            title('Cumulative Behaviour Proportions')
+            legend({'Drive','Collect'}, 'Location', 'northwest')
+                  
+        subplot(3,3,2)
+            hist(SensedData.SeparatedSheep)
+            title('Separated Sheep Histogram')
+                  
+        subplot(3,3,3)
+            plot(SensedData.SheepNotInGoal, 'LineWidth', 3)
+            title('Sheep Not In Goal')
 
-    %% AGENT 3: MODULATION SELECTION SCRIPT HERE
-    % <SCRIPT HERE> -- sheepdog agent 
+        subplot(3,3,4)
+            hist(ClockTimesDist(:,1))
+            title('Clock 2 Time Histogram')
+
+        subplot(3,3,5)
+            hist(ClockTimesDist(:,2))
+            title('Clock 3 Time Histogram')
+
+%         subplot(3,3,6)
+%             
+%             title()
+% 
+%         subplot(3,3,7)
+%             
+%             title()
+% 
+%         subplot(3,3,8)
+% 
+%             title()
+%             
+%         subplot(3,3,9)
+% 
+%             title()
+    end
 
     % if NaNs are observed and recorded, now break from the simulation
     if parameters.BreakWhile 
@@ -780,6 +843,7 @@ output.TranslationData = TranslationDataSheepDog;
 output.parameters = parameters; 
 output.TacticPairRecord = TacticPairRecord; 
 output.Flags = Flags; 
+output.BehaviourProportions = BehaviourProportions; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
 end

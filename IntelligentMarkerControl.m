@@ -1,4 +1,4 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, C2_CLOCK_regmdl, C3_CLOCK_regmdl)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl)
     % Author: Adam J Hepworth
     % LastModified: 2022-09-26
     % Explanaton: Intelligent control agent
@@ -121,6 +121,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
         % Save individual classification performances for later
         MarkerClassPerfAgent.(nameAfterDot) = ClassPredYagent; 
+
+        [~,ScenarioIdx] = max(ClassPredict.score(3:end)); 
     end
 
     %% Current Tactic Pair 
@@ -171,8 +173,16 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     end
 
     %% Determine Clock Frequency
-
     
+    CLOCK_2_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2));
+    CLOCK_2 = predict(CLOCK_2_regmdl, CLOCK_2_xnew);
+    CLOCK_2 = round(CLOCK_2);
+
+    CLOCK_3_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2));
+    CLOCK_3 = predict(CLOCK_3_regmdl, CLOCK_3_xnew);
+    CLOCK_3 = round(CLOCK_3);
+
+    fprintf('Clock frequencies. Clock 2 = %.2f and Clock 3 = %.2f\n',CLOCK_2,CLOCK_3)    
     
     %% Output 
     % marker calculation 
@@ -181,12 +191,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     output.SwarmAgentAttnPoints = SwarmAgentAttnPoints; 
     output.InteractionAgentProp = InteractionAgentProp; 
     output.ClassPredict = ClassPredict; 
+    output.Clock2 = CLOCK_2;
+    output.Clock3 = CLOCK_3; 
     
     % onlineclassifications
     if parameters.OnlineClassifications
-    output.EvalGain = EvalGain; 
-    output.MarkerClassPerfAgent = MarkerClassPerfAgent; 
-    output.SwarmClassificationData = SwarmClassificationData; 
+        output.EvalGain = EvalGain; 
+        output.MarkerClassPerfAgent = MarkerClassPerfAgent; 
+        output.SwarmClassificationData = SwarmClassificationData; 
     end
     
     % behaviour selection
