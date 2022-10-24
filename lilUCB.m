@@ -2,7 +2,7 @@ function output = lilUCB(parameters, delta, epsilon, lambda, beta, n, Simulation
 
     % Author: Adam J Hepworth
     % LastModified: 2022-10-24
-    % Explanaton: Intelligent control agent 
+    % Explanaton: lilUCB function 
     
     % Implementation of "lil' UCB: An Optimal Exploration Algorithm for Multi-Armed Bandits"
     % 2014 JMLR Workshop and Conference Proceedings, vol 35:1-17
