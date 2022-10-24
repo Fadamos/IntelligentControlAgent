@@ -1,0 +1,45 @@
+function output = lilUCB(parameters, delta, epsilon, lambda, beta, n, SimulationTime, ClassPredict)
+
+if ~exist('delta', 'var')
+    delta = 0.1; % delta > 0 --> confidence 
+end 
+if ~exist('epsilon', 'var')
+    epsilon = 0.01; % epsilson > 0 --> algo param
+end 
+if ~exist('n', 'var')
+    n = 1 + 10/n; % n = number of arms in the system (i.e. number of scenario probabilities we are including, n=11 in most cases here)
+end 
+if ~exist('lambda', 'var')
+    lambda = 1 + 10/n; % lambda > 0 --> algo param
+end 
+
+%% Initialise 
+
+% Sample each of the n arms once 
+
+% Set T_{(i)}(t) = 1 for all i 
+
+% Set t = n
+
+%% Loop 
+
+% Nomenclature 
+%   T_{(i)}(t) denotes the number of times arm i has been sampled upt to time t 
+%   X_{i,s}, s = 1,2,.. denotes independent samples from arm i 
+
+% While T_{(i)}(t) < 1 + lambda sum(j ~= i) T_{(j)}(t) for all i 
+
+    % Sample arm I_t = 
+    %   argmax(i in 1,..,n) mu_{i,T_{(i)}(t)} + (1 + beta) * (1 + sqrt(epsilon)) 
+    %   sqrt({2 * sigma^2 (1 + epsilon) log ({log({(1 + epsilon) T_{(i)}(t)})}/{delta}}/{T_{(i)}(t)})
+
+    % mu_{i,T_{(i)}(t)} = {1}/{T_{(i)}(t)} sum{s=1}{T_{(i)}(t)} X_{i,s} 
+    %   as the empircal mean of the T_{(i)}(t) samples from arm i up to time t 
+
+    % Set T_{(i)}(t+1) = T_{(i)}(t) + 1 if I_t = i 
+
+    % Else set T_{(i)}(t+1) = T_{(i)}(t) 
+
+% Else stop and output argmax(i in 1,..,n)T_{(i)}(t)
+
+end

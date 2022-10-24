@@ -1,6 +1,6 @@
 function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl)
     % Author: Adam J Hepworth
-    % LastModified: 2022-09-26
+    % LastModified: 2022-10-24
     % Explanaton: Intelligent control agent
 
     if parameters.SET_CLOCK
