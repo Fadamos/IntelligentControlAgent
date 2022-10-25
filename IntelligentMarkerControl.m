@@ -141,15 +141,9 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     % Scenario 
     AgentDecision = DecisionModel(parameters, ProbMat, ClassPredict.score); 
     ProbMat = [ProbMat; ClassPredict.score'];
-    if ~isnan(AgentDecision) & size(ProbMat,1) > 4
-        subCube = squeeze(datacube(:, :, parameters.intent, AgentDecision, :)); 
-        fprintf('Assessed Scenario is S%i\n',AgentDecision)
-    end
 
     %% Behaviour Parameterisation Engine
     % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
-    viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
-    [row,col] = find(viableTP == max(max(viableTP)));
     
     % 3 - rank the means H --> L and select the H 
     

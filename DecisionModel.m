@@ -3,13 +3,23 @@ function output = DecisionModel(parameters, ProbMat, NewObs, TwoClass)
     % LastModified: 2022-10-24
     % Explanaton: Intelligent control agent decision module
 
-    Scenario2Class = string(TwoClass); 
     
     % subcube takes the form [5 5 5] = [drive collect result]
-    if strcmp("Homogeneous", scenario)
+
+    %% (1) Calculate scenario statistics
+
+    %% (2) Assess specific scenario 
+    if ~isnan(AgentDecision) & size(ProbMat,1) > 4
+        subCube = squeeze(datacube(:, :, parameters.intent, AgentDecision, :)); 
+        fprintf('Assessed Scenario is S%i\n',AgentDecision)
+    end
+
+    %% (3) Assess Heterogeneous or Homogeneous if unable 
+    ScenarioTwoClass = string(TwoClass); 
+    if strcmp("Homogeneous", ScenarioTwoClass)
         fprintf('Assessed Scenario type is Homogeneous\n')
         subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
-    elseif strcmp("Heterogeneous", scenario)
+    elseif strcmp("Heterogeneous", ScenarioTwoClass)
         subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
         fprintf('Assessed Scenario type is Heterogeneous\n')
     else
@@ -17,14 +27,9 @@ function output = DecisionModel(parameters, ProbMat, NewObs, TwoClass)
         fprintf('Assessed Scenario type is Default\n')
     end 
 
-    ProbMat = [ProbMat; NewObs']; 
+    %% (4) Output selected scenario and data 
 
-    mu = mean(ProbMat(:,3:end),1); % remove He and Ho columns 
-    sigma = var(ProbMat(:,3:end),1); 
-
-    output = find(max(mu - sigma) == (mu - sigma)); 
+    viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
+    [output.row, output.col] = find(viableTP == max(max(viableTP)));
     
 end
-
-
-%% Only return a result if statistically significant, else reutrn output as 'false'
