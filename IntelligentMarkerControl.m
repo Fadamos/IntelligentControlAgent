@@ -136,18 +136,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     %% Context-Awareness Engine (part of agent 1) -- He or Ho only ---
     % 1 - select right metric/scenario sub-set
-    % subcube takes the form [5 5 5] = [drive collect result]
-    scenario = string(yfit2class); 
-    if strcmp("Homogeneous", scenario)
-        fprintf('Assessed Scenario type is Homogeneous\n')
-        subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
-    elseif strcmp("Heterogeneous", scenario)
-        subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
-        fprintf('Assessed Scenario type is Heterogeneous\n')
-    else
-        subCube = squeeze(datacube(:, :, parameters.intent, 1, :)); 
-        fprintf('Assessed Scenario type is Default\n')
-    end 
+    
 
     % Scenario 
     AgentDecision = DecisionModel(parameters, ProbMat, ClassPredict.score); 
