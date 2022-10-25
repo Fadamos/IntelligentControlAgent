@@ -1,0 +1,13 @@
+function output = DecisionModel(parameters, ProbMat, NewObs)
+    % Author: Adam J Hepworth
+    % LastModified: 2022-10-24
+    % Explanaton: Intelligent control agent decision module
+
+    ProbMat = [ProbMat; NewObs]; 
+
+    mu = mean(ProbMat(:,3:end),1); % re
+    sigma = var(ProbMat(:,3:end),1); 
+
+    output 
+end
+

@@ -1,7 +1,7 @@
 function output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, CLOCK_2_regmdl, CLOCK_3_regmdl)
 
 % Author: Adam J Hepworth, Daniel P Baxter 
-% LastModified: 2022-10-11
+% LastModified: 2022-10-24
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection. These can be static for the length of the simulation or
 % dynamic.
@@ -101,6 +101,9 @@ FlagSigma1                              = 0;
 FlagSigma2                              = 0; 
 FlagSigma1pos                           = 0; 
 FlagSigma2pos                           = 0; 
+
+% Decision Model 
+ProbMat                                 = []; % probability matrix for scenario classifications
 
 %% Assign the environment boundaries
 MinX = BoundarySize(1);
@@ -741,11 +744,14 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
     if parameters.InternalMarkerCalculations
         if sum(SimulationTime==parameters.Windows(:,2))>0
             
+            % ###
             nameAfterDot = ['t',num2str(SimulationTime)]; 
-            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl);; 
+            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat); 
             IntelligentAgent.(nameAfterDot).FLAGS = [SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
-        
+            
             % Stats for plotting 
+            ProbMat = IntelligentAgent.(nameAfterDot).ProbMat; % save the probability matrix
+            ProbMat
             
             % Behaviour re-assessment clock 
             parameters.SigmaLength = IntelligentAgent.(nameAfterDot).Clock2; 
@@ -767,30 +773,30 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
 
     %% Stats & Data Plotting 
     if Verbose
-        f2 = figure(2); 
-        f2.Position = [1300 100 2300 1100];
-                  
-        subplot(3,3,1)
-            plot(BehaviourProportions, 'LineWidth', 3)
-            ylim([0 100])
-            title('Cumulative Behaviour Proportions')
-            legend({'Drive','Collect'}, 'Location', 'northwest')
-                  
-        subplot(3,3,2)
-            hist(SensedData.SeparatedSheep)
-            title('Separated Sheep Histogram')
-                  
-        subplot(3,3,3)
-            plot(SensedData.SheepNotInGoal, 'LineWidth', 3)
-            title('Sheep Not In Goal')
-
-        subplot(3,3,4)
-            hist(ClockTimesDist(:,1))
-            title('Clock 2 Time Histogram')
-
-        subplot(3,3,5)
-            hist(ClockTimesDist(:,2))
-            title('Clock 3 Time Histogram')
+%         f2 = figure(2); 
+%         f2.Position = [1300 100 2300 1100];
+%                   
+%         subplot(3,3,1)
+%             plot(BehaviourProportions, 'LineWidth', 3)
+%             ylim([0 100])
+%             title('Cumulative Behaviour Proportions')
+%             legend({'Drive','Collect'}, 'Location', 'northwest')
+%                   
+%         subplot(3,3,2)
+%             hist(SensedData.SeparatedSheep)
+%             title('Separated Sheep Histogram')
+%                   
+%         subplot(3,3,3)
+%             plot(SensedData.SheepNotInGoal, 'LineWidth', 3)
+%             title('Sheep Not In Goal')
+% 
+%         subplot(3,3,4)
+%             hist(ClockTimesDist(:,1))
+%             title('Clock 2 Time Histogram')
+% 
+%         subplot(3,3,5)
+%             hist(ClockTimesDist(:,2))
+%             title('Clock 3 Time Histogram')
 
 %         subplot(3,3,6)
 %             
@@ -846,4 +852,5 @@ output.Flags = Flags;
 output.BehaviourProportions = BehaviourProportions; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
+   output.ProbMat = ProbMat; 
 end

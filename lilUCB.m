@@ -1,4 +1,4 @@
-function output = lilUCB(parameters, delta, epsilon, lambda, beta, n, SimulationTime, ClassPredict)
+function output = lilUCB(parameters, RewardsMat, NewReward, MABiter, n, delta, epsilon, lambda, beta)
 
     % Author: Adam J Hepworth
     % LastModified: 2022-10-24
@@ -17,21 +17,26 @@ function output = lilUCB(parameters, delta, epsilon, lambda, beta, n, Simulation
         epsilon = 0.01; % epsilson > 0 --> algo param
     end 
     if ~exist('n', 'var')
-        n = 1 + 10/n; % n = number of arms in the system (i.e. number of scenario probabilities we are including, n=11 in most cases here)
+        n = 11; % n = number of arms in the system (i.e. number of scenario probabilities we are including, n=11 in most cases here)
     end 
     if ~exist('lambda', 'var')
         lambda = 1 + 10/n; % lambda > 0 --> algo param
     end 
     
+    
+    
+    
     %% Initialise 
     
     % Sample each of the n arms once 
-    
+    reward      = [RewardsMat; NewReward]; % combine previous and current observations
+
     % Set T_{(i)}(t) = 1 for all i 
+    MABiter     = [MABiter; MABiter+1]; % counter for each of the  
     
     % Set t = n
     
-    %% Loop 
+    %% Loop (not a loop in our setting) 
     
     % Nomenclature 
     %   T_{(i)}(t) denotes the number of times arm i has been sampled upt to time t 
@@ -51,5 +56,9 @@ function output = lilUCB(parameters, delta, epsilon, lambda, beta, n, Simulation
         % Else set T_{(i)}(t+1) = T_{(i)}(t) 
     
     % Else stop and output argmax(i in 1,..,n)T_{(i)}(t)
+
+    % while condition is our 'exit' for a particular scenario 
+
+    if 
 
 end

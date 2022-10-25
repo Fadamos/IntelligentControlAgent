@@ -1,4 +1,4 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat)
     % Author: Adam J Hepworth
     % LastModified: 2022-10-24
     % Explanaton: Intelligent control agent
@@ -134,22 +134,29 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     % Get the right dataset first - subset for metric and classified scenario
     % very simple - select between best TP for Ho or He case only 
 
-
-    %% Context-Awareness Engine (part of agent 1)
+    %% Context-Awareness Engine (part of agent 1) -- He or Ho only ---
     % 1 - select right metric/scenario sub-set
     % subcube takes the form [5 5 5] = [drive collect result]
     scenario = string(yfit2class); 
     if strcmp("Homogeneous", scenario)
-        fprintf('Assessed Scenario is Homogeneous\n')
+        fprintf('Assessed Scenario type is Homogeneous\n')
         subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
     elseif strcmp("Heterogeneous", scenario)
         subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
-        fprintf('Assessed Scenario is Heterogeneous\n')
+        fprintf('Assessed Scenario type is Heterogeneous\n')
     else
         subCube = squeeze(datacube(:, :, parameters.intent, 1, :)); 
-        fprintf('Assessed Scenario is Default\n')
+        fprintf('Assessed Scenario type is Default\n')
     end 
-    
+
+    % Scenario 
+    AgentDecision = DecisionModel(parameters, ProbMat, ClassPredict.score); 
+    ProbMat = [ProbMat; ClassPredict.score'];
+    if ~isnan(AgentDecision) & size(ProbMat,1) > 4
+        subCube = squeeze(datacube(:, :, parameters.intent, AgentDecision, :)); 
+        fprintf('Assessed Scenario is S%i\n',AgentDecision)
+    end
+
     %% Behaviour Parameterisation Engine
     % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
     viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
@@ -193,12 +200,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     output.ClassPredict = ClassPredict; 
     output.Clock2 = CLOCK_2;
     output.Clock3 = CLOCK_3; 
+    output.ProbMat = ProbMat; 
     
     % onlineclassifications
     if parameters.OnlineClassifications
         output.EvalGain = EvalGain; 
         output.MarkerClassPerfAgent = MarkerClassPerfAgent; 
         output.SwarmClassificationData = SwarmClassificationData; 
+        output.DecisionModel = AgentDecision; 
     end
     
     % behaviour selection
