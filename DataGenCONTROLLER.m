@@ -128,12 +128,12 @@ parameters.usr = [0    0    1    0    0    0    0]; % all values must = 1; see S
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C1.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_He.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_He2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho2.mat')
 end
 
 if parameters.BehaviourLibrary
@@ -144,7 +144,7 @@ if parameters.BehaviourLibrary
     fprintf('Complete...\n\n\n')
 else
     fprintf('Loading behaviour library...\n')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/datacube.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/datacube.mat')
     fprintf('Complete...\n\n\n')
 end
 

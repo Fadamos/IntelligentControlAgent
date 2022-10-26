@@ -25,6 +25,7 @@ parameters.SET_CLOCK = false;
 % Sim params 
 parameters.ImageVisual = false; % true = images; false = scatter plot 
 parameters.Verbose = true; % visuals (true) or data only (false)
+parameters.Verbose2 = false; % clock parameterisation consolt reporting
 parameters.VerboseBugger = false; % sys print for increased data debugging
 parameters.visual = "classic"; % 'classic' if using original visuals for orientation
 % turn off warnings if not impacting code execution
@@ -157,14 +158,14 @@ end
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
 
 if parameters.InternalMarkerCalculations
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C1.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_He2.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/C2_Ho2.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/CLOCK_2_regmdl.mat')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/CLOCK_3_regmdl.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C1.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_He.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_He2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/CLOCK_2_regmdl.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/CLOCK_3_regmdl.mat')
 end
 
 if parameters.BehaviourLibrary
@@ -175,7 +176,7 @@ if parameters.BehaviourLibrary
     fprintf('Complete...\n\n\n')
 else
     fprintf('Loading behaviour library...\n')
-    load('/Users/ajh/GitHub/IntelligentControlAgent/datacube.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/datacube.mat')
     fprintf('Complete...\n\n\n')
 end
 

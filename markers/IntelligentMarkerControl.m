@@ -1,4 +1,4 @@
-function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat)
+function output = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat, PredClassScore)
     % Author: Adam J Hepworth
     % LastModified: 2022-10-24
     % Explanaton: Intelligent control agent
@@ -129,28 +129,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     CurrentTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
     fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
-    %% Determine Next Behaviour Action 
-
-    % Get the right dataset first - subset for metric and classified scenario
-    % very simple - select between best TP for Ho or He case only 
-
-    %% Context-Awareness Engine (part of agent 1) -- He or Ho only ---
-    % 1 - select right metric/scenario sub-set
-    
-
     % Scenario 
-    AgentDecision = DecisionModel(parameters, ProbMat, ClassPredict.score); 
-    ProbMat = [ProbMat; ClassPredict.score'];
+    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, CurrentTacticPair); 
+    PredClassScore = [PredClassScore; ClassPredict.score'];
 
+    row = AgentDecision.row;
+    col = AgentDecision.col;
+    
     %% Behaviour Parameterisation Engine
-    % 2 - take test result (1 - "0" for best fit) <-- simply t-test only in this case 
-    
-    % 3 - rank the means H --> L and select the H 
-    
-    % 4 - save these for selection
-
-    % This is where the ANN classifier goes to determine the TP as an output
-
     if parameters.TacticPairSelection
         DrivingTacticIndex = char(parameters.TacticDriveReference(col)); % re-parameterise the agent for new collect and drive actions 
         CollectingTacticIndex = char(parameters.TacticCollectReference(row));
@@ -172,7 +158,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     CLOCK_3 = predict(CLOCK_3_regmdl, CLOCK_3_xnew);
     CLOCK_3 = round(CLOCK_3);
 
-    fprintf('Clock frequencies. Clock 2 = %.2f and Clock 3 = %.2f\n',CLOCK_2,CLOCK_3)    
+    fprintf('Clock frequencies: Clock 2 = %.2f and Clock 3 = %.2f\n',CLOCK_2,CLOCK_3)    
     
     %% Output 
     % marker calculation 
@@ -183,7 +169,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     output.ClassPredict = ClassPredict; 
     output.Clock2 = CLOCK_2;
     output.Clock3 = CLOCK_3; 
-    output.ProbMat = ProbMat; 
+    output.ProbMat = AgentDecision.ProbMat; 
     
     % onlineclassifications
     if parameters.OnlineClassifications
