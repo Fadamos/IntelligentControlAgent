@@ -22,10 +22,9 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
             [p(test_scenario), h(test_scenario)]= ranksum(ProbMat(:,ref_scenario),ProbMat(:,test_scenario));
         end
     end
-    [p h] 
+    %[p h] 
 
     if nansum(h) < length(h)-1
-        nansum(h) < length(h)-1
         ScenarioFlag = true; 
         fprintf('Assessed Scenario not statistically significant.\n')
     else 
@@ -67,9 +66,11 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
     
 
     viableTP = (1 - subCube(:,:,1)) .* subCube(:,:,4);
+    [output.row, output.col] = find(viableTP == max(max(viableTP)));
     
     %% (6) Output selected scenario and data 
-    [output.row, output.col] = find(viableTP == max(max(viableTP)));
+    output.row = row; 
+    output.col = col; 
     
     output.scenario = ref_scenario; 
     output.stats = [p h];
