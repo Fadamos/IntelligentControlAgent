@@ -103,7 +103,7 @@ FlagSigma1pos                           = 0;
 FlagSigma2pos                           = 0; 
 
 % Decision Model 
-ProbMat                                 = ones(1,11)/11; % probability matrix for scenario classifications
+ProbMat                                 = []; % probability matrix for scenario classifications
 PredClassScore                          = []; 
 
 %% Assign the environment boundaries

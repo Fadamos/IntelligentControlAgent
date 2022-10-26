@@ -6,51 +6,60 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
     %% (1) Data and scenario statistics
     ScenarioFlag = false; % false = specific scenario; true for two-class
 
-    ProbMat = [ProbMat; NewObs(3:end)']; 
+    ProbMat = [ProbMat; NewObs']; 
+
+    ProbMatScenario = ProbMat(:,3:end); 
+    ProbMatType = ProbMat(:,1:2); 
     
     if ~exist('ProbThreshold', 'var')
         ProbThreshold = 0.69;
     end
 
-    %% (2) Assess specific scenario 
-    mu = mean(ProbMat,1); % remove He and Ho columns 
-    sigma = var(ProbMat,1); 
-
-    mean_var = find(max(mu - sigma) == (mu - sigma)); 
-
-    ref_scenario = find(max(mu) == mu); 
-    p = nan(size(ProbMat,2),1);
-    h = nan(size(ProbMat,2),1);
-    for test_scenario = 1:size(ProbMat,2)
-        if test_scenario ~= ref_scenario
-            [p(test_scenario), h(test_scenario)]= ranksum(ProbMat(:,ref_scenario),ProbMat(:,test_scenario));
-        end
-    end
-    %[p h] 
-
-    if nansum(h) < length(h)-1
-        ScenarioFlag = true; 
-        fprintf('Assessed Scenario not statistically significant.\n')
-    else 
-        subCube = squeeze(datacube(:, :, parameters.intent, ref_scenario, :)); 
-        fprintf('Assessed statistically significant Scenario is S%i\n',ref_scenario)
-    end
-
-    %% (3) Assess Heterogeneous or Homogeneous if unable 
-    if ScenarioFlag
-        ScenarioTwoClass = string(TwoClass); 
-        if TwoClassProb(2) > ProbThreshold
-            fprintf('Assessed Scenario type is Homogeneous\n')
-            subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
-        elseif TwoClassProb(1) > ProbThreshold
-            subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
-            fprintf('Assessed Scenario type is Heterogeneous\n')
-        else
-            subCube = squeeze(datacube(:, :, parameters.intent, 1, :)); 
-            fprintf('Insufficient data to determine if Heterogeneous or Homogeneous (Pr > %.2f)\n',ProbThreshold)
-            fprintf('Assessed Scenario type is Default\n')
-        end 
+    %% (2) Assess Heterogeneous or Homogeneous 
+    ScenarioTwoClass = string(TwoClass); 
+    ProbMatType = find(max(sum(ProbMatType > 0.69)) == sum(ProbMatType > 0.69));
+    if ProbMatType == 2
+        fprintf('Assessed Scenario type is Homogeneous\n')
+        subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
+    elseif ProbMatType == 1
+        subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
+        fprintf('Assessed Scenario type is Heterogeneous\n')
+    else
+        subCube = squeeze(datacube(:, :, parameters.intent, 1, :)); 
+        fprintf('Insufficient data to determine if Heterogeneous or Homogeneous (Pr > %.2f)\n',ProbThreshold)
+        fprintf('Assessed Scenario type is Default\n')
     end 
+
+    %% (2) Assess specific scenario 
+    if ProbMatType == 2
+        ProbMatScenario = ProbMatScenario(:,5:end);
+    elseif ProbMatType == 1
+        ProbMatScenario = ProbMatScenario(:,1:4);
+    end 
+    
+    mu = mean(ProbMatScenario,1); 
+    sigma = var(ProbMatScenario,1);
+
+    ref_scenario = find(max(mu - sigma) == (mu - sigma)); 
+
+    p = nan(size(ProbMatScenario,2),1);
+    h = nan(size(ProbMatScenario,2),1);
+    for test_scenario = 1:size(ProbMatScenario,2)
+        if test_scenario ~= ref_scenario
+            [p(test_scenario), h(test_scenario)]= ranksum(ProbMatScenario(:,ref_scenario),ProbMatScenario(:,test_scenario));
+        end
+    end 
+
+    if ProbMatType == 2 % output must account for 
+        ref_scenario = ref_scenario + 4; 
+    end
+    if nansum(h) < length(h)-1
+        fprintf('Assessed Scenario S%i not statistically significant (num scenarios = %i).\n',ref_scenario,(length(h)-nansum(h)))
+    else
+        subCube = squeeze(datacube(:, :, parameters.intent, ref_scenario, :)); 
+        fprintf('Assessed Scenario is S%i\n',ref_scenario)
+    end
+
 
     % datacube = [collect drive metric scenario hypoth-test]
     % 6D array 
@@ -75,8 +84,8 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
     end
     
     %% (5) Output selected scenario and data 
-    output.row = row; 
-    output.col = col; 
+    output.row = row(1); 
+    output.col = col(1); 
     
     output.scenario = ref_scenario; 
     output.stats = [p h];

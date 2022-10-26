@@ -152,7 +152,7 @@ parameters.InfluenceOfDogWeight = [0.50 0.50 1.00 1.90 1.00 1.00 1.00]; % W_pi_b
 parameters.usr = [0    0    1    0    0    0    0]; % all values must = 1; see ScenarioLibrary for examples
 
 if parameters.IsolatedSim
-    parameters.ScenarioIndex = 'S1'; % If calling this script externally, remove this Scenario selector; S5 = Strombom
+    parameters.ScenarioIndex = 'S7'; % If calling this script externally, remove this Scenario selector; S5 = Strombom
 end 
 
 parameters.Scenario = ScenarioLibrary(parameters,parameters.ScenarioIndex);
