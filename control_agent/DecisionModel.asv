@@ -38,11 +38,13 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
 
     %% (3) Assess Heterogeneous or Homogeneous if unable 
     if ScenarioFlag
+        ScenarioTwoClass
+        TwoClassProb
         ScenarioTwoClass = string(TwoClass); 
-        if TwoClassProb(2) > ProbThreshold
+        if TwoClassProb(1) > ProbThreshold
             fprintf('Assessed Scenario type is Homogeneous\n')
             subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); 
-        elseif TwoClassProb(1) > ProbThreshold
+        elseif strcmp("Heterogeneous", ScenarioTwoClass) && TwoClassProb(2) > ProbThreshold
             subCube = squeeze(datacube(:, :, parameters.intent, 2, :)); 
             fprintf('Assessed Scenario type is Heterogeneous\n')
         else

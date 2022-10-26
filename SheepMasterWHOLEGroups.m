@@ -765,7 +765,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.(nameAfterDot).TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.(nameAfterDot).TacticCollect;
             end
-            if ~parameters.SET_CLOCK
+            if ~parameters.SET_CLOCK && parameters.Verbose2
                 fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
             end
         end

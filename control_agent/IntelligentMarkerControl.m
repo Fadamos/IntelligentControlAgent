@@ -130,7 +130,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
     % Scenario 
-    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, CurrentTacticPair); 
+    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair); 
     PredClassScore = [PredClassScore; ClassPredict.score'];
 
     row = AgentDecision.row;
@@ -142,7 +142,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         CollectingTacticIndex = char(parameters.TacticCollectReference(row));
         NextTacticPair = [convertCharsToStrings(DrivingTacticIndex) convertCharsToStrings(CollectingTacticIndex)]; 
         if NextTacticPair == CurrentTacticPair 
-            fprintf('Continuing with Tactic Pair: {%s %s}.\n', NextTacticPair(1), NextTacticPair(2))
+            fprintf('Continuing with Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
         else 
             fprintf('New Tactic Pair: {%s %s}.\n',NextTacticPair(1),NextTacticPair(2))
         end
