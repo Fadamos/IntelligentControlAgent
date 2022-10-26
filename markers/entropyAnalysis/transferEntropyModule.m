@@ -159,7 +159,7 @@ Verbose = false; % sys print statements
             % JIDT location:
             % Adam 
             %properties.jidtJarLocation = '/Users/fadamos/GitHub/SkyShepherds/centreOfInfluence/transferEntropy/infodynamics.jar'; 
-            properties.jidtJarLocation = '/Users/ajh/GitHub/IntelligentControlAgent/entropyAnalysis/transferEntropy/infodynamics.jar';
+            properties.jidtJarLocation = '/Users/ajh/GitHub/IntelligentControlAgent/markers/entropyAnalysis/transferEntropy/infodynamics.jar';
             % Kate
             % properties.jidtJarLocation = 'C:\Users\K8\Documents\MATLAB\LeaderFollower Code\SSCI Analysis\Sensitivity Analysis Phase\centreOfInfluence\transferEntropy\infodynamics.jar'; 
             % Daniel 
