@@ -1,23 +1,47 @@
-function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass, TwoClassProb, CurrentTacticPair, ProbThreshold,  scenario_agent, scenario_library)
+function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, TwoClass, TwoClassProb, CurrentTacticPair,  scenario_agent, scenario_library, ProbThreshold)
     % Author: Adam J Hepworth
     % LastModified: 2022-10-26
     % Explanaton: Intelligent control agent decision module 
     
-    %% (1) Data and scenario statistics
-    ScenarioFlag = false; % false = specific scenario; true for two-class
+    %% (0) Init 
+    if ~exist('ProbThreshold', 'var')
+        ProbThreshold = 0.69;
+    end    
+
+    %% (1) Agent classification logic --> agent to swarm 
+    
+    % difference 
+    agent_out = sum(abs(scenario_library - scenario_agent)');  
+   
+    for type = 1:size(scenario_library,1)
+        % 1- L2 norm of difference between observed swarm and known scenario 
+        % 2- observed is the sum of probabilities from the classifier for each agent 
+        % 3- the output norm gives us a 'euclidenan distance' that the observation is from each scenario (our observation is ref) 
+        agent_out(type) = norm(abs(scenario_agent - scenario_library(type,:)), 2); 
+    end
+    % inverse distance weighting technique
+    % motivated by weighted average as it applies an inverse transform to each of the distancnes (from L2 norm) 
+    AgentPred = (1./agent_out)./(sum(1./agent_out)); 
+    
+                                      % He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
+    NewObs = [ClassPredict.C2.score(1)                                                       % He 
+              ClassPredict.C2.score(2)                                                       % Ho
+              mean([ClassPredict.C2He.score(1) ClassPredict.C2He2.score(2)])                 % S1
+              mean([ClassPredict.C2He.score(2) ClassPredict.C2He2.score(3)])                 % S2                                        
+              mean([ClassPredict.C2He.score(3) ClassPredict.C2He2.score(4)])                 % S3                                        
+              mean([ClassPredict.C2He.score(4) ClassPredict.C2He2.score(5)])                 % S4                                        
+              mean([ClassPredict.C2Ho.score(3) ClassPredict.C2Ho2.score(4)])                 % S5                                        
+              mean([ClassPredict.C2Ho.score(4) ClassPredict.C2Ho2.score(5)])                 % S6                                         
+              mean([ClassPredict.C2Ho.score(5) ClassPredict.C2Ho2.score(6)])                 % S7                                         
+              mean([ClassPredict.C2Ho.score(6) ClassPredict.C2Ho2.score(7)])                 % S8                                         
+              mean([ClassPredict.C2Ho.score(7) ClassPredict.C2Ho2.score(8)])                 % S9                                         
+              mean([ClassPredict.C2Ho.score(1) ClassPredict.C2Ho2.score(2)])                 % S10                                         
+              mean([ClassPredict.C2Ho.score(2) ClassPredict.C2Ho2.score(3)])];               % S11     
 
     ProbMat = [ProbMat; NewObs']; 
 
     ProbMatScenario = ProbMat(:,3:end); 
     ProbMatType = ProbMat(:,1:2); 
-    
-    if ~exist('ProbThreshold', 'var')
-        ProbThreshold = 0.69;
-    end
-
-    %% (1) Employ agent classifications to determine
-
-    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCENARIO TYPE! 
 
     %% (2) Assess Heterogeneous or Homogeneous 
     ScenarioTwoClass = string(TwoClass); 
@@ -83,24 +107,18 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         % if viable, then set the next TP to the current TP 
         row = find(CurrentTacticPair(1) == parameters.TacticDriveReference); 
         col = find(CurrentTacticPair(2) == parameters.TacticCollectReference); 
-        if length(row) > 1 || length(col) > 1
-            if 
-                subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); % homogeneous 
-            elseif 
-
-            end
-        end
     else % set the next TP to the TP that maximises the likelihood of metric performance
         [row, col] = find(viableTP == max(max(viableTP))); % select the TP with the highest performance (noting that they are all stat signif differentiable)
     end
     
     %% (5) Output selected scenario and data 
-    output.row = row; 
-    output.col = col; 
+    output.row = row(1); 
+    output.col = col(1); 
     
     output.scenario = ref_scenario; 
     output.stats = [p h];
     output.viableTP = viableTP; 
     output.ProbMat = ProbMat; 
+    output.score = NewObs; 
     
 end

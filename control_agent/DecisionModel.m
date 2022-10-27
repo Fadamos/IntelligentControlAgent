@@ -1,23 +1,51 @@
-function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass, TwoClassProb, CurrentTacticPair,  scenario_agent, scenario_library, ProbThreshold)
+function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, TwoClass, TwoClassProb, CurrentTacticPair,  scenario_agent, scenario_library, ProbThreshold)
     % Author: Adam J Hepworth
     % LastModified: 2022-10-26
     % Explanaton: Intelligent control agent decision module 
     
-    %% (1) Data and scenario statistics
-    ScenarioFlag = false; % false = specific scenario; true for two-class
+    %% (0) Init 
+    if ~exist('ProbThreshold', 'var')
+        ProbThreshold = 0.69;
+    end    
+
+    %% (1) Agent classification logic --> agent to swarm 
+    
+    % difference 
+    agent_out = sum(abs(scenario_library - scenario_agent)');  
+   
+    for type = 1:size(scenario_library,1)
+        % 1- L2 norm of difference between observed swarm and known scenario 
+        % 2- observed is the sum of probabilities from the classifier for each agent 
+        % 3- the output norm gives us a 'euclidenan distance' that the observation is from each scenario (our observation is ref) 
+        agent_out(type) = norm(abs(scenario_agent - scenario_library(type,:)), 2); 
+    end
+    % 1- inverse distance weighting technique
+    % 2- motivated by weighted average as it applies an inverse transform to each of the distancnes (from L2 norm) 
+    %    to give a likelihood measure where the larger the distance from the reference (observed scenario), 
+    %    the smaller the inverse (i.e. smaller likelihood)
+    % 3- https://stackoverflow.com/questions/23459707/how-to-convert-distance-into-probability
+    % 4- https://en.wikipedia.org/wiki/Inverse_distance_weighting
+    AgentPred = (1./agent_out)./(sum(1./agent_out)); 
+    
+                                      % He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
+    NewObs = [ClassPredict.C2.score(1)                                                          % He 
+              ClassPredict.C2.score(2)                                                          % Ho
+              mean([ClassPredict.C2He.score(1) ClassPredict.C2He2.score(2) AgentPred(1)])       % S1
+              mean([ClassPredict.C2He.score(2) ClassPredict.C2He2.score(3) AgentPred(2)])       % S2                                        
+              mean([ClassPredict.C2He.score(3) ClassPredict.C2He2.score(4) AgentPred(3)])       % S3                                        
+              mean([ClassPredict.C2He.score(4) ClassPredict.C2He2.score(5) AgentPred(4)])       % S4                                        
+              mean([ClassPredict.C2Ho.score(3) ClassPredict.C2Ho2.score(4) AgentPred(5)])       % S5                                        
+              mean([ClassPredict.C2Ho.score(4) ClassPredict.C2Ho2.score(5) AgentPred(6)])       % S6                                         
+              mean([ClassPredict.C2Ho.score(5) ClassPredict.C2Ho2.score(6) AgentPred(7)])       % S7                                         
+              mean([ClassPredict.C2Ho.score(6) ClassPredict.C2Ho2.score(7) AgentPred(8)])       % S8                                         
+              mean([ClassPredict.C2Ho.score(7) ClassPredict.C2Ho2.score(8) AgentPred(9)])       % S9                                         
+              mean([ClassPredict.C2Ho.score(1) ClassPredict.C2Ho2.score(2) AgentPred(10)])      % S10                                         
+              mean([ClassPredict.C2Ho.score(2) ClassPredict.C2Ho2.score(3) AgentPred(11)])];    % S11     
 
     ProbMat = [ProbMat; NewObs']; 
 
     ProbMatScenario = ProbMat(:,3:end); 
     ProbMatType = ProbMat(:,1:2); 
-    
-    if ~exist('ProbThreshold', 'var')
-        ProbThreshold = 0.69;
-    end
-
-    %% (1) Agent classification logic 
-
-    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCENARIO TYPE! 
 
     %% (2) Assess Heterogeneous or Homogeneous 
     ScenarioTwoClass = string(TwoClass); 
@@ -95,5 +123,6 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
     output.stats = [p h];
     output.viableTP = viableTP; 
     output.ProbMat = ProbMat; 
+    output.score = NewObs; 
     
 end

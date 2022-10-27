@@ -102,29 +102,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         ClassPredict.C2He2.yfit = yfitHe2;
         ClassPredict.C2He2.score = yfitHe2SCORE;
         ClassPredict.C2Ho2.yfit = yfitHo2;
-        ClassPredict.C2Ho2.score = yfitHo2SCORE;
-    
-                              % He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
-        ClassPredict.score = [ClassPredict.C2.score(1)                                     % He 
-            ClassPredict.C2.score(2)                                                       % Ho
-            mean([ClassPredict.C2He.score(1) ClassPredict.C2He2.score(2)])                 % S1
-            mean([ClassPredict.C2He.score(2) ClassPredict.C2He2.score(3)])                 % S2                                        
-            mean([ClassPredict.C2He.score(3) ClassPredict.C2He2.score(4)])                 % S3                                        
-            mean([ClassPredict.C2He.score(4) ClassPredict.C2He2.score(5)])                 % S4                                        
-            mean([ClassPredict.C2Ho.score(3) ClassPredict.C2Ho2.score(4)])                 % S5                                        
-            mean([ClassPredict.C2Ho.score(4) ClassPredict.C2Ho2.score(5)])                 % S6                                         
-            mean([ClassPredict.C2Ho.score(5) ClassPredict.C2Ho2.score(6)])                 % S7                                         
-            mean([ClassPredict.C2Ho.score(6) ClassPredict.C2Ho2.score(7)])                 % S8                                         
-            mean([ClassPredict.C2Ho.score(7) ClassPredict.C2Ho2.score(8)])                 % S9                                         
-            mean([ClassPredict.C2Ho.score(1) ClassPredict.C2Ho2.score(2)])                 % S10                                         
-            mean([ClassPredict.C2Ho.score(2) ClassPredict.C2Ho2.score(3)])];               % S11                                        
+        ClassPredict.C2Ho2.score = yfitHo2SCORE;                               
 
         % G1: Classification accuracy - agents and G2: Classification accuracy - swarm
         EvalGain = [EvalGain; SimulationTime sum(ClassPredYagent) ((sum(ClassPredYagent)/NumberOfSheep)*100)];
         % Save individual classification performances for later
         MarkerClassPerfAgent.(nameAfterDot) = ClassPredYagent; 
 
-        [~,ScenarioIdx] = max(ClassPredict.score(3:end)); 
+        %[~,ScenarioIdx] = max(ClassPredict.score(3:end)); 
     end
 
     %% Current Tactic Pair 
@@ -133,8 +118,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     % Scenario 
     scenario_library = ScenarioLibrary(parameters, 'FULL_LIB');
-    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair, scenario_agent, scenario_library); 
-    PredClassScore = [PredClassScore; ClassPredict.score'];
+    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict, yfit2class, yfit2classSCORE, CurrentTacticPair, scenario_agent, scenario_library); 
+    PredClassScore = [PredClassScore; AgentDecision.score'];
 
     row = AgentDecision.row;
     col = AgentDecision.col;
@@ -153,11 +138,11 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     %% Determine Clock Frequency
     
-    CLOCK_2_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2)); %% ScenarioIdx needs to come from AgentDecision
+    CLOCK_2_xnew = table(append("S",num2str(AgentDecision.scenario)), NextTacticPair(1), NextTacticPair(2)); %% ScenarioIdx needs to come from AgentDecision
     CLOCK_2 = predict(CLOCK_2_regmdl, CLOCK_2_xnew);
     CLOCK_2 = round(CLOCK_2);
 
-    CLOCK_3_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2));
+    CLOCK_3_xnew = table(append("S",num2str(AgentDecision.scenario)), NextTacticPair(1), NextTacticPair(2));
     CLOCK_3 = predict(CLOCK_3_regmdl, CLOCK_3_xnew);
     CLOCK_3 = round(CLOCK_3);
 
@@ -180,6 +165,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         output.MarkerClassPerfAgent = MarkerClassPerfAgent; 
         output.SwarmClassificationData = SwarmClassificationData; 
         output.DecisionModel = AgentDecision; 
+        output.PredClassScore = PredClassScore; 
     end
     
     % behaviour selection
