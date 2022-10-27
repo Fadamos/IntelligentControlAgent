@@ -6,7 +6,7 @@ function Scenario = ScenarioLibrary(parameters, ScenarioIndex)
     usr = parameters.usr;
 
     switch ScenarioIndex
-        case 'S0' % custom scenario 
+        case 'SX' % custom scenario 
             Scenario = usr; 
         
         case 'S1' % Find and Guide
@@ -41,6 +41,19 @@ function Scenario = ScenarioLibrary(parameters, ScenarioIndex)
         
         case 'S11' % Homogeneous A6
             Scenario = [0    0    0    0    0    1.00    0];
+        
+        case 'FULL_LIB'
+            Scenario = [0.20 0    0    0    0    0    0.80; 
+                        0    0.20 0.20 0    0    0.20 0.40;
+                        0    0    0    0.80 0    0    0.20;
+                        0.20 0    0    0    0.20 0    0.60;
+                        0    0    0    0    0    0    1.00;
+                        1.00 0    0    0    0    0       0;
+                        0    1.00 0    0    0    0       0;
+                        0    0    1.00 0    0    0       0;
+                        0    0    0    1.00 0    0       0;
+                        0    0    0    0    1.00 0       0;
+                        0    0    0    0    0    1.00    0];
     end 
 
 end

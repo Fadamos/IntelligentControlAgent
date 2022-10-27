@@ -64,7 +64,9 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('\nClassified Agent Distribution:\n')
         summary(categorical(string(cell2mat(yfit))))
         
-        
+        scenario_agent = sum(yfitSCORE)/length(yfit);
+        scenario_library = ScenarioLibrary(parameters, 'FULL_LIB');
+
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
         %if string(yfit2class) == "Heterogeneous" 
@@ -131,7 +133,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
     % Scenario 
-    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair); 
+    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair, scenario_agent, scenario_library); 
     PredClassScore = [PredClassScore; ClassPredict.score'];
 
     row = AgentDecision.row;

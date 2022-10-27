@@ -1,4 +1,4 @@
-function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass, TwoClassProb, CurrentTacticPair, ProbThreshold)
+function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass, TwoClassProb, CurrentTacticPair, ProbThreshold,  scenario_agent, scenario_library)
     % Author: Adam J Hepworth
     % LastModified: 2022-10-26
     % Explanaton: Intelligent control agent decision module 
@@ -30,7 +30,11 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         fprintf('Assessed Scenario type is Default\n')
     end 
 
-    %% (2) Assess specific scenario 
+    %% (2) Employ agent classifications to determine 
+
+    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCEN
+
+    %% (3) Assess specific scenario 
     if ProbMatType == 2
         ProbMatScenario = ProbMatScenario(:,5:end);
     elseif ProbMatType == 1
@@ -50,7 +54,7 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         end
     end 
 
-    if ProbMatType == 2 % 
+    if ProbMatType == 2 % output must account for 
         ref_scenario = ref_scenario + 4; 
     end
     if nansum(h) < length(h)-1
@@ -84,8 +88,8 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
     end
     
     %% (5) Output selected scenario and data 
-    output.row = row; 
-    output.col = col; 
+    output.row = row(1); 
+    output.col = col(1); 
     
     output.scenario = ref_scenario; 
     output.stats = [p h];

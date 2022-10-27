@@ -148,7 +148,7 @@ parameters.WeightCollision      = [2.00 2.00 3.00 2.00 3.00 1.50 2.00]; % W_pi_p
 parameters.InfluenceOfDogWeight = [0.50 0.50 1.00 1.90 1.00 1.00 1.00]; % W_pi_beta
 
 %% Scenario Generation 
-% used for custom scenario generation with ScenarioIndex 'S0'
+% used for custom scenario generation with ScenarioIndex 'SX'
 parameters.usr = [0    0    1    0    0    0    0]; % all values must = 1; see ScenarioLibrary for examples
 
 if parameters.IsolatedSim
