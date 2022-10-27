@@ -64,7 +64,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         fprintf('\nClassified Agent Distribution:\n')
         summary(categorical(string(cell2mat(yfit))))
         
-        
+        scenario_agent = sum(yfitSCORE)/length(yfit);
+
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
         %if string(yfit2class) == "Heterogeneous" 
@@ -79,13 +80,14 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         [yfitHe2, yfitHe2SCORE] = C2_He2.predictFcn(Mrk.M3.L2norm); 
         [yfitHo2, yfitHo2SCORE] = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
-        fprintf('Identified Swarm Type (Tree Classifier    C2        {Homogeneous Heterogeneous})                      = %s Pr(%.2f) \n', string(yfit2class), max(yfit2classSCORE))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_He     {S1, S2, S3, S4})                                 = %s Pr(%.2f) \n', string(yfitHe), max(yfitHeSCORE))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho     {S5, S6, S7, S8, S9, S10, S11})                   = %s Pr(%.2f) \n', string(yfitHo), max(yfitHoSCORE))
-        fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s Pr(%.2f) \n', string(yfitHe2), max(yfitHe2SCORE))
-        fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s Pr(%.2f) \n', string(yfitHo2), max(yfitHo2SCORE))
-        fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
-
+         if parameters.VerboseBugger
+            fprintf('Identified Swarm Type (Tree Classifier    C2        {Homogeneous Heterogeneous})                      = %s Pr(%.2f) \n', string(yfit2class), max(yfit2classSCORE))
+            fprintf('Identified Swarm Type (Tree Classifier    C2_He     {S1, S2, S3, S4})                                 = %s Pr(%.2f) \n', string(yfitHe), max(yfitHeSCORE))
+            fprintf('Identified Swarm Type (Tree Classifier    C2_Ho     {S5, S6, S7, S8, S9, S10, S11})                   = %s Pr(%.2f) \n', string(yfitHo), max(yfitHoSCORE))
+            fprintf('Identified Swarm Type (FF ANN Classifier  C2_He2    {S1, S2, S3, S4, Homogeneous})                    = %s Pr(%.2f) \n', string(yfitHe2), max(yfitHe2SCORE))
+            fprintf('Identified Swarm Type (Tree Classifier    C2_Ho2    {S5, S6, S7, S8, S9, S10, S11, Heterogeneous})    = %s Pr(%.2f) \n', string(yfitHo2), max(yfitHo2SCORE))
+            fprintf('\n* * * * * Ground Truth Swarm Type: %s\n', parameters.ScenarioIndex)
+        end 
         %% Record performance data here and save it 
         SwarmClassificationData = [SwarmClassificationData; parameters.ScenarioIndex string(yfit2class) string(yfitHe) string(yfitHo) string(yfitHe2) string(yfitHo2)];
         
@@ -130,7 +132,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
     % Scenario 
-    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair); 
+    scenario_library = ScenarioLibrary(parameters, 'FULL_LIB')
+    AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair, scenario_agent, scenario_library); 
     PredClassScore = [PredClassScore; ClassPredict.score'];
 
     row = AgentDecision.row;

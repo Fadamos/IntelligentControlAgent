@@ -65,7 +65,6 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         summary(categorical(string(cell2mat(yfit))))
         
         scenario_agent = sum(yfitSCORE)/length(yfit);
-        scenario_library = ScenarioLibrary(parameters, 'FULL_LIB');
 
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
@@ -133,6 +132,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     fprintf('\nCurrent Tactic Pair: {%s %s}.\n',CurrentTacticPair(1),CurrentTacticPair(2))
 
     % Scenario 
+    scenario_library = ScenarioLibrary(parameters, 'FULL_LIB');
     AgentDecision = DecisionModel(parameters, datacube, ProbMat, ClassPredict.score, yfit2class, yfit2classSCORE, CurrentTacticPair, scenario_agent, scenario_library); 
     PredClassScore = [PredClassScore; ClassPredict.score'];
 
@@ -153,7 +153,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     %% Determine Clock Frequency
     
-    CLOCK_2_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2));
+    CLOCK_2_xnew = table(append("S",num2str(ScenarioIdx-2)), NextTacticPair(1), NextTacticPair(2)); %% ScenarioIdx needs to come from AgentDecision
     CLOCK_2 = predict(CLOCK_2_regmdl, CLOCK_2_xnew);
     CLOCK_2 = round(CLOCK_2);
 
