@@ -132,7 +132,6 @@ function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, Two
     output.sigma = sigma; 
     output.ProbThreshold = ProbThreshold; 
     output.agent_out = agent_out; 
-
-    
+    output.MeanVar = mu - sigma;    
 end
 %

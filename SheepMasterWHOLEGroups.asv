@@ -103,7 +103,8 @@ FlagSigma1pos                           = 0;
 FlagSigma2pos                           = 0; 
 
 % Decision Model 
-ProbMat                              = []; % probability matrix
+ProbMat                                 = []; % probability matrix for scenario classifications
+PredClassScore                          = []; 
 
 %% Assign the environment boundaries
 MinX = BoundarySize(1);
@@ -115,34 +116,34 @@ MaxY = BoundarySize(4);
 if parameters.military == 1
 % military scenario - F35/Ghost Bat
     if parameters.visual == "classic"
-        [DogImg,DogM] = imread('f35.png');
+        [DogImg,DogM] = imread('core_sim/f35.png');
         DogImg = imresize(DogImg,1);
         DogImgSize = [7.64,11]; 
     elseif parameters.visual == "flipped"
-        [DogImg,~,DogM] = imread('f35.png');
+        [DogImg,~,DogM] = imread('core_sim/f35.png');
         DogImg = imresize(DogImg,[7.64, 11], 'lanczos3');
         DogM = imresize(DogM,[7.64, 11], 'lanczos3');
     end
     
-    [SheepImg,SheepM] = imread('ghostbat.png');
+    [SheepImg,SheepM] = imread('core_sim/ghostbat.png');
     SheepImg = imresize(SheepImg,1);
     SheepImgSize = [4.8,5.96]; 
 elseif parameters.military == 2
     % military scenario - Apache/M1A1
-    [DogImg,DogM] = imread('apache.png');
+    [DogImg,DogM] = imread('core_sim/apache.png');
     DogImg = imresize(DogImg,1);
     DogImgSize = [11.68,15.9]; 
     
-    [SheepImg,SheepM] = imread('m1a1.png');
+    [SheepImg,SheepM] = imread('core_sim/m1a1.png');
     SheepImg = imresize(SheepImg,1);
     SheepImgSize = [4.01,10.61]; 
 else 
     % classic shepherding 
-    [DogImg,DogM] = imread('Dog.png');
+    [DogImg,DogM] = imread('core_sim/Dog.png');
     DogImg = imresize(DogImg,1);
     DogImgSize = [10,10]; 
     
-    [SheepImg,SheepM] = imread('sheep.png');
+    [SheepImg,SheepM] = imread('core_sim/sheep.png');
     SheepImg = imresize(SheepImg,1);
     SheepImgSize = [7,7]; 
     
@@ -464,7 +465,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                     SwarmState = 2; % "Dispersed";
                 end
             end
-            if parameters.Verbose 
+            if parameters.Verbose2
                 fprintf('t = %i with behaviour = %i ||| Continue behaviour? = %i ||| Drive until = %i -- Collect until = %i ||| Continue with drive pos until = %i -- Continue with collect pos until = %i |||\n',SimulationTime,ShepherdIndividualBehaviour,FlagSigma,FlagSigma1,FlagSigma2,FlagSigma1pos,FlagSigma2pos)
             end
             nameAfterDot = ['t',num2str(SimulationTime)]; 
@@ -746,10 +747,11 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             
             % ###
             nameAfterDot = ['t',num2str(SimulationTime)]; 
-            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat); 
+            IntelligentAgent.(nameAfterDot) = IntelligentMarkerControl(Verbose, SensedData, parameters, SimulationTime, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, NumberOfSheep, FullSet, EvalCost, EvalGain, SwarmAgentAttnPoints, InteractionAgentProp, SwarmClassificationData, DrivingTacticIndex, CollectingTacticIndex, CLOCK_2_regmdl, CLOCK_3_regmdl, ProbMat, PredClassScore); 
             IntelligentAgent.(nameAfterDot).FLAGS = [SimulationTime, ShepherdIndividualBehaviour, FlagSigma, FlagSigma1, FlagSigma2, FlagSigma1pos, FlagSigma2pos];
-        
+            
             % Stats for plotting 
+            ProbMat = IntelligentAgent.(nameAfterDot).ProbMat; % save the probability matrix
             
             % Behaviour re-assessment clock 
             parameters.SigmaLength = IntelligentAgent.(nameAfterDot).Clock2; 
@@ -763,7 +765,7 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
                 DrivingTacticIndex = IntelligentAgent.(nameAfterDot).TacticDrive;
                 CollectingTacticIndex = IntelligentAgent.(nameAfterDot).TacticCollect;
             end
-            if ~parameters.SET_CLOCK
+            if ~parameters.SET_CLOCK && parameters.Verbose2
                 fprintf('\nUsing %s and %s behaviours. \n\n\n\n\n', convertCharsToStrings(DrivingTacticIndex), convertCharsToStrings(CollectingTacticIndex))
             end
         end
@@ -796,21 +798,21 @@ while AllSheepWithinGoal == 0 && SimulationTime < NumberOfTimeSteps
             hist(ClockTimesDist(:,2))
             title('Clock 3 Time Histogram')
 
-%         subplot(3,3,6)
-%             
-%             title()
-% 
-%         subplot(3,3,7)
-%             
-%             title()
-% 
-%         subplot(3,3,8)
-% 
-%             title()
-%             
-%         subplot(3,3,9)
-% 
-%             title()
+        subplot(3,3,6)
+            
+            title()
+
+        subplot(3,3,7)
+            
+            title()
+
+        subplot(3,3,8)
+
+            title()
+            
+        subplot(3,3,9)
+
+            title()
     end
 
     % if NaNs are observed and recorded, now break from the simulation
@@ -850,6 +852,5 @@ output.Flags = Flags;
 output.BehaviourProportions = BehaviourProportions; 
 if parameters.InternalMarkerCalculations
    output.IntelligentAgent = IntelligentAgent; 
-   output.MAB.RewardsMat = ProbMat; 
-   output.MAB.MABiter = MABiter; 
+   output.ProbMat = ProbMat; 
 end
