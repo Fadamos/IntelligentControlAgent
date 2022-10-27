@@ -17,7 +17,7 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
 
     %% (1) Employ agent classifications to determine
 
-    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCENARIO TYPE! 
+    %agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCENARIO TYPE! 
 
     %% (2) Assess Heterogeneous or Homogeneous 
     ScenarioTwoClass = string(TwoClass); 

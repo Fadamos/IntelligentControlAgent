@@ -15,6 +15,10 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         ProbThreshold = 0.69;
     end
 
+    %% (1) Employ agent classifications to determine
+
+    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCENARIO TYPE! 
+
     %% (2) Assess Heterogeneous or Homogeneous 
     ScenarioTwoClass = string(TwoClass); 
     ProbMatType = find(max(sum(ProbMatType > 0.69)) == sum(ProbMatType > 0.69));
@@ -29,10 +33,6 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         fprintf('Insufficient data to determine if Heterogeneous or Homogeneous (Pr > %.2f)\n',ProbThreshold)
         fprintf('Assessed Scenario type is Default\n')
     end 
-
-    %% (2) Employ agent classifications to determine 
-
-    agent_out = sum(abs(scenario_library - scenario_agent)');  %% THIS NEEDS TO BE FIXED TO INCLUDE THIS DATA IN THE SCEN
 
     %% (3) Assess specific scenario 
     if ProbMatType == 2
@@ -83,13 +83,20 @@ function output = DecisionModel(parameters, datacube, ProbMat, NewObs, TwoClass,
         % if viable, then set the next TP to the current TP 
         row = find(CurrentTacticPair(1) == parameters.TacticDriveReference); 
         col = find(CurrentTacticPair(2) == parameters.TacticCollectReference); 
+        if length(row) > 1 || length(col) > 1
+            if 
+                subCube = squeeze(datacube(:, :, parameters.intent, 3, :)); % homogeneous 
+            elseif 
+
+            end
+        end
     else % set the next TP to the TP that maximises the likelihood of metric performance
         [row, col] = find(viableTP == max(max(viableTP))); % select the TP with the highest performance (noting that they are all stat signif differentiable)
     end
     
     %% (5) Output selected scenario and data 
-    output.row = row(1); 
-    output.col = col(1); 
+    output.row = row; 
+    output.col = col; 
     
     output.scenario = ref_scenario; 
     output.stats = [p h];
