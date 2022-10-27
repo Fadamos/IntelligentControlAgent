@@ -72,6 +72,7 @@ function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, Two
     mu = mean(ProbMatScenario,1); 
     sigma = var(ProbMatScenario,1);
 
+    % mean minus variance is our reference scenario (highest mean likelihood with least variability)
     ref_scenario = find(max(mu - sigma) == (mu - sigma)); 
 
     p = nan(size(ProbMatScenario,2),1);
@@ -116,13 +117,22 @@ function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, Two
     end
     
     %% (5) Output selected scenario and data 
+    % selected TP from decision model enginge
     output.row = row(1); 
     output.col = col(1); 
-    
+    % supporting data
     output.scenario = ref_scenario; 
     output.stats = [p h];
     output.viableTP = viableTP; 
     output.ProbMat = ProbMat; 
     output.score = NewObs; 
+    output.ProbMatType = ProbMatType;
+    output.ProbMatScenario = ProbMatScenario; 
+    output.mu = mu; 
+    output.sigma = sigma; 
+    output.ProbThreshold = ProbThreshold; 
+    output.agent_out = agent_out; 
+
     
 end
+%

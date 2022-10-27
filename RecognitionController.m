@@ -41,8 +41,8 @@ parameters.military = 1; % 0 = classic shepherding; 1+ = military
 if parameters.IsolatedSim
     parameters.CollisionRange = 'L1';
     parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
-    parameters.DogCollectingTacticIndex = 'C2D';
-    parameters.DogDrivingTacticIndex = 'DOAT';
+    parameters.DogCollectingTacticIndex = 'F2H';
+    parameters.DogDrivingTacticIndex = 'DAH';
     parameters.Replicate = 1; 
 end
 % Markers 
@@ -69,10 +69,10 @@ parameters.WindowSize = 60; % number of observations for each marker window --> 
 parameters.Overlap = 0.75; % = Proportion of overlap between each marker
 
 % Behaviour re-assessment clock 
-parameters.SigmaLength = 15; % 1 = strombom; > 1 = novel 
+parameters.SigmaLength = 1; % 1 = strombom; > 1 = novel 
 
 % Behaviour execution point re-assessment clock
-parameters.SigmaPositioningPoint = 10;  % 1 = strombom; > 1 = novel 
+parameters.SigmaPositioningPoint = 1;  % 1 = strombom; > 1 = novel 
 
 parameters.TacticDriveReference = {'DAH' 'DHH' 'DOAT' 'DQH' 'DTQH'};
 parameters.TacticCollectReference = {'C2D' 'C2H' 'F2D' 'F2G' 'F2H'};

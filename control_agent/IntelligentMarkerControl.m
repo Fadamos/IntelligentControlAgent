@@ -68,15 +68,8 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
         %% Classifier: Swarm Characteristics
         [yfit2class, yfit2classSCORE] = C2.predictFcn(Mrk.M3.L2norm);
-        %if string(yfit2class) == "Heterogeneous" 
-            [yfitHe, yfitHeSCORE]  = C2_He.predictFcn(Mrk.M3.L2norm); 
-            %yfitHo = "NaN";
-            %yfitHoSCORE = 0; 
-        %elseif string(yfit2class) == "Homogeneous" 
-            [yfitHo, yfitHoSCORE] = C2_Ho.predictFcn(Mrk.M3.L2norm); 
-            %yfitHe = "NaN";
-            %yfitHeSCORE = 0; 
-        %end
+        [yfitHe, yfitHeSCORE]  = C2_He.predictFcn(Mrk.M3.L2norm); 
+        [yfitHo, yfitHoSCORE] = C2_Ho.predictFcn(Mrk.M3.L2norm); 
         [yfitHe2, yfitHe2SCORE] = C2_He2.predictFcn(Mrk.M3.L2norm); 
         [yfitHo2, yfitHo2SCORE] = C2_Ho2.predictFcn(Mrk.M3.L2norm);  
         
@@ -138,7 +131,7 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
 
     %% Determine Clock Frequency
     
-    CLOCK_2_xnew = table(append("S",num2str(AgentDecision.scenario)), NextTacticPair(1), NextTacticPair(2)); %% ScenarioIdx needs to come from AgentDecision
+    CLOCK_2_xnew = table(append("S",num2str(AgentDecision.scenario)), NextTacticPair(1), NextTacticPair(2)); 
     CLOCK_2 = predict(CLOCK_2_regmdl, CLOCK_2_xnew);
     CLOCK_2 = round(CLOCK_2);
 
@@ -166,6 +159,9 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
         output.SwarmClassificationData = SwarmClassificationData; 
         output.DecisionModel = AgentDecision; 
         output.PredClassScore = PredClassScore; 
+        output.row = row; 
+        output.col = col; 
+        output.NextTacticPair = NextTacticPair; 
     end
     
     % behaviour selection
@@ -175,27 +171,4 @@ function output = IntelligentMarkerControl(Verbose, SensedData, parameters, Simu
     end
 
 end
-
-
-%% Tasks 
-
-% This is the flow chart as a very simple agent in the first instance
-
-% C1: Agent Classification (Type = 7 class)
-
-% C2: Swarm Classification (Type = binary)
-
-% if Heterogeneous == C2_He 
-
-% if Homogeneous == C2_Ho 
-
-% if number of swarm classification sequences > threshold || swarm 2-class type > XXX threshold
-
-% Query library for optimal set of behaviours 
-
-% Are suitable for intent? 
-
-% Select optimal (based on optimal mean TP now, not just from the available) 
-
-% if predicted sequence of TP > threshold2 (i.e. invariant of selection) 
-% change TP 
+%
