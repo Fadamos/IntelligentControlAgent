@@ -25,8 +25,8 @@
     % Control agent 
     parameters.CollisionRange = 'L1';
     parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
-    parameters.DogCollectingTacticIndex = 'F2H';
-    parameters.DogDrivingTacticIndex = 'DAH';
+    parameters.DogCollectingTacticIndex = 'F2H'; % strombom 
+    parameters.DogDrivingTacticIndex = 'DAH'; % strombom 
     % Markers 
     parameters.OnlineClassifications = 1; % if you want to classify in each time step
     parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
@@ -40,7 +40,6 @@
     parameters.ShowTimeLength = 20; % length of time the explanation is shown on the screen
     parameters.BehaviourLibrary = 0; % 1 = needs to be calcualted else 0 to load a pre-existing data cube
     parameters.TacticPairSelection = 1; % 1 = dynamically select TP; 0 = do not
-    parameters.replicates = 1; 
 
 parameters.TimePrinter = 0; % print time out or not
 

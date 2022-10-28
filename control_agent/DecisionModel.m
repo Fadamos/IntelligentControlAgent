@@ -11,7 +11,7 @@ function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, Two
     %% (1) Agent classification logic --> agent to swarm 
     
     % difference 
-    agent_out = sum(abs(scenario_library - scenario_agent)');  
+    % agent_out = sum(abs(scenario_library - scenario_agent)');  
    
     for type = 1:size(scenario_library,1)
         % 1- L2 norm of difference between observed swarm and known scenario 

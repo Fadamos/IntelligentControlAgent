@@ -1,4 +1,4 @@
-% Author: Adam J Hepworth
+% Author: Adam J Hepwort
 % LastModified: 2022-10-27
 % Explanaton: Experimentation data generation and analysis script
 % Purpose: Agent performance testing 
