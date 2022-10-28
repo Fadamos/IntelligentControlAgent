@@ -6,11 +6,12 @@
 % parameters.Adam = true; --> This is now set in DataGenMASTER
 
     % system wide test param
-    parameters.SET_CLOCK = 'true';  
+    parameters.SET_CLOCK = false;  
 
     parameters.user = "Adam";
     % Sim params 
     parameters.Verbose = false; % visuals (true) or data only (false)
+    parameters.Verbose2 = false; % clock parameterisation consolt reporting
     parameters.VerboseBugger = false; % sys print for increased data debugging
     parameters.visual = "classic"; % 'classic' if using original visuals
     % turn off warnings if not impacting code execution
@@ -21,13 +22,18 @@
     % Context-aware intelligent agent setup
     parameters.NumberOfSheep = 20;
     parameters.NumberOfSteps = (630 + 20 * parameters.NumberOfSheep) * 5;
+    % Control agent 
+    parameters.CollisionRange = 'L1';
+    parameters.SheepDogVehicleSpeedLimit = 'Dog1.5'; %1.5; % If calling this script externally, remove this Scenario selector 
+    parameters.DogCollectingTacticIndex = 'F2H';
+    parameters.DogDrivingTacticIndex = 'DAH';
     % Markers 
     parameters.OnlineClassifications = 1; % if you want to classify in each time step
     parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
     parameters.FullSet = true; 
     parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
     parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
-    parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
+    parameters.IntelligentControlAgent = 1; % 1 = intelligent markers agent or 0 = standard simulation 
     parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
     % Translator 
     parameters.TranslationController = 0; % translation controller (1=true, 0=false)
@@ -39,6 +45,11 @@
 parameters.TimePrinter = 0; % print time out or not
 
 %% Clocks 
+% Behaviour re-assessment clock 
+parameters.SigmaLength = 1; % 1 = strombom; > 1 = novel 
+
+% Behaviour execution point re-assessment clock
+parameters.SigmaPositioningPoint = 1;  % 1 = strombom; > 1 = novel 
 
 % Context-Aware Markers
 parameters.WindowSize = 60; % number of observations for each marker window --> 100 = optimal 
@@ -134,6 +145,8 @@ if parameters.InternalMarkerCalculations
     load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho.mat')
     load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_He2.mat')
     load('/Users/ajh/GitHub/IntelligentControlAgent/import/C2_Ho2.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/CLOCK_2_regmdl.mat')
+    load('/Users/ajh/GitHub/IntelligentControlAgent/import/CLOCK_3_regmdl.mat')
 end
 
 if parameters.BehaviourLibrary
@@ -150,7 +163,7 @@ end
 
 %% Main Function Call
 if parameters.InternalMarkerCalculations
-     output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube);
+     output = SheepMasterWHOLEGroups(parameters, C1, C2, C2_He, C2_Ho, C2_He2, C2_Ho2, datacube, CLOCK_2_regmdl, CLOCK_3_regmdl);
  else
      output = SheepMasterWHOLEGroups(parameters);
  end

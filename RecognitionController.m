@@ -89,12 +89,6 @@ if parameters.InternalMarkerCalculations
      parameters.Windows = WindowSegments(1:parameters.NumberOfSteps,parameters.WindowSize,(1-parameters.Overlap),0,1); % flag for calculating a new marker set <-- do not chagne
 end
 
-% %% TranslationController
-% if parameters.TranslationController
-%     parameters.CollisionRange = SheepSeparationLibrary(parameters.SheepSheepSeparationIndex);
-%     parameters.SheepDogVehicleSpeedLimit = DogSpeedLibrary(parameters.DogSpeedDifferentialIndex);
-% end 
-
 %% Evnrionment Setup
 parameters.MinX = 0;
 parameters.MaxX = 250;
