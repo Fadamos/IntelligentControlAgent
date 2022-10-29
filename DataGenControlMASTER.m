@@ -16,8 +16,8 @@
     parameters.BatchCurrentRun = 0; 
     parameters.BatchTotalRuns = 110; 
     
-    parameters.seedGen = randperm(1000000,30); % seed already generated here and saved as 'seed.mat' for 
-    parameters.seed = parameters.seedGen;
+    %parameters.seedGen = randperm(1000000,30); % seed already generated here and saved as 'seed.mat' for 
+    %parameters.seed = parameters.seedGen;
     
     %load('/Users/ajh/GitHub/RecognitionController/seed.mat') % load seed setting
 
@@ -110,7 +110,7 @@
                                         ];                                                                                      
                                     output.MissionPerformanceStatistics = MissionPerformanceStatistics; 
                                         varName = [parameters.ScenarioIndex,'_r',num2str(parameters.BatchCurrentRun),'-',num2str(parameters.BatchTotalRuns),'_seed',num2str(parameters.seed(iterator))];       
-                                        save(sprintf('/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/markers/%s.mat',varName),'output') % macOS-mini
+                                        save(sprintf('/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/classic/%s.mat',varName),'output') % macOS-mini
                                         %save(sprintf('/Users/fadamos/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % macOS-mbp
                                         %save(sprintf('C:/Users/danie/OneDrive/Documents/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % WIN
         end
