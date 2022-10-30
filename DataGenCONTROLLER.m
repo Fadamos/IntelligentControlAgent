@@ -10,7 +10,7 @@
     % system wide test param
     parameters.SET_CLOCK = false;  
 
-    parameters.user = "Adam";
+    parameters.u=ser = "Adam";
     % Sim params 
     parameters.Verbose = true; % visuals (true) or data only (false)
     parameters.Verbose2 = false; % clock parameterisation consolt reporting
