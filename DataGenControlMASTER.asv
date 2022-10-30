@@ -1,4 +1,4 @@
-% Author: Adam J Hepworth
+% Author: Adam J Hepwort
 % LastModified: 2022-10-27
 % Explanaton: Experimentation data generation and analysis script
 % Purpose: Agent performance testing 
@@ -11,13 +11,13 @@
     % user set this
     parameters.Adam = true; 
     
-        parameters.ScenarioIterator = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11"]; % manually set per terminal! 
-        parameters.replicates = 10; 
-        parameters.BatchCurrentRun = 0; 
-        parameters.BatchTotalRuns = (length(parameters.ScenarioIterator) * length(parameters.CollisonIterator) * length(parameters.SheepDogVehicleSpeedIterator) * length(parameters.CollectIterator) * length(parameters.DriveIterator) * parameters.replicates); % per terminal above i.e. = 750 
+    parameters.ScenarioIterator = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11"]; % manually set per terminal! 
+    parameters.replicates = 10; 
+    parameters.BatchCurrentRun = 0; 
+    parameters.BatchTotalRuns = 110; 
     
-    parameters.seedGen = randperm(1000000,30); % seed already generated here and saved as 'seed.mat' for 
-    parameters.seed = parameters.seedGen;
+    %parameters.seedGen = randperm(1000000,30); % seed already generated here and saved as 'seed.mat' for 
+    %parameters.seed = parameters.seedGen;
     
     %load('/Users/ajh/GitHub/RecognitionController/seed.mat') % load seed setting
 
@@ -25,10 +25,6 @@
         parameters.ScenarioIndex = char(parameters.ScenarioIterator(scenario));
         for iterator = 1:parameters.replicates % replicates of each scenario, integer 
                                     parameters.Replicate = iterator;
-                                    parameters.CollisionRange = parameters.CollisonIterator(collision); 
-                                    parameters.SheepDogVehicleSpeedLimit = parameters.SheepDogVehicleSpeedIterator(dogspeed);
-                                    parameters.DogCollectingTacticIndex = parameters.CollectIterator(collect);
-                                    parameters.DogDrivingTacticIndex = parameters.DriveIterator(drive);
                                     parameters.IsolatedSim = false;
                                     parameters.BatchCurrentRun = parameters.BatchCurrentRun + 1; 
                                     rng(parameters.seed(iterator))
@@ -45,11 +41,7 @@
                                         fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * \n')
                                         fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
                                         fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
-                                        if parameters.InternalMarkerCalculations
-                                            fprintf('\nSim failed for: sim run=%i; iterator=%i, collision=%i; dogspeed=%i; collect=%i; drive=%i; window=%i; overlap=%d\n',parameters.BatchCurrentRun,iterator,collision,dogspeed,collect,drive,ObsWindow,OverWindow)
-                                        else
-                                            fprintf('\nSim failed for: sim run=%i; iterator=%i, collision=%i; dogspeed=%i; collect=%i; drive=%i\n',parameters.BatchCurrentRun,iterator,collision,dogspeed,collect,drive)
-                                        end
+                                        fprintf('\nSim failed for: sim run=%i; iterator=%i.\n',parameters.BatchCurrentRun,iterator)          
                                         fprintf('\n * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
                                         fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n')
                                         fprintf(' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * \n')
@@ -81,7 +73,11 @@
                                     
                                     for i = 1:MissionRunTime(end)
                                         FlockGCM(i,:) = MARKERS.CentreOfMassMarker(SheepX, SheepY, NumSheep, i); % GCM positions over segment 
-                                        [~,chull(i)] = convhull(output.SensedData.SheepX(i,:), output.SensedData.SheepY(i,:));
+                                        try
+                                            [~,chull(i)] = convhull(output.SensedData.SheepX(i,:), output.SensedData.SheepY(i,:));
+                                        catch 
+                                            chull(i) = NaN;
+                                        end
                                     end
                                     
                                     FlockDiff = [diff(FlockGCM,1); FlockGCM(end,:)-FlockGCM(1,:)];
@@ -118,7 +114,7 @@
                                         ];                                                                                      
                                     output.MissionPerformanceStatistics = MissionPerformanceStatistics; 
                                         varName = [parameters.ScenarioIndex,'_r',num2str(parameters.BatchCurrentRun),'-',num2str(parameters.BatchTotalRuns),'_seed',num2str(parameters.seed(iterator))];       
-                                        save(sprintf('/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/markers/%s.mat',varName),'output') % macOS-mini
+                                        save(sprintf('/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/classic/%s.mat',varName),'output') % macOS-mini
                                         %save(sprintf('/Users/fadamos/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % macOS-mbp
                                         %save(sprintf('C:/Users/danie/OneDrive/Documents/GitHub/RecognitionController/SimData/%s.mat',varName),'output') % WIN
         end

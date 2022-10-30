@@ -1,16 +1,18 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-09-11
+% LastModified: 2022-10-28
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection for batch processing. 
 
 % parameters.Adam = true; --> This is now set in DataGenMASTER
+
+%% THIS IS CURRENTLY IN NORMAL MODE
 
     % system wide test param
     parameters.SET_CLOCK = false;  
 
     parameters.user = "Adam";
     % Sim params 
-    parameters.Verbose = false; % visuals (true) or data only (false)
+    parameters.Verbose = true; % visuals (true) or data only (false)
     parameters.Verbose2 = false; % clock parameterisation consolt reporting
     parameters.VerboseBugger = false; % sys print for increased data debugging
     parameters.visual = "classic"; % 'classic' if using original visuals
@@ -28,12 +30,12 @@
     parameters.DogCollectingTacticIndex = 'F2H'; % strombom 
     parameters.DogDrivingTacticIndex = 'DAH'; % strombom 
     % Markers 
-    parameters.OnlineClassifications = 0; % if you want to classify in each time step
-    parameters.TacticPairSelection = 0; % 1 = select new tactic pair behaviour and 0 = do not select
+    parameters.OnlineClassifications = 1; % if you want to classify in each time step
+    parameters.TacticPairSelection = 1; % 1 = select new tactic pair behaviour and 0 = do not select
     parameters.FullSet = true; 
-    parameters.InternalMarkerCalculations = 0; % 1 = observer or 0 = standard simulation
+    parameters.InternalMarkerCalculations = 1; % 1 = observer or 0 = standard simulation
     parameters.InternalMarkerCalculationsVisual = 0; % 1 = additional visuals 4x4 plot; 0 = just the sim visual
-    parameters.IntelligentControlAgent = 0; % 1 = intelligent markers agent or 0 = standard simulation 
+    parameters.IntelligentControlAgent = 1; % 1 = intelligent markers agent or 0 = standard simulation 
     parameters.AttentionThreshold = 0.5; % 0.5 = default, else change this. Represents cumsum 
     % Translator 
     parameters.TranslationController = 0; % translation controller (1=true, 0=false)

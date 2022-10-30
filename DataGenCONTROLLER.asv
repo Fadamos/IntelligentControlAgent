@@ -1,9 +1,11 @@
 % Author: Adam J Hepworth
-% LastModified: 2022-09-11
+% LastModified: 2022-10-28
 % Explanaton: simulation control script, enabling scenario, behaviour and
 % tactic selection for batch processing. 
 
 % parameters.Adam = true; --> This is now set in DataGenMASTER
+
+%% THIS IS CURRENTLY I
 
     % system wide test param
     parameters.SET_CLOCK = false;  
