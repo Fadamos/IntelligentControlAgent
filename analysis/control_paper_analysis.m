@@ -139,7 +139,12 @@ fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n'
 dfCLASSIC = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY);
 dfCLASSIC.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution"];
 
+save('dfCLASSIC', 'dfCLASSIC')
 
+df.classic = dfCLASSIC;
+df.intelligent = dfMARKERS;
+
+save('IntelligentControlAgent/analysis/df','df')
 
 %% Analysis 1 - Mission Performance 
 %   Intent:                     Compare mission performance of Intelligent Context Agent (ICA) and Classic Reactive Agent (CRA) across heterogeneous and homogeneous settings
@@ -152,6 +157,10 @@ dfCLASSIC.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length
 %   Statistical verification: 
 %                               (1) t-test: Test difference in mean success rate across each scenario, for He settins, Ho settings and aggregate
 %                               (2) KS Test or KL Divergence: Compare run-time distribution of agents
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
 
 
@@ -166,6 +175,10 @@ dfCLASSIC.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length
 %   Statistical verification: 
 %                               (1) t-test: difference in stability for He, Ho and S0
 %                               (2) t-test: difference in mean separated agents for He, Ho and S0   
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
 
 
@@ -184,3 +197,8 @@ dfCLASSIC.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length
 %                               (2) KS test or KL divergence: agent distance distribution
 %                               (3) t-test: difference in swarm distance travelled for He, Ho and S0
 %                               (4) t-test: difference in agent distance travelled for He, Ho and S0 
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
+
