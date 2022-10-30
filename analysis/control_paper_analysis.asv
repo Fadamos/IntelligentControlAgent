@@ -5,6 +5,8 @@
 
 %% Init Data 
 
+%%%%% MARKERS %%%%% 
+
 clear 
 clc
 
@@ -20,7 +22,75 @@ format long g;
 format compact;
 
 % Specify the file pattern.
-filePattern = sprintf('%s/*.mat', topLevelFolder);
+filePattern = sprintf('%s/*.mat', topLevelFolderMarkers);
+allFileInfo = dir(filePattern);
+
+% Throw out any folders.  We want files only, not folders.
+isFolder = [allFileInfo.isdir]; % Logical list of what item is a folder or not.
+% Now set those folder entries to null, essentially deleting/removing them from the list.
+allFileInfo(isFolder) = [];
+% Get a cell array of strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFolderNames = unique({allFileInfo.folder});
+numberOfFolders = length(listOfFolderNames);
+fprintf('The total number of folders to look in is %d.\n', numberOfFolders);
+
+% Get a cell array of base filename strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFileNames = {allFileInfo.name};
+totalNumberOfFiles = length(listOfFileNames);
+fprintf('The total number of files in those %d folders is %d.\n', numberOfFolders, totalNumberOfFiles);
+
+% Process all files in those folders.
+totalNumberOfFiles = length(allFileInfo);
+% Now we have a list of all files, matching the pattern, in the top level folder and its subfolders.
+if totalNumberOfFiles >= 1
+	for k = 1 : totalNumberOfFiles
+		% Go through all those files.
+		thisFolder = allFileInfo(k).folder;
+		thisBaseFileName = allFileInfo(k).name;
+		fullFileName = fullfile(thisFolder, thisBaseFileName);
+ 		%fprintf(' Processing file %d of %d : "%s".\n', k, totalNumberOfFiles, fullFileName);
+
+		[~, baseNameNoExt, ~] = fileparts(thisBaseFileName);
+		fprintf('%s\n', baseNameNoExt);
+
+        dat = importdata(fullFileName);
+            
+        % MissionPerformanceStats
+        MPstats = [MPstats; dat.MissionPerformanceStatistics];
+        ScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
+        AgentKEY = [AgentKEY; dat.parameters.Scenario]; 
+        CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
+        DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
+	end
+else
+	fprintf('     Folder %s has no files in it.\n', thisFolder);
+end
+fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
+
+% arrange data 
+dfMARKERS = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY);
+dfMARKERS.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution"];
+
+save('dfMARKERS', 'dfMARKERS')
+
+%%%%% CLASSIC %%%%% 
+
+clear
+clc
+
+topLevelFolderClassic = '/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/classic';
+
+ScenarioKEY = [];
+AgentKEY = []; 
+MPstats = []; 
+CollectKEY = []; 
+DriveKEY = []; 
+
+format long g;
+format compact;
+
+% Specify the file pattern.
+filePattern = sprintf('%s/*.mat', topLevelFolderClassic);
 allFileInfo = dir(filePattern);
 
 % Throw out any folders.  We want files only, not folders.
@@ -53,24 +123,28 @@ if totalNumberOfFiles >= 1
 
         dat = importdata(fullFileName);
             
-        parameters.ProbMat% MissionPerformanceStats
-        parameters.ProbMatMPstats = [MPstats; dat.MissionPerformanceStatistics];
-        parameters.ProbMatScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
-        parameters.ProbMatAgentKEY = [AgentKEY; dat.parameters.Scenario]; 
-        parameters.ProbMatCollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
-        parameters.ProbMatDriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
-        parameters.ProbMatCLOCK_2 = [CLOCK_2; dat.parameters.SigmaLength];
-        parameters.ProbMatCLOCK_3 = [CLOCK_3; dat.parameters.SigmaPositioningPoint];
+        % MissionPerformanceStats
+        MPstats = [MPstats; dat.MissionPerformanceStatistics];
+        ScenarioKEY = [ScenarioKEY; convertCharsToStrings(dat.parameters.ScenarioIndex)]; 
+        AgentKEY = [AgentKEY; dat.parameters.Scenario]; 
+        CollectKEY = [CollectKEY; dat.parameters.DogCollectingTacticIndex];
+        DriveKEY = [DriveKEY; dat.parameters.DogDrivingTacticIndex];
 	end
 else
 	fprintf('     Folder %s has no files in it.\n', thisFolder);
-    end
-    fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
+end
+fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
 
 % arrange data 
-df = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY, CLOCK_2, CLOCK_3);
-df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution" "CLOCK_2" "CLOCK_3"];
+dfCLASSIC = table(MPstats(:,1), MPstats(:,2), MPstats(:,3), MPstats(:,4), MPstats(:,5), MPstats(:,6), MPstats(:,7), MPstats(:,8), MPstats(:,9), MPstats(:,10), MPstats(:,11), MPstats(:,12), ScenarioKEY, CollectKEY, DriveKEY, AgentKEY);
+dfCLASSIC.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn Speed" "Mssn Comp Rate" "Swarm Total Dist" "Swarm Avg Dist" "Cntrl Total Dist" "Cntrl Avg Dist" "Runtime" "Avg Num Sep pi" "Paddock Area" "Scenario" "Collect Tactic" "Drive Tactic" "Agent Distribution"];
 
+save('dfCLASSIC', 'dfCLASSIC')
+
+df.classic = dfCLASSIC;
+df.intelligent = dfMARKERS;
+
+save('IntelligentControlAgent/analysis/df','df')
 
 %% Analysis 1 - Mission Performance 
 %   Intent:                     Compare mission performance of Intelligent Context Agent (ICA) and Classic Reactive Agent (CRA) across heterogeneous and homogeneous settings
@@ -83,6 +157,61 @@ df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn
 %   Statistical verification: 
 %                               (1) t-test: Test difference in mean success rate across each scenario, for He settins, Ho settings and aggregate
 %                               (2) KS Test or KL Divergence: Compare run-time distribution of agents
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
+
+df_CRA = df.classic;
+df_ICA = df.intelligent; 
+
+scenarios = unique(df_ICA.Scenario);
+
+% (1) Mission Success 
+
+msCRA = df_CRA.("Mssn Success");
+msICA = df_ICA.("Mssn Success"); 
+
+% all runs 
+[p, h, stats] = ranksum(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+[h, p, ci, stats] = ttest2(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+[h, p, k2stat] = kstest2(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+
+% He scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(1) | df_CRA.Scenario == scenarios(4) | df_CRA.Scenario == scenarios(5) | df_CRA.Scenario == scenarios(6)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(1) | df_ICA.Scenario == scenarios(4) | df_ICA.Scenario == scenarios(5) | df_ICA.Scenario == scenarios(6)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Ho scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(2) | df_CRA.Scenario == scenarios(3) | df_CRA.Scenario == scenarios(7) | df_CRA.Scenario == scenarios(8) | df_CRA.Scenario == scenarios(9) | df_CRA.Scenario == scenarios(10) | df_CRA.Scenario == scenarios(11)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenarios(3) | df_ICA.Scenario == scenarios(7) | df_ICA.Scenario == scenarios(8) | df_ICA.Scenario == scenarios(9) | df_ICA.Scenario == scenarios(10) | df_ICA.Scenario == scenarios(11)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Individual scenarios - 18% improvement 
+
+    for SCENARIO = 1:11
+        subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (1) Run Time Performance 
+
+
 
 
 
@@ -97,6 +226,10 @@ df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn
 %   Statistical verification: 
 %                               (1) t-test: difference in stability for He, Ho and S0
 %                               (2) t-test: difference in mean separated agents for He, Ho and S0   
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
 
 
@@ -115,3 +248,8 @@ df.Properties.VariableNames = ["Mssn Success" "Decision Chg" "Mssn Length" "Mssn
 %                               (2) KS test or KL divergence: agent distance distribution
 %                               (3) t-test: difference in swarm distance travelled for He, Ho and S0
 %                               (4) t-test: difference in agent distance travelled for He, Ho and S0 
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
+

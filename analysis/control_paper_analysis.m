@@ -162,6 +162,94 @@ clear
 clc
 load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
+df_CRA = df.classic;
+df_ICA = df.intelligent; 
+
+scenarios = unique(df_ICA.Scenario);
+
+% (1) Mission Success 
+
+msCRA = df_CRA.("Mssn Success");
+msICA = df_ICA.("Mssn Success"); 
+
+% all runs 
+[p, h, stats] = ranksum(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+[h, p, ci, stats] = ttest2(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+[h, p, k2stat] = kstest2(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
+
+% He scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(1) | df_CRA.Scenario == scenarios(4) | df_CRA.Scenario == scenarios(5) | df_CRA.Scenario == scenarios(6)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(1) | df_ICA.Scenario == scenarios(4) | df_ICA.Scenario == scenarios(5) | df_ICA.Scenario == scenarios(6)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Ho scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(2) | df_CRA.Scenario == scenarios(3) | df_CRA.Scenario == scenarios(7) | df_CRA.Scenario == scenarios(8) | df_CRA.Scenario == scenarios(9) | df_CRA.Scenario == scenarios(10) | df_CRA.Scenario == scenarios(11)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenarios(3) | df_ICA.Scenario == scenarios(7) | df_ICA.Scenario == scenarios(8) | df_ICA.Scenario == scenarios(9) | df_ICA.Scenario == scenarios(10) | df_ICA.Scenario == scenarios(11)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Individual scenarios - 18% improvement 
+
+    for SCENARIO = 1:11
+        subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (1) Run Time Performance 
+
+msCRA = df_CRA.("Mssn Length");
+msICA = df_ICA.("Mssn Length"); 
+
+% all runs 
+[p, h, stats] = ranksum(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
+[h, p, ci, stats] = ttest2(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
+[h, p, k2stat] = kstest2(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
+
+% He scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(1) | df_CRA.Scenario == scenarios(4) | df_CRA.Scenario == scenarios(5) | df_CRA.Scenario == scenarios(6)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(1) | df_ICA.Scenario == scenarios(4) | df_ICA.Scenario == scenarios(5) | df_ICA.Scenario == scenarios(6)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Ho scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(2) | df_CRA.Scenario == scenarios(3) | df_CRA.Scenario == scenarios(7) | df_CRA.Scenario == scenarios(8) | df_CRA.Scenario == scenarios(9) | df_CRA.Scenario == scenarios(10) | df_CRA.Scenario == scenarios(11)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenarios(3) | df_ICA.Scenario == scenarios(7) | df_ICA.Scenario == scenarios(8) | df_ICA.Scenario == scenarios(9) | df_ICA.Scenario == scenarios(10) | df_ICA.Scenario == scenarios(11)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Individual scenarios - 18% improvement 
+
+    for SCENARIO = 1:11
+        subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
 
 
 %% Analysis 2 - Control Impact on Stability 
