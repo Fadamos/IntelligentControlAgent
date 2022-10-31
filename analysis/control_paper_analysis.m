@@ -374,8 +374,8 @@ MDS_ICA = df_ICA.("Mssn Success")./df_ICA.("Decision Chg");
 
 % (2-b) DSS
 
-DSS_CRA = df_CRA.("Avg Num Sep pi")./df_CRA.("Decision Chg");
-DSS_ICA = df_ICA.("Avg Num Sep pi")./df_ICA.("Decision Chg");
+DSS_CRA = df_CRA.("Avg Num Sep pi")./(df_CRA.("Decision Chg")+1);
+DSS_ICA = df_ICA.("Avg Num Sep pi")./(df_ICA.("Decision Chg")+1);
 
 [p, h, stats] = ranksum(DSS_ICA, DSS_CRA)
 [h, p, ci, stats] = ttest2(DSS_ICA, DSS_CRA)
