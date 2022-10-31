@@ -193,7 +193,7 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
 [h, p, ci, stats] = ttest2(subCRA, subICA)
 [h, p, k2stat] = kstest2(subCRA, subICA)
 
-% Individual scenarios - 18% improvement 
+% Individual scenarios
 
     for SCENARIO = 1:11
         subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
@@ -209,7 +209,7 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         clear h p 
     end
 
-% (1) Run Time Performance 
+% (2) Run Time Performance 
 
 msCRA = df_CRA.("Mssn Length");
 msICA = df_ICA.("Mssn Length"); 
@@ -235,7 +235,7 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
 [h, p, ci, stats] = ttest2(subCRA, subICA)
 [h, p, k2stat] = kstest2(subCRA, subICA)
 
-% Individual scenarios - 18% improvement 
+% Individual scenarios
 
     for SCENARIO = 1:11
         subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
@@ -268,6 +268,122 @@ clear
 clc
 load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
+% (1) Separated agents 
+
+msCRA = df_CRA.("Avg Num Sep pi");
+msICA = df_ICA.("Avg Num Sep pi"); 
+
+% all runs 
+[p, h, stats] = ranksum(df_ICA.("Avg Num Sep pi"), df_CRA.("Avg Num Sep pi"))
+[h, p, ci, stats] = ttest2(df_ICA.("Avg Num Sep pi"), df_CRA.("Avg Num Sep pi"))
+[h, p, k2stat] = kstest2(df_ICA.("Avg Num Sep pi"), df_CRA.("Avg Num Sep pi"))
+
+% He scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(1) | df_CRA.Scenario == scenarios(4) | df_CRA.Scenario == scenarios(5) | df_CRA.Scenario == scenarios(6)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(1) | df_ICA.Scenario == scenarios(4) | df_ICA.Scenario == scenarios(5) | df_ICA.Scenario == scenarios(6)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Ho scenarios 
+subCRA = msCRA(find(df_CRA.Scenario == scenarios(2) | df_CRA.Scenario == scenarios(3) | df_CRA.Scenario == scenarios(7) | df_CRA.Scenario == scenarios(8) | df_CRA.Scenario == scenarios(9) | df_CRA.Scenario == scenarios(10) | df_CRA.Scenario == scenarios(11)));
+subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenarios(3) | df_ICA.Scenario == scenarios(7) | df_ICA.Scenario == scenarios(8) | df_ICA.Scenario == scenarios(9) | df_ICA.Scenario == scenarios(10) | df_ICA.Scenario == scenarios(11)));
+
+[p, h, stats] = ranksum(subCRA, subICA)
+[h, p, ci, stats] = ttest2(subCRA, subICA)
+[h, p, k2stat] = kstest2(subCRA, subICA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (2-a) Mission Decision Stability
+
+MDS_CRA = df_CRA.("Mssn Success")./df_CRA.("Decision Chg");
+MDS_ICA = df_ICA.("Mssn Success")./df_ICA.("Decision Chg");
+
+[p, h, stats] = ranksum(MDS_ICA, MDS_CRA)
+[h, p, ci, stats] = ttest2(MDS_ICA, MDS_CRA)
+[h, p, k2stat] = kstest2(MDS_ICA, MDS_CRA)
+
+% Individual scenarios 
+
+    for SCENARIO = 1:11
+        subCRA = MDS_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = MDS_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (2-b) DSS
+
+DSS_CRA = df_CRA.("Avg Num Sep pi")./df_CRA.("Decision Chg");
+DSS_ICA = df_ICA.("Avg Num Sep pi")./df_ICA.("Decision Chg");
+
+[p, h, stats] = ranksum(DSS_ICA, DSS_CRA)
+[h, p, ci, stats] = ttest2(DSS_ICA, DSS_CRA)
+[h, p, k2stat] = kstest2(DSS_ICA, DSS_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = DSS_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = DSS_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (2-c) MSS
+
+MSS_CRA = df_CRA.("Mssn Success")./df_CRA.("Avg Num Sep pi");
+MSS_ICA = df_ICA.("Mssn Success")./df_ICA.("Avg Num Sep pi");
+
+[p, h, stats] = ranksum(MSS_ICA, MSS_CRA)
+[h, p, ci, stats] = ttest2(MSS_ICA, DSS_CRA)
+[h, p, k2stat] = kstest2(MSS_ICA, MSS_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = MSS_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = MSS_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
 
 
 %% Analysis 3 - Control Efficiency
@@ -290,3 +406,104 @@ clear
 clc
 load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
+
+% (1) swarm distance moved
+
+STD_CRA = df_CRA.("Swarm Total Dist");
+STD_ICA = df_ICA.("Swarm Total Dist");
+
+[p, h, stats] = ranksum(STD_ICA, STD_CRA)
+[h, p, ci, stats] = ttest2(STD_ICA, STD_CRA)
+[h, p, k2stat] = kstest2(STD_ICA, STD_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = STD_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = STD_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+
+% (2) control agent distance moved
+
+ATD_CRA = df_CRA.("Cntrl Total Dist");
+ATD_ICA = df_ICA.("Cntrl Total Dist"); 
+
+[p, h, stats] = ranksum(ATD_ICA, ATD_CRA)
+[h, p, ci, stats] = ttest2(ATD_ICA, ATD_CRA)
+[h, p, k2stat] = kstest2(ATD_ICA, ATD_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = ATD_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = ATD_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (3) MS 
+
+MS_CRA = df_CRA.("Mssn Speed");
+MS_ICA = df_ICA.("Mssn Speed"); 
+
+[p, h, stats] = ranksum(MS_ICA, MS_CRA)
+[h, p, ci, stats] = ttest2(MS_ICA, MS_CRA)
+[h, p, k2stat] = kstest2(MS_ICA, MS_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = MS_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = MS_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+% (4) MCR 
+
+MCR_CRA = df_CRA.("Mssn Comp Rate");
+MCR_ICA = df_ICA.("Mssn Comp Rate"); 
+
+[p, h, stats] = ranksum(MCR_ICA, MCR_CRA)
+[h, p, ci, stats] = ttest2(MCR_ICA, MCR_CRA)
+[h, p, k2stat] = kstest2(MCR_ICA, MCR_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = MCR_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = MCR_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
