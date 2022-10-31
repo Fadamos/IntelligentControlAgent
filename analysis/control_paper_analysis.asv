@@ -207,8 +207,13 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
+        CRA(SCENARIO,1) = nanmean(subCRA); 
+        CRA(SCENARIO,2) = nanstd(subCRA); 
+        ICA(SCENARIO,1) = nanmean(subICA); 
+        ICA(SCENARIO,2) = nanstd(subICA); 
     end
 
+   
 % (2) Run Time Performance 
 
 msCRA = df_CRA.("Mssn Length");
@@ -249,8 +254,14 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
+        CRA(SCENARIO,1) = nanmean(subCRA); 
+        CRA(SCENARIO,2) = nanstd(subCRA); 
+        ICA(SCENARIO,1) = nanmean(subICA); 
+        ICA(SCENARIO,2) = nanstd(subICA); 
     end
 
+    round(CRA,2)
+    round(ICA,2)
 
 %% Analysis 2 - Control Impact on Stability 
 %   Intent:                     Compare stability of the mission and swarm 
@@ -294,7 +305,7 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
 [h, p, ci, stats] = ttest2(subCRA, subICA)
 [h, p, k2stat] = kstest2(subCRA, subICA)
 
-% Individual scenarios
+Individual scenarios
 
     for SCENARIO = 1:11
         subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
@@ -308,7 +319,14 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
+        CRA(SCENARIO,1) = nanmean(subCRA); 
+        CRA(SCENARIO,2) = nanstd(subCRA); 
+        ICA(SCENARIO,1) = nanmean(subICA); 
+        ICA(SCENARIO,2) = nanstd(subICA); 
     end
+
+    round(CRA,2)
+    round(ICA,2)
 
 % (2-a) Mission Decision Stability
 
@@ -358,7 +376,14 @@ DSS_ICA = df_ICA.("Avg Num Sep pi")./df_ICA.("Decision Chg");
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
+        CRA(SCENARIO,1) = nanmean(subCRA); 
+        CRA(SCENARIO,2) = nanstd(subCRA); 
+        ICA(SCENARIO,1) = nanmean(subICA); 
+        ICA(SCENARIO,2) = nanstd(subICA); 
     end
+
+    round(CRA,2)
+    round(ICA,2)
 
 % (2-c) MSS
 
@@ -409,20 +434,44 @@ load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
 
 % (1) swarm distance moved
 
-% (2) control agent distance moved
+STD_CRA = df_CRA.("Swarm Total Dist");
+STD_ICA = df_ICA.("Swarm Total Dist");
 
-MS_CRA = df_CRA.("Mssn Speed");
-MS_ICA = df_ICA.("Mssn Speed"); 
-
-[p, h, stats] = ranksum(MS_ICA, MS_CRA)
-[h, p, ci, stats] = ttest2(MS_ICA, MS_CRA)
-[h, p, k2stat] = kstest2(MS_ICA, MS_CRA)
+[p, h, stats] = ranksum(STD_ICA, STD_CRA)
+[h, p, ci, stats] = ttest2(STD_ICA, STD_CRA)
+[h, p, k2stat] = kstest2(STD_ICA, STD_CRA)
 
 % Individual scenarios
 
     for SCENARIO = 1:11
-        subCRA = MS_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
-        subICA = MS_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        subCRA = STD_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = STD_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+    end
+
+
+% (2) control agent distance moved
+
+ATD_CRA = df_CRA.("Cntrl Total Dist");
+ATD_ICA = df_ICA.("Cntrl Total Dist"); 
+
+[p, h, stats] = ranksum(ATD_ICA, ATD_CRA)
+[h, p, ci, stats] = ttest2(ATD_ICA, ATD_CRA)
+[h, p, k2stat] = kstest2(ATD_ICA, ATD_CRA)
+
+% Individual scenarios
+
+    for SCENARIO = 1:11
+        subCRA = ATD_CRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = ATD_ICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
         [p, h] = ranksum(subICA, subCRA);
         pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
         clear p h
