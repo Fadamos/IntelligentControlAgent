@@ -213,6 +213,8 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         ICA(SCENARIO,2) = nanstd(subICA); 
     end
 
+    round(CRA,2)
+    round(ICA,2)
    
 % (2) Run Time Performance 
 
