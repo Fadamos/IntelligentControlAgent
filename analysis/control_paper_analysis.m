@@ -172,6 +172,13 @@ scenarios = unique(df_ICA.Scenario);
 msCRA = df_CRA.("Mssn Success");
 msICA = df_ICA.("Mssn Success"); 
 
+% IS DATA NORMAL? 
+[h p] = kstest(msCRA)
+[h p] = kstest(msICA)
+
+% IS VARIANCE EQUAL?
+vartestn([msCRA, msICA], 'TestType', 'LeveneAbsolute')
+
 % all runs 
 [p, h, stats] = ranksum(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
 [h, p, ci, stats] = ttest2(df_ICA.("Mssn Success"), df_CRA.("Mssn Success"))
@@ -223,13 +230,22 @@ df_ICA = df.intelligent;
 
 scenarios = unique(df_ICA.Scenario);
 
-msCRA = df_CRA.("Mssn Length");
-msICA = df_ICA.("Mssn Length"); 
+CRAlength = df_CRA.("Mssn Length");
+ICAlength = df_ICA.("Mssn Length"); 
+
+% IS DATA NORMAL? 
+[h,p] = kstest(msCRA)
+[h,p] = kstest(msICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([msICA, msCRA], 'TestType', 'LeveneAbsolute')
 
 % all runs 
 [p, h, stats] = ranksum(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
 [h, p, ci, stats] = ttest2(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
 [h, p, k2stat] = kstest2(df_ICA.("Mssn Length"), df_CRA.("Mssn Length"))
+
+nonzeros(subMScra.*subCRA)
 
 % He scenarios 
 subCRA = msCRA(find(df_CRA.Scenario == scenarios(1) | df_CRA.Scenario == scenarios(4) | df_CRA.Scenario == scenarios(5) | df_CRA.Scenario == scenarios(6)));
@@ -250,9 +266,16 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
 % Individual scenarios
 
     for SCENARIO = 1:11
-        subCRA = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
-        subICA = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
-        [p, h] = ranksum(subICA, subCRA);
+        subMScra = msCRA(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subMSica = msICA(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        subCRA = CRAlength(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        subICA = ICAlength(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        try 
+            [p, h] = ranksum(nonzeros(subMSica.*subICA), nonzeros(subMScra.*subCRA));
+        catch 
+            p = -1; 
+            h = -1; 
+        end
         pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
         clear p h
         [h, p] = ttest2(subICA, subCRA);
@@ -261,14 +284,35 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
-        CRA(SCENARIO,1) = nanmean(subCRA); 
-        CRA(SCENARIO,2) = nanstd(subCRA); 
-        ICA(SCENARIO,1) = nanmean(subICA); 
-        ICA(SCENARIO,2) = nanstd(subICA); 
+        CRA(SCENARIO,1) = nanmean(nonzeros(subMScra.*subCRA)); 
+        CRA(SCENARIO,2) = nanstd(nonzeros(subMScra.*subCRA)); 
+        ICA(SCENARIO,1) = nanmean(nonzeros(subMSica.*subICA)); 
+        ICA(SCENARIO,2) = nanstd(nonzeros(subMSica.*subICA)); 
     end
 
-    round(CRA,2)
     round(ICA,2)
+    round(CRA,2)
+    
+
+% subset of only successful data 
+
+
+clear
+clc
+load('/Users/ajh/GitHub/IntelligentControlAgent/analysis/df.mat')
+
+df_CRA = df.classic;
+df_ICA = df.intelligent; 
+
+scenarios = unique(df_ICA.Scenario);
+
+msCRA = df_CRA.("Mssn Success");
+msICA = df_ICA.("Mssn Success"); 
+
+CRAlength = df_CRA.("Mssn Length");
+ICAlength = df_ICA.("Mssn Length"); 
+
+[p, h] = ranksum(nonzeros(msICA.*CRAlength), nonzeros(msICA.*ICAlength));
 
 %% Analysis 2 - Control Impact on Stability 
 %   Intent:                     Compare stability of the mission and swarm 
@@ -295,6 +339,13 @@ scenarios = unique(df_ICA.Scenario);
 
 msCRA = df_CRA.("Avg Num Sep pi");
 msICA = df_ICA.("Avg Num Sep pi"); 
+
+% IS DATA NORMAL? 
+[h,p] = kstest(msCRA)
+[h,p] = kstest(msICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([msICA, msCRA], 'TestType', 'LeveneAbsolute')
 
 % all runs 
 [p, h, stats] = ranksum(df_ICA.("Avg Num Sep pi"), df_CRA.("Avg Num Sep pi"))
@@ -345,6 +396,13 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
 MDS_CRA = df_CRA.("Mssn Success")./df_CRA.("Decision Chg");
 MDS_ICA = df_ICA.("Mssn Success")./df_ICA.("Decision Chg");
 
+% IS DATA NORMAL? 
+[h,p] = kstest(msCRA)
+[h,p] = kstest(MDS_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([MDS_ICA, MDS_CRA], 'TestType', 'LeveneAbsolute')
+
 [p, h, stats] = ranksum(MDS_ICA, MDS_CRA)
 [h, p, ci, stats] = ttest2(MDS_ICA, MDS_CRA)
 [h, p, k2stat] = kstest2(MDS_ICA, MDS_CRA)
@@ -377,6 +435,13 @@ MDS_ICA = df_ICA.("Mssn Success")./df_ICA.("Decision Chg");
 DSS_CRA = df_CRA.("Avg Num Sep pi")./(df_CRA.("Decision Chg")+1);
 DSS_ICA = df_ICA.("Avg Num Sep pi")./(df_ICA.("Decision Chg")+1);
 
+% IS DATA NORMAL? 
+[h,p] = kstest(DSS_CRA)
+[h,p] = kstest(DSS_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([DSS_ICA, DSS_CRA], 'TestType', 'LeveneAbsolute')
+
 [p, h, stats] = ranksum(DSS_ICA, DSS_CRA)
 [h, p, ci, stats] = ttest2(DSS_ICA, DSS_CRA)
 [h, p, k2stat] = kstest2(DSS_ICA, DSS_CRA)
@@ -408,6 +473,13 @@ DSS_ICA = df_ICA.("Avg Num Sep pi")./(df_ICA.("Decision Chg")+1);
 
 MSS_CRA = df_CRA.("Mssn Success")./df_CRA.("Avg Num Sep pi");
 MSS_ICA = df_ICA.("Mssn Success")./df_ICA.("Avg Num Sep pi");
+
+% IS DATA NORMAL? 
+[h,p] = kstest(MSS_CRA)
+[h,p] = kstest(MSS_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([MSS_ICA, MSS_CRA], 'TestType', 'LeveneAbsolute')
 
 [p, h, stats] = ranksum(MSS_ICA, MSS_CRA)
 [h, p, ci, stats] = ttest2(MSS_ICA, DSS_CRA)
@@ -467,6 +539,13 @@ scenarios = unique(df_ICA.Scenario);
 STD_CRA = df_CRA.("Swarm Total Dist");
 STD_ICA = df_ICA.("Swarm Total Dist");
 
+% IS DATA NORMAL? 
+[h,p] = kstest(STD_CRA)
+[h,p] = kstest(STD_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([STD_ICA, STD_CRA], 'TestType', 'LeveneAbsolute')
+
 [p, h, stats] = ranksum(STD_ICA, STD_CRA)
 [h, p, ci, stats] = ttest2(STD_ICA, STD_CRA)
 [h, p, k2stat] = kstest2(STD_ICA, STD_CRA)
@@ -485,6 +564,9 @@ STD_ICA = df_ICA.("Swarm Total Dist");
         [h, p] = kstest2(subICA, subCRA);
         hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
         clear h p 
+        p = anova1([subICA, subCRA]);
+        %pANOVA(SCENARIO) = p; 
+        %clear p
         CRA(SCENARIO,1) = nanmean(subCRA); 
         CRA(SCENARIO,2) = nanstd(subCRA); 
         ICA(SCENARIO,1) = nanmean(subICA); 
@@ -499,6 +581,13 @@ STD_ICA = df_ICA.("Swarm Total Dist");
 
 ATD_CRA = df_CRA.("Cntrl Total Dist");
 ATD_ICA = df_ICA.("Cntrl Total Dist"); 
+
+% IS DATA NORMAL? 
+[h,p] = kstest(ATD_CRA)
+[h,p] = kstest(ATD_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([ATD_ICA, ATD_CRA], 'TestType', 'LeveneAbsolute')
 
 [p, h, stats] = ranksum(ATD_ICA, ATD_CRA)
 [h, p, ci, stats] = ttest2(ATD_ICA, ATD_CRA)
@@ -532,6 +621,13 @@ ATD_ICA = df_ICA.("Cntrl Total Dist");
 MS_CRA = df_CRA.("Mssn Speed");
 MS_ICA = df_ICA.("Mssn Speed"); 
 
+% IS DATA NORMAL? 
+[h,p] = kstest(MS_CRA)
+[h,p] = kstest(MS_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([MS_ICA, MS_CRA], 'TestType', 'LeveneAbsolute')
+
 [p, h, stats] = ranksum(MS_ICA, MS_CRA)
 [h, p, ci, stats] = ttest2(MS_ICA, MS_CRA)
 [h, p, k2stat] = kstest2(MS_ICA, MS_CRA)
@@ -562,7 +658,14 @@ MS_ICA = df_ICA.("Mssn Speed");
 % (4) MCR 
 
 MCR_CRA = df_CRA.("Mssn Comp Rate");
-MCR_ICA = df_ICA.("Mssn Comp Rate"); 
+MCR_ICA = df_ICA.("Mssn Comp Rate");
+
+% IS DATA NORMAL? 
+[h,p] = kstest(MCR_CRA)
+[h,p] = kstest(MCR_ICA)
+
+% IS VARIANCE EQUAL? 
+vartestn([MCR_ICA,  MCR_CRA], 'TestType', 'LeveneAbsolute')
 
 [p, h, stats] = ranksum(MCR_ICA, MCR_CRA)
 [h, p, ci, stats] = ttest2(MCR_ICA, MCR_CRA)
