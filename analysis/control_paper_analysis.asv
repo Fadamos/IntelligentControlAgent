@@ -312,7 +312,7 @@ msICA = df_ICA.("Mssn Success");
 CRAlength = df_CRA.("Mssn Length");
 ICAlength = df_ICA.("Mssn Length"); 
 
-kstest
+[p, h] = ranksum(nonzeros(msICA.*CRAlength), nonzeros(msICA.*ICAlength));
 
 %% Analysis 2 - Control Impact on Stability 
 %   Intent:                     Compare stability of the mission and swarm 
@@ -391,6 +391,9 @@ subICA = msICA(find(df_ICA.Scenario == scenarios(2) | df_ICA.Scenario == scenari
     round(CRA,2)
     round(ICA,2)
 
+    mean(round(CRA,2))
+    mean(round(ICA,2))
+
 % (2-a) Mission Decision Stability
 
 MDS_CRA = df_CRA.("Mssn Success")./df_CRA.("Decision Chg");
@@ -429,6 +432,9 @@ vartestn([MDS_ICA, MDS_CRA], 'TestType', 'LeveneAbsolute')
 
     round(CRA,2)
     round(ICA,2)
+
+    mean(round(CRA,2))
+    mean(round(ICA,2))
 
 % (2-b) DSS
 
@@ -469,6 +475,9 @@ vartestn([DSS_ICA, DSS_CRA], 'TestType', 'LeveneAbsolute')
     round(CRA,2)
     round(ICA,2)
 
+    mean(round(CRA,2))
+    mean(round(ICA,2))
+
 % (2-c) MSS
 
 MSS_CRA = df_CRA.("Mssn Success")./df_CRA.("Avg Num Sep pi");
@@ -508,6 +517,8 @@ vartestn([MSS_ICA, MSS_CRA], 'TestType', 'LeveneAbsolute')
     round(CRA,2)
     round(ICA,2)
 
+    mean(round(CRA,2))
+    mean(round(ICA,2))
 
 %% Analysis 3 - Control Efficiency
 %   Intent:                     Compare the efficiency of each method     
@@ -576,6 +587,9 @@ vartestn([STD_ICA, STD_CRA], 'TestType', 'LeveneAbsolute')
     round(CRA,2)
     round(ICA,2)
 
+    mean(round(CRA,2))
+    mean(round(ICA,2))
+
 
 % (2) control agent distance moved
 
@@ -616,7 +630,10 @@ vartestn([ATD_ICA, ATD_CRA], 'TestType', 'LeveneAbsolute')
     round(CRA,2)
     round(ICA,2)
 
-% (3) MS 
+    mean(round(CRA,2))
+    mean(round(ICA,2))
+
+% (3) MSp
 
 MS_CRA = df_CRA.("Mssn Speed");
 MS_ICA = df_ICA.("Mssn Speed"); 
@@ -654,6 +671,9 @@ vartestn([MS_ICA, MS_CRA], 'TestType', 'LeveneAbsolute')
 
     round(CRA,2)
     round(ICA,2)
+
+    mean(round(CRA,2))
+    mean(round(ICA,2))
 
 % (4) MCR 
 
@@ -693,3 +713,229 @@ vartestn([MCR_ICA,  MCR_CRA], 'TestType', 'LeveneAbsolute')
 
     round(CRA,2)
     round(ICA,2)
+
+    mean(round(CRA,2))
+    mean(round(ICA,2))
+
+%% Controlability Metric 
+
+% How many agents are under the influence of the shepherding agent? 
+% Metric: Calculate at each time step how many sheep are within the influence range of the dog 
+
+% 1- get data set
+
+clear 
+clc
+
+topLevelFolderMarkers = '/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/markers';
+
+%%%%% MARKERS %%%%% 
+
+ScenarioKEY = [];
+RunKEY = []; 
+MPstats = []; 
+SwarmX = []; 
+SwarmY = []; 
+CtrlX = []; 
+CtrlY = []; 
+
+format long g;
+format compact;
+
+% Specify the file pattern.
+filePattern = sprintf('%s/*.mat', topLevelFolderMarkers);
+allFileInfo = dir(filePattern);
+
+% Throw out any folders.  We want files only, not folders.
+isFolder = [allFileInfo.isdir]; % Logical list of what item is a folder or not.
+% Now set those folder entries to null, essentially deleting/removing them from the list.
+allFileInfo(isFolder) = [];
+% Get a cell array of strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFolderNames = unique({allFileInfo.folder});
+numberOfFolders = length(listOfFolderNames);
+fprintf('The total number of folders to look in is %d.\n', numberOfFolders);
+
+% Get a cell array of base filename strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFileNames = {allFileInfo.name};
+totalNumberOfFiles = length(listOfFileNames);
+fprintf('The total number of files in those %d folders is %d.\n', numberOfFolders, totalNumberOfFiles);
+
+% Process all files in those folders.
+totalNumberOfFiles = length(allFileInfo);
+% Now we have a list of all files, matching the pattern, in the top level folder and its subfolders.
+if totalNumberOfFiles >= 1
+	for k = 1 : totalNumberOfFiles
+		% Go through all those files.
+		thisFolder = allFileInfo(k).folder;
+		thisBaseFileName = allFileInfo(k).name;
+		fullFileName = fullfile(thisFolder, thisBaseFileName);
+ 		%fprintf(' Processing file %d of %d : "%s".\n', k, totalNumberOfFiles, fullFileName);
+
+		[~, baseNameNoExt, ~] = fileparts(thisBaseFileName);
+		fprintf('%s\n', baseNameNoExt);
+
+        dat = importdata(fullFileName);
+            
+        % MissionPerformanceStats
+        SwarmX = [SwarmX; dat.SensedData.SheepX];
+        SwarmY = [SwarmY; dat.SensedData.SheepY];
+        CtrlX = [CtrlX; dat.SensedData.SheepDogX'];
+        CtrlY = [CtrlY; dat.SensedData.SheepDogY'];
+        ScenarioKEY = [ScenarioKEY; repmat(convertCharsToStrings(dat.parameters.ScenarioIndex), size(dat.SensedData.SheepX,1), 1)]; 
+        RunKEY = [RunKEY; repmat(dat.parameters.BatchCurrentRun, size(dat.SensedData.SheepX,1), 1)];
+	end
+else
+	fprintf('     Folder %s has no files in it.\n', thisFolder);
+end
+fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
+
+% arrange data 
+dfA4markers = table(RunKEY, ScenarioKEY, SwarmX, SwarmY, CtrlX, CtrlY);
+
+save('dfA4markers', 'dfA4markers')
+
+%%%%% CLASSIC %%%%% 
+
+clear 
+clc
+
+topLevelFolderMarkers = '/Users/ajh/GitHub/IntelligentControlAgent/SimData/control_sim/classic';
+
+%%%%% MARKERS %%%%% 
+
+ScenarioKEY = [];
+RunKEY = []; 
+MPstats = []; 
+SwarmX = []; 
+SwarmY = []; 
+CtrlX = []; 
+CtrlY = []; 
+
+format long g;
+format compact;
+
+% Specify the file pattern.
+filePattern = sprintf('%s/*.mat', topLevelFolderMarkers);
+allFileInfo = dir(filePattern);
+
+% Throw out any folders.  We want files only, not folders.
+isFolder = [allFileInfo.isdir]; % Logical list of what item is a folder or not.
+% Now set those folder entries to null, essentially deleting/removing them from the list.
+allFileInfo(isFolder) = [];
+% Get a cell array of strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFolderNames = unique({allFileInfo.folder});
+numberOfFolders = length(listOfFolderNames);
+fprintf('The total number of folders to look in is %d.\n', numberOfFolders);
+
+% Get a cell array of base filename strings.  We don't really use it.  I'm just showing you how to get it in case you want it.
+listOfFileNames = {allFileInfo.name};
+totalNumberOfFiles = length(listOfFileNames);
+fprintf('The total number of files in those %d folders is %d.\n', numberOfFolders, totalNumberOfFiles);
+
+% Process all files in those folders.
+totalNumberOfFiles = length(allFileInfo);
+% Now we have a list of all files, matching the pattern, in the top level folder and its subfolders.
+if totalNumberOfFiles >= 1
+	for k = 1 : totalNumberOfFiles
+		% Go through all those files.
+		thisFolder = allFileInfo(k).folder;
+		thisBaseFileName = allFileInfo(k).name;
+		fullFileName = fullfile(thisFolder, thisBaseFileName);
+ 		%fprintf(' Processing file %d of %d : "%s".\n', k, totalNumberOfFiles, fullFileName);
+
+		[~, baseNameNoExt, ~] = fileparts(thisBaseFileName);
+		fprintf('%s\n', baseNameNoExt);
+
+        dat = importdata(fullFileName);
+            
+        % MissionPerformanceStats
+        SwarmX = [SwarmX; dat.SensedData.SheepX];
+        SwarmY = [SwarmY; dat.SensedData.SheepY];
+        CtrlX = [CtrlX; dat.SensedData.SheepDogX'];
+        CtrlY = [CtrlY; dat.SensedData.SheepDogY'];
+        ScenarioKEY = [ScenarioKEY; repmat(convertCharsToStrings(dat.parameters.ScenarioIndex), size(dat.SensedData.SheepX,1), 1)]; 
+        RunKEY = [RunKEY; repmat(dat.parameters.BatchCurrentRun, size(dat.SensedData.SheepX,1), 1)];
+	end
+else
+	fprintf('     Folder %s has no files in it.\n', thisFolder);
+end
+fprintf('\nDone looking in all %d folders!\nFound %d files in the %d folders.\n', numberOfFolders, totalNumberOfFiles, numberOfFolders);
+
+% arrange data 
+dfA4classic = table(RunKEY, ScenarioKEY, SwarmX, SwarmY, CtrlX, CtrlY);
+
+save('dfA4classic', 'dfA4classic')
+
+
+% 2- compare position of each agent to that of the dog using the influence range and count the number of agents at each period under influence
+
+clear
+clc
+
+load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/dfA4.mat')
+
+influence_range = 65; 
+
+for t = 1:size(dfA4.markers,1)
+    cnt = 0; 
+    for pi = 1:size(dfA4.markers.SwarmX,2)
+            cnt = cnt + double(pdist2([dfA4.markers.CtrlX(t) dfA4.markers.CtrlY(t)],[dfA4.markers.SwarmX(t,pi) dfA4.markers.SwarmX(t,pi)]) <= influence_range); 
+    end
+    influence_pi(t) = cnt;
+end
+
+dfA4.markers.influence_pi = influence_pi';
+dfA4.markers
+
+clear influence_pi
+
+for t = 1:size(dfA4.classic,1)
+    cnt = 0; 
+    for pi = 1:size(dfA4.classic.SwarmX,2)
+            cnt = cnt + double(pdist2([dfA4.classic.CtrlX(t) dfA4.classic.CtrlY(t)],[dfA4.classic.SwarmX(t,pi) dfA4.classic.SwarmX(t,pi)]) <= influence_range); 
+    end
+    influence_pi(t) = cnt;
+end
+
+dfA4.classic.influence_pi = influence_pi';
+dfA4.classic
+
+save('dfA4', 'dfA4')
+
+% 3- calculate statistics for each scenario (intelligent vs classic)
+
+clear
+clc
+
+load('/Users/ajh/GitHub/IntelligentControlAgent/SimData/dfA4.mat')
+
+CRA = dfA4.markers.influence_pi;
+ICA = dfA4.classic.influence_pi; 
+
+[p, h, stats] = ranksum(ICA, CRA)
+
+[round(mean(ICA),2) round(std(ICA),2)]
+[round(mean(CRA),2) round(std(CRA),2)]
+
+scenarios = unique(dfA4.markers.ScenarioKEY);
+
+    for SCENARIO = 1:11
+        subCRA = CRA(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));
+        subICA = ICA(find(dfA4.classic.ScenarioKEY == scenarios(SCENARIO)));
+        [p, h] = ranksum(subICA, subCRA);
+        pRS(SCENARIO) = p; hRS(SCENARIO) = h; 
+        clear p h
+        [h, p] = ttest2(subICA, subCRA);
+        hT(SCENARIO) = h; pT(SCENARIO) = p; 
+        clear h p
+        [h, p] = kstest2(subICA, subCRA);
+        hKS(SCENARIO) = h; pKS(SCENARIO) = p; 
+        clear h p 
+        CRAmu(SCENARIO,1) = nanmean(subCRA); 
+        CRAsigma(SCENARIO,2) = nanstd(subCRA); 
+        ICAmu(SCENARIO,1) = nanmean(subICA); 
+        ICAsigma(SCENARIO,2) = nanstd(subICA); 
+    end
+
+    mean(round(ICA,2))
+    mean(round(CRA,2))
