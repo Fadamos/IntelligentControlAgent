@@ -25,6 +25,7 @@ function output = DecisionModel(parameters, datacube, ProbMat, ClassPredict, Two
     %    the smaller the inverse (i.e. smaller likelihood)
     % 3- https://stackoverflow.com/questions/23459707/how-to-convert-distance-into-probability
     % 4- https://en.wikipedia.org/wiki/Inverse_distance_weighting
+    % 5- https://stats.stackexchange.com/questions/248772/why-does-the-l2-norm-heuristic-work-in-measuring-uniformity-of-probability-distr
     AgentPred = (1./agent_out)./(sum(1./agent_out)); 
     
                                       % He - Ho - S1 - S2 - S3 - S4 - S5 - S6 - S7 - S8 - S9 - S10 - S11 
