@@ -966,3 +966,27 @@ msp = [0.24 0.27 0.23 0.06 0.05 0.21 0.31 0.23 0.23 0.06 0.04; 0.07 0.03 0.09 0.
 
 [r,p] = corrcoef(swarm_dist(1,:), msp(1,:))
 [r,p] = corrcoef(swarm_dist(2,:), msp(2,:))
+
+%% Decisions vs number of separated agents 
+
+df_CRA.("Mssn Success") %% ___ NEEDS TO BE df_CRA etc. 
+
+mrk_sep = dfA4..("Avg Num Sep pi"); 
+cls_sep = dfA4.classic.("Avg Num Sep pi");
+
+mrk_dec = df_ICA.("Decision Chg");
+cls_dec = dfA4.classic.("Decision Chg");
+
+scenarios = unique(dfA4.markers.ScenarioKEY);%% ___ NEEDS TO BE df_CRA etc. 
+
+    for SCENARIO = 1:11
+        sub_mrk_sep = mrk_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO))); %% ___ NEEDS TO BE df_CRA etc. 
+        sub_cls_sep = cls_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
+        sub_mrk_dec = mrk_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
+        sub_cls_dec = cls_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
+        
+        MrkSep(SCENARIO) = nanmean(sub_mrk_sep); 
+        ClsSep(SCENARIO) = nanmean(sub_cls_sep); 
+        MrkDec(SCENARIO) = nanmean(sub_mrk_dec); 
+        ClsDec(SCENARIO) = nanmean(sub_cls_dec); 
+    end

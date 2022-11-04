@@ -949,4 +949,44 @@ scenarios = unique(dfA4.markers.ScenarioKEY);
 mssn_len = [1136.4 665 863.1 3702.6 4099 1617.6 989 1187.5 768.7 3879.2 4824.9; 2956.3 4721.4 2229 4393.4 4507.9 2571.3 1891.6 2447.2 1182.8 5149 4471.6];
 mssn_len_s = [690.6 665 863.1 2256.2 2524 734.8 526.8 747.3 768.7 2609.4 3528.5; 2016.6 3723.7 1904.6 2623.3 3866.8 2284.9 1891.6 1771.7 1182.8 0 4020];
 swarm_dist = [175.39 173.59 173.59 168.82 159.24 172.37 175.44 174.8 176.36 173.04 164.92; 97.38 133.07 88.3 67.33 56.2 103.96 141.17 125.69 60.02 110.95 111.23];
-msp = [0.24 0.27 0.23 0.06 0.05 0.21 0.31 0.23 0.23 0.06 0.04; ];
+msp = [0.24 0.27 0.23 0.06 0.05 0.21 0.31 0.23 0.23 0.06 0.04; 0.07 0.03 0.09 0.04 0.03 0.08 0.11 0.09 0.15 0.02 0.04];
+
+
+[r,p] = corrcoef(mssn_len(1,:), swarm_dist(1,:))
+[r,p] = corrcoef(mssn_len(2,:), swarm_dist(2,:))
+
+[r,p] = corrcoef(mssn_len_s(1,:), swarm_dist(1,:))
+[r,p] = corrcoef(mssn_len_s(2,:), swarm_dist(2,:))
+
+[r,p] = corrcoef(mssn_len(1,:), msp(1,:))
+[r,p] = corrcoef(mssn_len(2,:), msp(2,:))
+
+[r,p] = corrcoef(mssn_len_s(1,:), msp(1,:))
+[r,p] = corrcoef(mssn_len_s(2,:), msp(2,:))
+
+[r,p] = corrcoef(swarm_dist(1,:), msp(1,:))
+[r,p] = corrcoef(swarm_dist(2,:), msp(2,:))
+
+%% Decisions vs number of separated agents 
+
+df_CRA.("Mssn Success")
+
+mrk_sep = dfA4..("Avg Num Sep pi"); 
+cls_sep = dfA4.classic.("Avg Num Sep pi");
+
+mrk_dec = df_ICA.("Decision Chg");
+cls_dec = dfA4.classic.("Decision Chg");
+
+scenarios = unique(dfA4.markers.ScenarioKEY);
+
+    for SCENARIO = 1:11
+        sub_mrk_sep = mrk_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));
+        sub_cls_sep = cls_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));
+        sub_mrk_dec = mrk_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));
+        sub_cls_dec = cls_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));
+        
+        MrkSep(SCENARIO) = nanmean(sub_mrk_sep); 
+        ClsSep(SCENARIO) = nanmean(sub_cls_sep); 
+        MrkDec(SCENARIO) = nanmean(sub_mrk_dec); 
+        ClsDec(SCENARIO) = nanmean(sub_cls_dec); 
+    end
