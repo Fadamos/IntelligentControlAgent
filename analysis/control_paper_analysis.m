@@ -969,24 +969,25 @@ msp = [0.24 0.27 0.23 0.06 0.05 0.21 0.31 0.23 0.23 0.06 0.04; 0.07 0.03 0.09 0.
 
 %% Decisions vs number of separated agents 
 
-df_CRA.("Mssn Success") %% ___ NEEDS TO BE df_CRA etc. 
-
-mrk_sep = dfA4..("Avg Num Sep pi"); 
-cls_sep = dfA4.classic.("Avg Num Sep pi");
+mrk_sep = df_CRA.("Avg Num Sep pi"); 
+cls_sep = df_CRA.("Avg Num Sep pi");
 
 mrk_dec = df_ICA.("Decision Chg");
-cls_dec = dfA4.classic.("Decision Chg");
+cls_dec = df_ICA.("Decision Chg");
 
-scenarios = unique(dfA4.markers.ScenarioKEY);%% ___ NEEDS TO BE df_CRA etc. 
+scenarios = unique(df_CRA.Scenario);
 
     for SCENARIO = 1:11
-        sub_mrk_sep = mrk_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO))); %% ___ NEEDS TO BE df_CRA etc. 
-        sub_cls_sep = cls_sep(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
-        sub_mrk_dec = mrk_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
-        sub_cls_dec = cls_dec(find(dfA4.markers.ScenarioKEY == scenarios(SCENARIO)));%% ___ NEEDS TO BE df_CRA etc. 
+        sub_mrk_sep = mrk_sep(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        sub_cls_sep = cls_sep(find(df_CRA.Scenario == scenarios(SCENARIO)));
+        sub_mrk_dec = mrk_dec(find(df_ICA.Scenario == scenarios(SCENARIO)));
+        sub_cls_dec = cls_dec(find(df_CRA.Scenario == scenarios(SCENARIO)));
         
         MrkSep(SCENARIO) = nanmean(sub_mrk_sep); 
         ClsSep(SCENARIO) = nanmean(sub_cls_sep); 
         MrkDec(SCENARIO) = nanmean(sub_mrk_dec); 
         ClsDec(SCENARIO) = nanmean(sub_cls_dec); 
     end
+
+    [r,p] = corrcoef(MrkSep, MrkDec)
+    [r,p] = corrcoef(ClsSep, ClsDec)
