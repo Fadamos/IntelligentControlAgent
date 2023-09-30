@@ -186,13 +186,10 @@ std(s_CRA)/10
 mean(s_ICA)/10
 std(s_ICA)/10
 
-ica_sorted = [s_ICA(1); s_ICA(4:end); s_ICA(2); s_ICA(3)];
-cra_sorted = [s_CRA(1); s_CRA(4:end); s_CRA(2); s_CRA(3)];
-
-% plot performance
-plot(cra_sorted/10, 'LineWidth', 3)
+% plot pe
+plot(s_CRA/10, 'LineWidth', 3)
 hold on 
-plot(ica_sorted/10, 'LineWidth', 3)
+plot(s_ICA/10, 'LineWidth', 3)
 hold off
 axis([1 11 0 1])
 xlabel('Scenarios') 
